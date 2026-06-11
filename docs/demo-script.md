@@ -101,6 +101,64 @@ Scroll to **Evaluation report**, then **GitHub export**.
   conform to the *same* `@ventureos/contracts` types the live labs emit, and the evaluation
   report and export files are produced by the *same* renderers Real Mode uses.
 - **"How do you handle secrets?"** BYOK keys are encrypted, used only server-side, never sent to
-  the browser or logged, and never included in a GitHub export. See `docs/security.md`.
+  the browser or logged, and never included in a GitHub export. See `docs/security.md` and
+  `docs/security-byok.md`.
 - **"What's the primary object?"** The Venture. Every lab run is a `VentureJob` against a Venture,
   and every output is a versioned `VentureArtifact`.
+
+---
+
+## 3-minute version (tight)
+
+For a quick reviewer pass. Skip everything optional.
+
+| Time | URL | Talk track |
+|---|---|---|
+| 0:00 | `/` | "VentureOS is a multi-agent venture operating system. Persona, committee, research-graph, validation, BuildSquad and evaluation agents collaborate on a shared venture." |
+| 0:30 | `/demo/faceless-crm` | "Faceless CRM for SMB — every artifact below was produced by an agent group. No keys, no network calls." |
+| 1:00 | scroll to Buying Committee | "Five synthetic personas deliberated, two changed positions, the committee converged on Pilot." |
+| 1:45 | scroll to Research Graph | "The graph surfaces god-nodes and contradictions explicitly." |
+| 2:15 | scroll to VentureLab | "PROCEED with high confidence — here's the scorecard and the counter-signals." |
+| 2:40 | scroll to GitHub Export | "These 14 files are produced by the same renderer Real Mode pushes to your GitHub account via your BYOK PAT." |
+| 3:00 | end | "That's the swarm. Real Mode runs the same flow on your own idea." |
+
+## 7-minute version (with Real Mode hand-off)
+
+For an interactive demo where you have a BYOK key ready.
+
+| Time | URL | Talk track |
+|---|---|---|
+| 0:00 | `/` | Hero + the multi-agent architecture section. |
+| 1:00 | `/#pipeline` | Pipeline table: each step, agent role, artifact, signal. |
+| 2:00 | `/demo/faceless-crm` | Full demo walkthrough (compress 5-minute version into ~3 minutes). |
+| 5:00 | `/settings/byok` | Show validated OpenAI key + GitHub PAT. Talk about encryption at rest and the `lint:arch` import boundary. |
+| 5:45 | `/ventures/new` | Create a venture from a brief (don't run labs live — they take real time). |
+| 6:15 | jump back to Demo's GitHub Export section | "In Real Mode, this preview is identical, and the export creates a real repo under your account with a real commit SHA. We've shipped error classification for `repo_exists`, `invalid_token`, `insufficient_scope`, `rate_limited`." |
+| 7:00 | end | Open `docs/agent-swarms.md` briefly to land the architecture point. |
+
+---
+
+## Fallback plans
+
+### Fallback A — API key fails mid-demo
+
+1. Don't panic. Don't fix it on-screen.
+2. Switch to `/demo/faceless-crm` and continue the walkthrough from Demo Mode.
+3. Talking point: "This is exactly why Demo Mode exists — every reviewer can experience the full output regardless of provider health." Then point at the structured failure card if the failure happened during a live Real Mode run: "Notice the failure code is stable (`invalid_token`) with retry guidance. This is the BYOK-linked failure UX we ship across every lab."
+
+### Fallback B — GitHub export fails mid-demo
+
+1. Most common cause is `repo_exists`. The failure card explicitly says so.
+2. Demo the **error UX itself** as a feature: stable error codes (`repo_exists`, `invalid_token`, `insufficient_scope`, `rate_limited`, `network`), actionable hints, retry buttons that re-issue the call without the user re-entering the credential.
+3. Then switch to `/demo/faceless-crm` and show the simulated GitHub Export section to make the "what the success path looks like" point.
+
+### Fallback C — Local server stops responding
+
+1. The dev server has logs at `apps/web` console. Don't show them on stream.
+2. Switch to the deployed/static demo if available, otherwise share the GitHub repo link directly.
+3. Walk through `docs/agent-swarms.md` and `docs/architecture-overview.md` to deliver the architecture story without the live UI.
+
+### Fallback D — Network is flaky
+
+1. Demo Mode is fully static and works offline once loaded.
+2. Open `/demo/faceless-crm` ahead of time; if network drops mid-demo, continue scrolling through Demo Mode — no further network calls are needed.
