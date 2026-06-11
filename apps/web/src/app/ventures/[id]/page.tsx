@@ -1,83 +1,112 @@
 'use client';
 
 /**
- * Venture Workspace (Sprint 2A.5).
+ * Venture Workspace — the central product surface (Sprint 2: Real productization).
  *
- * The page a user lives on. Shows the venture overview, status controls,
- * progress + readiness, the timeline, the artifact registry, and quick-action
- * links that pre-bind ventureId for PersonaLab / Research Graph / VentureLab /
- * BuildSquad so no JSON ever has to be pasted between modules.
+ * Eight tabs render every artifact as readable product content (never raw JSON
+ * by default): Overview, Personas, Research, Validation, Build Plan, Evaluation,
+ * Timeline, Artifacts. The Overview computes the next best action from the
+ * artifacts present and surfaces active jobs + GitHub export status. Evaluation
+ * is rendered client-side from the loaded artifacts via the same pure renderer
+ * Real Mode's GitHub export uses.
+ *
+ * Preserves: Venture as the domain object, VentureJob as the async primitive,
+ * BYOK-only GitHub export (no secrets in the browser).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type {
-  Venture,
+  BuildSquadArtifactPack,
+  BuyingCommitteeTranscript,
+  GitHubRepoArtifactPayload,
+  PersonaLabPersona,
+  ResearchGraph,
   VentureArtifact,
   VentureArtifactKind,
+  VentureJob,
+  VentureRecommendation,
   VentureStatus,
   VentureSummary,
   VentureTimelineEvent,
-  BuildSquadArtifactPack,
-  VentureRecommendation,
-  PersonaLabPersona,
-  ResearchGraph,
 } from '@ventureos/contracts';
 
-import { RecentJobs } from '../../../components/RecentJobs';
 import { JobProgress } from '../../../components/JobProgress';
+import { RecentJobs } from '../../../components/RecentJobs';
+import { GithubExportPanel } from '../../../components/GithubExportPanel';
+import {
+  ArtifactsView,
+  Bar,
+  BuildPlanView,
+  CommitteeView,
+  cx,
+  DecisionBadge,
+  EmptyState,
+  EvaluationView,
+  fmtTime,
+  PersonaCards,
+  ResearchGraphView,
+  ScoreRing,
+  styles,
+  TimelineView,
+  ValidationView,
+  VentureStatusBadge,
+} from '../../../components/artifacts';
+import { buildEvaluationFromArtifacts } from '../../../lib/evaluation';
 
 const STATUSES: VentureStatus[] = [
   'draft', 'researching', 'validating', 'pivoting', 'approved', 'building', 'archived', 'rejected',
 ];
 
-const STATUS_COLOUR: Record<VentureStatus, string> = {
-  draft:        '#9aa0a6',
-  researching:  '#7aa3ff',
-  validating:   '#f3b350',
-  pivoting:     '#d589ff',
-  approved:     '#56c596',
-  building:     '#56c596',
-  archived:     '#5a5a5a',
-  rejected:     '#ef6a6a',
-};
+type Tab =
+  | 'overview' | 'personas' | 'research' | 'validation'
+  | 'buildplan' | 'evaluation' | 'timeline' | 'artifacts';
 
-const ARTIFACT_LABEL: Record<VentureArtifactKind, string> = {
-  persona_set:            'Persona set',
-  interview_transcript:   'Interview',
-  focus_group_transcript: 'Focus group',
-  buying_committee:       'Buying committee',
-  persona_insights:       'Persona insights',
-  research_graph:         'Research graph',
-  venture_recommendation: 'Recommendation',
-  buildsquad_pack:        'BuildSquad pack',
-  evaluation_report:      'Evaluation report',
-  github_repo:            'GitHub repo',
-};
+const TABS: { key: Tab; label: string }[] = [
+  { key: 'overview', label: 'Overview' },
+  { key: 'personas', label: 'Personas' },
+  { key: 'research', label: 'Research' },
+  { key: 'validation', label: 'Validation' },
+  { key: 'buildplan', label: 'Build Plan' },
+  { key: 'evaluation', label: 'Evaluation' },
+  { key: 'timeline', label: 'Timeline' },
+  { key: 'artifacts', label: 'Artifacts' },
+];
+
+interface DerivedArtifacts {
+  personas: PersonaLabPersona[] | null;
+  graph: ResearchGraph | null;
+  rec: VentureRecommendation | null;
+  pack: BuildSquadArtifactPack | null;
+  committee: BuyingCommitteeTranscript | null;
+  github: GitHubRepoArtifactPayload | null;
+  has: { personas: boolean; graph: boolean; rec: boolean; pack: boolean; committee: boolean; github: boolean };
+}
 
 interface Props { params: { id: string } }
-
-type SectionKey = 'overview' | 'research' | 'personas' | 'committee' | 'validation' | 'buildsquad' | 'history' | 'artifacts';
 
 export default function VentureWorkspacePage({ params }: Props) {
   const [summary, setSummary] = useState<VentureSummary | null>(null);
   const [artifacts, setArtifacts] = useState<VentureArtifact[]>([]);
   const [events, setEvents] = useState<VentureTimelineEvent[]>([]);
+  const [jobs, setJobs] = useState<VentureJob[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [section, setSection] = useState<SectionKey>('overview');
+  const [tab, setTab] = useState<Tab>('overview');
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
     setError(null);
     try {
-      const [s, a, t] = await Promise.all([
+      const [s, a, t, j] = await Promise.all([
         fetch(`/api/ventures/${params.id}`, { cache: 'no-store' }).then((r) => r.json()),
         fetch(`/api/ventures/${params.id}/artifacts`, { cache: 'no-store' }).then((r) => r.json()),
         fetch(`/api/ventures/${params.id}/timeline`, { cache: 'no-store' }).then((r) => r.json()),
+        fetch(`/api/ventures/${params.id}/jobs?limit=25`, { cache: 'no-store' }).then((r) => r.json()),
       ]);
       if (!s.ok) { setError(s.reason ?? 'Failed to load venture.'); return; }
       setSummary(s.summary as VentureSummary);
       setArtifacts((a.ok ? a.artifacts : []) as VentureArtifact[]);
       setEvents((t.ok ? t.events : []) as VentureTimelineEvent[]);
+      setJobs((j.ok ? j.jobs : []) as VentureJob[]);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load.');
     }
@@ -97,18 +126,49 @@ export default function VentureWorkspacePage({ params }: Props) {
     } finally { setBusy(false); }
   }, [params.id, load]);
 
+  const derived = useMemo<DerivedArtifacts>(() => {
+    const personasArt = latestOf(artifacts, 'persona_set');
+    const researchArt = latestOf(artifacts, 'research_graph');
+    const recArt = latestOf(artifacts, 'venture_recommendation');
+    const packArt = latestOf(artifacts, 'buildsquad_pack');
+    const committeeArt = latestOf(artifacts, 'buying_committee');
+    const githubArt = latestOf(artifacts, 'github_repo');
+    return {
+      personas: (personasArt?.payload as PersonaLabPersona[] | undefined) ?? null,
+      graph: (researchArt?.payload as ResearchGraph | undefined) ?? null,
+      rec: (recArt?.payload as VentureRecommendation | undefined) ?? null,
+      pack: (packArt?.payload as BuildSquadArtifactPack | undefined) ?? null,
+      committee: (committeeArt?.payload as BuyingCommitteeTranscript | undefined) ?? null,
+      github: (githubArt?.payload as GitHubRepoArtifactPayload | undefined) ?? null,
+      has: {
+        personas: !!personasArt, graph: !!researchArt, rec: !!recArt,
+        pack: !!packArt, committee: !!committeeArt, github: !!githubArt,
+      },
+    };
+  }, [artifacts]);
+
+  const evaluation = useMemo(() => {
+    if (!summary) return null;
+    return buildEvaluationFromArtifacts({
+      venture: summary.venture,
+      readiness: summary.readiness,
+      personas: derived.personas,
+      graph: derived.graph,
+      recommendation: derived.rec,
+      committee: derived.committee,
+      pack: derived.pack,
+      sourceArtifacts: artifacts.map((a) => ({ kind: a.artifactKind, version: a.version })),
+    });
+  }, [summary, artifacts, derived]);
+
   if (error) return <p style={{ padding: '1.5rem', color: '#ef6a6a' }}>{error}</p>;
   if (!summary) return <p style={{ padding: '1.5rem', color: '#9aa0a6' }}>Loading…</p>;
 
   const v = summary.venture;
-  const personasArt = latestOf(artifacts, 'persona_set');
-  const researchArt = latestOf(artifacts, 'research_graph');
-  const recArt = latestOf(artifacts, 'venture_recommendation');
-  const packArt = latestOf(artifacts, 'buildsquad_pack');
-  const committeeArt = latestOf(artifacts, 'buying_committee');
+  const activeJobs = jobs.filter((j) => j.status === 'queued' || j.status === 'running');
 
   return (
-    <section style={{ maxWidth: 1200, margin: '0 auto', padding: '1.5rem' }}>
+    <section className={cx(styles.scope)} style={{ maxWidth: 1200, margin: '0 auto', padding: '1.5rem' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
         <div style={{ flex: '1 1 320px' }}>
           <a href="/ventures" style={{ color: '#7aa3ff', fontSize: '0.85rem', textDecoration: 'none' }}>← My Ventures</a>
@@ -116,9 +176,7 @@ export default function VentureWorkspacePage({ params }: Props) {
           {v.description && <p style={{ color: '#9aa0a6', margin: 0 }}>{v.description}</p>}
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <span style={{ ...badge, background: STATUS_COLOUR[v.status] + '22', color: STATUS_COLOUR[v.status], borderColor: STATUS_COLOUR[v.status] + '55' }}>
-            {v.status}
-          </span>
+          <VentureStatusBadge status={v.status} />
           <select
             value={v.status}
             disabled={busy}
@@ -131,276 +189,246 @@ export default function VentureWorkspacePage({ params }: Props) {
       </header>
 
       <nav style={{ display: 'flex', gap: '0.25rem', marginTop: '1rem', borderBottom: '1px solid #2a2a2a', overflowX: 'auto' }}>
-        {(['overview', 'research', 'personas', 'committee', 'validation', 'buildsquad', 'history', 'artifacts'] as SectionKey[]).map((k) => (
-          <button key={k} onClick={() => setSection(k)} style={tab(section === k)}>{k}</button>
+        {TABS.map(({ key, label }) => (
+          <button key={key} onClick={() => setTab(key)} style={tabStyle(tab === key)}>{label}</button>
         ))}
       </nav>
 
-      <div style={{ marginTop: '1rem' }}>
-        {section === 'overview' && <Overview summary={summary} artifacts={artifacts} />}
-        {section === 'research' && <ResearchSection venture={v} researchArt={researchArt} />}
-        {section === 'personas' && <PersonasSection venture={v} personasArt={personasArt} />}
-        {section === 'committee' && <CommitteeSection venture={v} committeeArt={committeeArt} />}
-        {section === 'validation' && <ValidationSection venture={v} recArt={recArt} />}
-        {section === 'buildsquad' && <BuildSquadSection venture={v} packArt={packArt} recArt={recArt} researchArt={researchArt} personasArt={personasArt} />}
-        {section === 'history' && <HistorySection events={events} />}
-        {section === 'artifacts' && <ArtifactsSection artifacts={artifacts} />}
+      <div style={{ marginTop: '1.25rem' }}>
+        {tab === 'overview' && (
+          <OverviewTab
+            summary={summary}
+            derived={derived}
+            activeJobs={activeJobs}
+            onJobChange={() => void load()}
+            onGoToTab={setTab}
+          />
+        )}
+
+        {tab === 'personas' && (
+          derived.personas && derived.personas.length > 0 ? (
+            <div className={cx(styles.stack)}>
+              <PersonaCards personas={derived.personas} />
+              {derived.committee ? (
+                <div>
+                  <h2 className={cx(styles.cardTitle)} style={{ margin: '0.5rem 0 0.75rem', fontSize: '1.05rem' }}>Buying committee</h2>
+                  <CommitteeView committee={derived.committee} personas={derived.personas} />
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <EmptyState
+              icon="👥"
+              title="No personas yet"
+              text="Generate a synthetic persona set and buying committee to ground every downstream decision."
+              action={{ href: `/labs/persona?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Generate personas →' }}
+            />
+          )
+        )}
+
+        {tab === 'research' && (
+          derived.graph ? (
+            <ResearchGraphView graph={derived.graph} />
+          ) : (
+            <EmptyState
+              icon="🕸"
+              title="No research graph yet"
+              text="Build a research graph to surface god-nodes, contradictions and the strongest market signals."
+              action={{ href: `/labs/research-graph?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Build research graph →' }}
+            />
+          )
+        )}
+
+        {tab === 'validation' && (
+          derived.rec ? (
+            <ValidationView recommendation={derived.rec} />
+          ) : (
+            <EmptyState
+              icon="⚖"
+              title="No recommendation yet"
+              text="Run VentureLab to get a Proceed / Pivot / Kill call with a scorecard, evidence and a validation roadmap."
+              action={{ href: `/labs/venture?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Run VentureLab →' }}
+            />
+          )
+        )}
+
+        {tab === 'buildplan' && (
+          derived.pack ? (
+            <div className={cx(styles.stack)}>
+              <BuildPlanView pack={derived.pack} />
+              <GithubExportPanel
+                ventureId={v.ventureId}
+                defaultRepoName={defaultRepoName(v.title)}
+                github={derived.github}
+                onJobChange={() => void load()}
+              />
+            </div>
+          ) : (
+            <EmptyState
+              icon="🛠"
+              title="No build plan yet"
+              text={derived.has.rec
+                ? 'Generate a BuildSquad pack to turn the recommendation into a PRD, MVP scope, user stories and an architecture brief.'
+                : 'BuildSquad needs a VentureLab recommendation first. Run VentureLab, then come back here.'}
+              action={derived.has.rec
+                ? { href: `/labs/buildsquad?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Generate BuildSquad plan →' }
+                : { href: `/labs/venture?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Run VentureLab →' }}
+            />
+          )
+        )}
+
+        {tab === 'evaluation' && evaluation && (
+          <EvaluationView report={evaluation.report} markdown={evaluation.markdown} />
+        )}
+
+        {tab === 'timeline' && (
+          events.length > 0 ? (
+            <TimelineView events={events} />
+          ) : (
+            <EmptyState icon="🕗" title="No timeline events yet" text="Events appear here as jobs run and artifacts are created." />
+          )
+        )}
+
+        {tab === 'artifacts' && (
+          artifacts.length > 0 ? (
+            <ArtifactsView artifacts={artifacts} events={events} />
+          ) : (
+            <EmptyState icon="📦" title="No artifacts yet" text="Run a lab to produce your first artifact — it will be registered here with full provenance." />
+          )
+        )}
       </div>
     </section>
   );
 }
 
-function Overview({ summary, artifacts }: { summary: VentureSummary; artifacts: VentureArtifact[] }) {
-  const r = summary.readiness;
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-      <div style={card}>
-        <h3 style={h3}>Readiness</h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Ring score={r.overall} />
-          <div style={{ flex: 1 }}>
-            <Bar label="Persona coverage" value={r.personaCoverage} />
-            <Bar label="Research coverage" value={r.researchCoverage} />
-            <Bar label="Validation confidence" value={r.validationConfidence} />
-            <Bar label="BuildSquad completeness" value={r.buildsquadCompleteness} />
-            <Bar label="Risk coverage" value={r.riskCoverage} />
-          </div>
-        </div>
-        {r.warnings.length > 0 && (
-          <ul style={{ marginTop: '0.5rem', color: '#f3b350', fontSize: '0.8rem', paddingLeft: '1rem' }}>
-            {r.warnings.map((w, i) => <li key={i}>{w}</li>)}
-          </ul>
-        )}
-      </div>
-
-      <div style={card}>
-        <h3 style={h3}>Progress</h3>
-        <Bar label="Research" value={summary.progress.research} />
-        <Bar label="Validation" value={summary.progress.validation} />
-        <Bar label="Planning" value={summary.progress.planning} />
-        <Bar label="Build-ready" value={summary.progress.buildReadiness} />
-      </div>
-
-      <div style={card}>
-        <h3 style={h3}>Latest recommendation</h3>
-        {summary.latestRecommendation ? (
-          <>
-            <div style={{ fontSize: '1.5rem', fontWeight: 600 }}>{summary.latestRecommendation.decision}</div>
-            <div style={{ color: '#9aa0a6', fontSize: '0.85rem' }}>
-              Score {summary.latestRecommendation.overallScore}/100 ·
-              Confidence {Math.round(summary.latestRecommendation.confidenceScore * 100)}%
-            </div>
-            <div style={{ color: '#7a8088', fontSize: '0.75rem', marginTop: '0.5rem' }}>
-              {new Date(summary.latestRecommendation.createdAt).toLocaleString()}
-            </div>
-          </>
-        ) : (
-          <p style={{ color: '#9aa0a6' }}>No recommendation yet. Run VentureLab to generate one.</p>
-        )}
-      </div>
-
-      <div style={card}>
-        <h3 style={h3}>Artifact counts</h3>
-        <ul style={{ listStyle: 'none', padding: 0, fontSize: '0.85rem' }}>
-          {(Object.keys(ARTIFACT_LABEL) as VentureArtifactKind[]).map((k) => {
-            const n = artifacts.filter((a) => a.artifactKind === k).length;
-            return (
-              <li key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.25rem 0', borderBottom: '1px solid #1c1c20' }}>
-                <span style={{ color: '#9aa0a6' }}>{ARTIFACT_LABEL[k]}</span>
-                <strong>{n}</strong>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-
-      <div style={{ ...card, gridColumn: '1 / -1' }}>
-        <h3 style={h3}>Recent jobs</h3>
-        <RecentJobs ventureId={summary.venture.ventureId} />
-      </div>
-    </div>
-  );
-}
-
-function ResearchSection({ venture, researchArt }: { venture: Venture; researchArt: VentureArtifact | null }) {
-  return (
-    <div style={card}>
-      <header style={sectionHead}>
-        <h3 style={h3}>Research Graph</h3>
-        <a href={`/labs/research-graph?ventureId=${encodeURIComponent(venture.ventureId)}`} style={primaryBtnSm}>
-          {researchArt ? 'Rebuild graph →' : 'Build graph →'}
-        </a>
-      </header>
-      {researchArt ? (
-        <ResearchSummary art={researchArt} />
-      ) : (
-        <p style={{ color: '#9aa0a6' }}>No research graph yet. Open Graphify to build one.</p>
-      )}
-    </div>
-  );
-}
-
-function ResearchSummary({ art }: { art: VentureArtifact }) {
-  const g = art.payload as ResearchGraph | undefined;
-  if (!g) return <p style={{ color: '#9aa0a6' }}>Could not parse graph payload.</p>;
-  return (
-    <div>
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.75rem', color: '#9aa0a6' }}>
-        v{art.version} · {new Date(art.createdAt).toLocaleString()}
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
-        <Stat label="Nodes" value={g.stats?.nodes ?? 0} />
-        <Stat label="Edges" value={g.stats?.edges ?? 0} />
-        <Stat label="God-nodes" value={g.godNodes?.length ?? 0} />
-        <Stat label="Contradictions" value={g.contradictions?.length ?? 0} />
-      </div>
-      {g.godNodes && g.godNodes.length > 0 && (
-        <>
-          <h4 style={h4}>Strongest signals</h4>
-          <ol style={{ paddingLeft: '1.25rem', fontSize: '0.85rem' }}>
-            {g.godNodes.slice(0, 5).map((n, i) => <li key={i}>{n.label}</li>)}
-          </ol>
-        </>
-      )}
-    </div>
-  );
-}
-
-function PersonasSection({ venture, personasArt }: { venture: Venture; personasArt: VentureArtifact | null }) {
-  const personas = (personasArt?.payload as PersonaLabPersona[] | undefined) ?? [];
-  return (
-    <div style={card}>
-      <header style={sectionHead}>
-        <h3 style={h3}>PersonaLab</h3>
-        <a href={`/labs/persona?ventureId=${encodeURIComponent(venture.ventureId)}`} style={primaryBtnSm}>
-          {personasArt ? 'Re-run personas →' : 'Generate personas →'}
-        </a>
-      </header>
-      {personasArt ? (
-        <>
-          <div style={{ fontSize: '0.75rem', color: '#9aa0a6', marginBottom: '0.5rem' }}>
-            v{personasArt.version} · {personas.length} personas · {new Date(personasArt.createdAt).toLocaleString()}
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.5rem' }}>
-            {personas.slice(0, 8).map((p) => (
-              <div key={p.id} style={{ ...card, padding: '0.6rem' }}>
-                <strong>{p.name}</strong>
-                <div style={{ color: '#9aa0a6', fontSize: '0.75rem' }}>{p.role}</div>
-                {p.quote && <p style={{ fontSize: '0.78rem', color: '#cbcbd1', margin: '0.3rem 0 0', fontStyle: 'italic' }}>“{p.quote}”</p>}
-              </div>
-            ))}
-          </div>
-        </>
-      ) : (
-        <p style={{ color: '#9aa0a6' }}>No personas yet.</p>
-      )}
-    </div>
-  );
-}
-
-function CommitteeSection({ venture, committeeArt }: { venture: Venture; committeeArt: VentureArtifact | null }) {
-  return (
-    <div style={card}>
-      <header style={sectionHead}>
-        <h3 style={h3}>Buying Committee</h3>
-        <a href={`/labs/persona?ventureId=${encodeURIComponent(venture.ventureId)}`} style={primaryBtnSm}>
-          Run committee →
-        </a>
-      </header>
-      {committeeArt ? (
-        <div style={{ fontSize: '0.85rem' }}>
-          <div style={{ color: '#9aa0a6', fontSize: '0.75rem' }}>
-            v{committeeArt.version} · {new Date(committeeArt.createdAt).toLocaleString()}
-          </div>
-          <pre style={preStyle}>{JSON.stringify(committeeArt.payload, null, 2).slice(0, 1200)}…</pre>
-        </div>
-      ) : <p style={{ color: '#9aa0a6' }}>No buying committee transcript yet.</p>}
-    </div>
-  );
-}
-
-function ValidationSection({ venture, recArt }: { venture: Venture; recArt: VentureArtifact | null }) {
-  const rec = recArt?.payload as VentureRecommendation | undefined;
-  return (
-    <div style={card}>
-      <header style={sectionHead}>
-        <h3 style={h3}>Venture Validation (VentureLab)</h3>
-        <a href={`/labs/venture?ventureId=${encodeURIComponent(venture.ventureId)}`} style={primaryBtnSm}>
-          {rec ? 'Re-analyse →' : 'Analyse →'}
-        </a>
-      </header>
-      {rec ? (
-        <>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '0.75rem' }}>
-            <span style={{ ...badge, fontSize: '0.85rem', padding: '0.25rem 0.75rem',
-              background: rec.decision === 'PROCEED' ? '#56c59622' : rec.decision === 'PIVOT' ? '#f3b35022' : '#ef6a6a22',
-              color: rec.decision === 'PROCEED' ? '#56c596' : rec.decision === 'PIVOT' ? '#f3b350' : '#ef6a6a',
-            }}>{rec.decision}</span>
-            <span style={{ color: '#9aa0a6', fontSize: '0.85rem' }}>
-              Score {rec.overallScore}/100 · Confidence {Math.round(rec.confidenceScore * 100)}%
-            </span>
-          </div>
-          <p style={{ fontSize: '0.9rem' }}>{rec.executiveSummary}</p>
-          {rec.decisionRationale.length > 0 && (
-            <>
-              <h4 style={h4}>Decision rationale</h4>
-              <ol style={{ paddingLeft: '1.25rem', fontSize: '0.85rem' }}>
-                {rec.decisionRationale.map((d, i) => <li key={i}>{d}</li>)}
-              </ol>
-            </>
-          )}
-        </>
-      ) : <p style={{ color: '#9aa0a6' }}>No recommendation yet. Run VentureLab.</p>}
-    </div>
-  );
-}
-
-function BuildSquadSection({ venture, packArt, recArt, researchArt, personasArt }: {
-  venture: Venture; packArt: VentureArtifact | null;
-  recArt: VentureArtifact | null; researchArt: VentureArtifact | null; personasArt: VentureArtifact | null;
+function OverviewTab({
+  summary, derived, activeJobs, onJobChange, onGoToTab,
+}: {
+  summary: VentureSummary;
+  derived: DerivedArtifacts;
+  activeJobs: VentureJob[];
+  onJobChange: () => void;
+  onGoToTab: (t: Tab) => void;
 }) {
-  const pack = packArt?.payload as BuildSquadArtifactPack | undefined;
-  const canRun = !!recArt;
-  const [showExport, setShowExport] = useState(false);
+  const v = summary.venture;
+  const vid = encodeURIComponent(v.ventureId);
+  const r = summary.readiness;
+
+  const steps: { key: string; label: string; href: string | null; done: boolean; enabled: boolean; goTab: Tab }[] = [
+    { key: 'personas', label: 'Generate personas', href: `/labs/persona?ventureId=${vid}`, done: derived.has.personas, enabled: true, goTab: 'personas' },
+    { key: 'research', label: 'Build research graph', href: `/labs/research-graph?ventureId=${vid}`, done: derived.has.graph, enabled: true, goTab: 'research' },
+    { key: 'validation', label: 'Run VentureLab', href: `/labs/venture?ventureId=${vid}`, done: derived.has.rec, enabled: true, goTab: 'validation' },
+    { key: 'buildplan', label: 'Generate BuildSquad plan', href: `/labs/buildsquad?ventureId=${vid}`, done: derived.has.pack, enabled: derived.has.rec, goTab: 'buildplan' },
+    { key: 'export', label: 'Export to GitHub', href: null, done: derived.has.github, enabled: derived.has.pack, goTab: 'buildplan' },
+  ];
+  const next = steps.find((s) => !s.done && s.enabled) ?? steps.find((s) => !s.done) ?? null;
+  const missing = steps.filter((s) => !s.done);
+
   return (
-    <div style={card}>
-      <header style={sectionHead}>
-        <h3 style={h3}>BuildSquad</h3>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          {pack ? (
-            <button onClick={() => setShowExport((v) => !v)} style={primaryBtnSm}>
-              {showExport ? 'Hide export →' : 'Export to GitHub →'}
-            </button>
-          ) : null}
-          <a
-            href={canRun ? `/labs/buildsquad?ventureId=${encodeURIComponent(venture.ventureId)}` : '#'}
-            onClick={(e) => { if (!canRun) e.preventDefault(); }}
-            style={{ ...primaryBtnSm, opacity: canRun ? 1 : 0.4, cursor: canRun ? 'pointer' : 'not-allowed' }}
-            title={canRun ? '' : 'Generate a recommendation first.'}
-          >
-            {pack ? 'Re-run BuildSquad →' : 'Plan with BuildSquad →'}
-          </a>
-        </div>
-      </header>
-      {!recArt && <p style={{ color: '#9aa0a6' }}>BuildSquad needs a VentureLab recommendation first.</p>}
-      {!personasArt && recArt && <p style={{ color: '#f3b350', fontSize: '0.85rem' }}>Tip: persona set + research graph improve BuildSquad output quality.</p>}
-      {!researchArt && recArt && <p style={{ color: '#f3b350', fontSize: '0.85rem' }}>Tip: a research graph adds grounding for the architect.</p>}
-      {pack ? (
-        <>
-          <div style={{ color: '#9aa0a6', fontSize: '0.75rem', marginTop: '0.5rem' }}>
-            v{packArt!.version} · mode {pack.mode} · {new Date(packArt!.createdAt).toLocaleString()}
+    <div className={cx(styles.stack)}>
+      <div className={cx(styles.grid2)}>
+        <div className={cx(styles.card)}>
+          <p className={cx(styles.cardTitle)}>Readiness</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <ScoreRing value={r.overall} />
+            <div style={{ flex: 1 }}>
+              <Bar label="Persona coverage" value={r.personaCoverage} />
+              <Bar label="Research coverage" value={r.researchCoverage} />
+              <Bar label="Validation confidence" value={r.validationConfidence} />
+              <Bar label="BuildSquad completeness" value={r.buildsquadCompleteness} />
+              <Bar label="Risk coverage" value={r.riskCoverage} />
+            </div>
           </div>
-          <p style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}><strong>Vision:</strong> {pack.productVision.problem}</p>
-          {pack.userStories && (
-            <p style={{ fontSize: '0.85rem', color: '#9aa0a6' }}>
-              {pack.userStories.length} user stories · {pack.agentCritiques.length} agent critiques
-            </p>
+          {r.warnings.length > 0 && (
+            <ul style={{ marginTop: '0.75rem', color: '#f3b350', fontSize: '0.8rem', paddingLeft: '1.1rem' }}>
+              {r.warnings.map((w, i) => <li key={i}>{w}</li>)}
+            </ul>
           )}
-          {showExport ? (
-            <ExportToGithubPanel ventureId={venture.ventureId} defaultRepoName={defaultRepoName(venture.title)} />
-          ) : null}
-        </>
-      ) : <p style={{ color: '#9aa0a6' }}>No BuildSquad pack yet.</p>}
+        </div>
+
+        <div className={cx(styles.stack)}>
+          <div className={cx(styles.card)}>
+            <p className={cx(styles.cardTitle)}>Next best action</p>
+            {next ? (
+              <>
+                <p className={cx(styles.docText)} style={{ marginBottom: '0.75rem' }}>
+                  {next.enabled
+                    ? `${next.label} to keep moving toward build-ready.`
+                    : `${next.label} is blocked — complete the previous step first.`}
+                </p>
+                {next.href ? (
+                  <a className={cx(styles.btn, styles.btnPrimary)} href={next.href}>{next.label} →</a>
+                ) : (
+                  <button className={cx(styles.btn, styles.btnPrimary)} onClick={() => onGoToTab(next.goTab)}>{next.label} →</button>
+                )}
+              </>
+            ) : (
+              <p className={cx(styles.docText)}>🎉 This venture is build-ready and exported. Nothing else is required.</p>
+            )}
+            {missing.length > 0 && (
+              <div className={cx(styles.chipRow)} style={{ marginTop: '0.85rem' }}>
+                {missing.map((s) => (
+                  s.href ? (
+                    <a key={s.key} className={cx(styles.btn, styles.btnGhost, !s.enabled && styles.btnDisabled)}
+                       href={s.enabled ? s.href : undefined}
+                       aria-disabled={!s.enabled}
+                       onClick={(e) => { if (!s.enabled) e.preventDefault(); }}>
+                      {s.label}
+                    </a>
+                  ) : (
+                    <button key={s.key} className={cx(styles.btn, styles.btnGhost, !s.enabled && styles.btnDisabled)}
+                            disabled={!s.enabled} onClick={() => onGoToTab(s.goTab)}>
+                      {s.label}
+                    </button>
+                  )
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className={cx(styles.card)}>
+            <p className={cx(styles.cardTitle)}>GitHub export</p>
+            {derived.github ? (
+              <>
+                <p className={cx(styles.docText)} style={{ marginBottom: '0.4rem' }}>
+                  Exported to <strong>{derived.github.owner}/{derived.github.name}</strong> · {derived.github.files.length} files on <code className={cx(styles.mono)}>{derived.github.defaultBranch}</code>
+                  {' · commit '}<code className={cx(styles.mono)}>{derived.github.commitSha.slice(0, 7)}</code>.
+                </p>
+                <a className={cx(styles.btn, styles.btnPrimary)} href={derived.github.htmlUrl} target="_blank" rel="noreferrer">Open repository →</a>
+              </>
+            ) : (
+              <p className={cx(styles.muted)}>Not exported yet. Generate a BuildSquad plan, then export repo-ready artifacts to GitHub with your BYOK PAT.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className={cx(styles.card)}>
+        <p className={cx(styles.cardTitle)}>Latest recommendation</p>
+        {summary.latestRecommendation ? (
+          <div className={cx(styles.chipRow)} style={{ alignItems: 'center' }}>
+            <DecisionBadge decision={summary.latestRecommendation.decision} />
+            <span className={cx(styles.muted)}>
+              Score {summary.latestRecommendation.overallScore}/100 · Confidence {Math.round(summary.latestRecommendation.confidenceScore * 100)}% · {fmtTime(summary.latestRecommendation.createdAt)}
+            </span>
+            <span className={cx(styles.jobSpacer)} />
+            <button className={cx(styles.btn, styles.btnGhost)} onClick={() => onGoToTab('validation')}>View validation →</button>
+          </div>
+        ) : (
+          <p className={cx(styles.muted)}>No recommendation yet. Run VentureLab to get a Proceed / Pivot / Kill call.</p>
+        )}
+      </div>
+
+      <div className={cx(styles.card)}>
+        <p className={cx(styles.cardTitle)}>{activeJobs.length > 0 ? `Active jobs (${activeJobs.length})` : 'Recent jobs'}</p>
+        {activeJobs.length > 0 ? (
+          <div className={cx(styles.stack)}>
+            {activeJobs.map((j) => <JobProgress key={j.jobId} jobId={j.jobId} onCancel={onJobChange} />)}
+          </div>
+        ) : (
+          <RecentJobs ventureId={v.ventureId} />
+        )}
+      </div>
     </div>
   );
 }
@@ -410,233 +438,15 @@ function defaultRepoName(title: string): string {
   return slug || 'venture-export';
 }
 
-interface GithubProfileLite {
-  id: string;
-  providerType: string;
-  displayName: string;
-  validationStatus: string;
-}
-
-function ExportToGithubPanel({ ventureId, defaultRepoName: dflt }: { ventureId: string; defaultRepoName: string }) {
-  const [profiles, setProfiles] = useState<GithubProfileLite[]>([]);
-  const [credId, setCredId] = useState<string>('');
-  const [repoName, setRepoName] = useState<string>(dflt);
-  const [org, setOrg] = useState<string>('');
-  const [isPrivate, setIsPrivate] = useState<boolean>(true);
-  const [busy, setBusy] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [jobId, setJobId] = useState<string | null>(null);
-
-  useEffect(() => {
-    void (async () => {
-      try {
-        const r = await fetch('/api/byok/providers', { cache: 'no-store' });
-        const body = (await r.json()) as { profiles?: GithubProfileLite[] };
-        const github = (body.profiles ?? []).filter((p) => p.providerType === 'github' && p.validationStatus === 'active');
-        setProfiles(github);
-        if (github.length > 0) setCredId(github[0]!.id);
-      } catch {
-        setProfiles([]);
-      }
-    })();
-  }, []);
-
-  async function submit() {
-    setError(null);
-    if (!credId) { setError('Add a GitHub PAT in Settings → BYOK first.'); return; }
-    if (!repoName) { setError('Repo name is required.'); return; }
-    setBusy(true);
-    try {
-      const resp = await fetch(`/api/ventures/${ventureId}/export/github`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          providerCredentialId: credId,
-          repoName,
-          ...(org ? { org } : {}),
-          private: isPrivate,
-        }),
-      });
-      const body = (await resp.json()) as { ok: boolean; jobId?: string; reason?: string };
-      if (!body.ok) { setError(body.reason ?? 'Export failed.'); return; }
-      setJobId(body.jobId ?? null);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div style={{ marginTop: '1rem', padding: '0.75rem', border: '1px solid #1c1c20', borderRadius: 6 }}>
-      <h4 style={{ margin: '0 0 0.5rem' }}>Export to GitHub</h4>
-      {profiles.length === 0 ? (
-        <p style={{ color: '#f3b350', fontSize: '0.85rem', margin: 0 }}>
-          No active GitHub PAT. <a href="/settings/byok" style={{ color: '#7aa3ff' }}>Add one in BYOK</a>.
-        </p>
-      ) : (
-        <>
-          <div style={{ display: 'grid', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.85rem' }}>
-              Credential
-              <select value={credId} onChange={(e) => setCredId(e.target.value)} style={selectStyle}>
-                {profiles.map((p) => <option key={p.id} value={p.id}>{p.displayName}</option>)}
-              </select>
-            </label>
-            <label style={{ fontSize: '0.85rem' }}>
-              Repo name
-              <input value={repoName} onChange={(e) => setRepoName(e.target.value)} style={selectStyle} />
-            </label>
-            <label style={{ fontSize: '0.85rem' }}>
-              Org (optional — leave blank for personal account)
-              <input value={org} onChange={(e) => setOrg(e.target.value)} placeholder="my-org" style={selectStyle} />
-            </label>
-            <label style={{ fontSize: '0.85rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} />
-              Private repo
-            </label>
-          </div>
-          {error ? <p style={{ color: '#ef6a6a', fontSize: '0.85rem' }}>{error}</p> : null}
-          <button onClick={() => void submit()} disabled={busy} style={{ ...primaryBtnSm, marginTop: '0.5rem' }}>
-            {busy ? 'Enqueuing…' : 'Create repo →'}
-          </button>
-          {jobId ? (
-            <div style={{ marginTop: '0.75rem' }}>
-              <JobProgress jobId={jobId} />
-            </div>
-          ) : null}
-        </>
-      )}
-    </div>
-  );
-}
-
-const selectStyle: React.CSSProperties = {
-  display: 'block',
-  width: '100%',
-  marginTop: '0.25rem',
-  padding: '0.4rem 0.5rem',
-  background: '#1a1a1f',
-  color: '#e7e7ea',
-  border: '1px solid #2a2a30',
-  borderRadius: 4,
-  fontSize: '0.85rem',
-};
-
-function HistorySection({ events }: { events: VentureTimelineEvent[] }) {
-  if (events.length === 0) {
-    return <div style={card}><p style={{ color: '#9aa0a6' }}>No events yet.</p></div>;
-  }
-  const sorted = [...events].sort((a, b) => b.at.localeCompare(a.at));
-  return (
-    <div style={card}>
-      <h3 style={h3}>Timeline</h3>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {sorted.map((e) => (
-          <li key={e.eventId} style={{ display: 'flex', gap: '0.75rem', padding: '0.5rem 0', borderBottom: '1px solid #1c1c20' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#7aa3ff', marginTop: 6, flexShrink: 0 }} />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '0.9rem' }}>{e.label}</div>
-              <div style={{ color: '#7a8088', fontSize: '0.7rem' }}>{e.eventKind} · {new Date(e.at).toLocaleString()}</div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function ArtifactsSection({ artifacts }: { artifacts: VentureArtifact[] }) {
-  if (artifacts.length === 0) {
-    return <div style={card}><p style={{ color: '#9aa0a6' }}>No artifacts attached yet.</p></div>;
-  }
-  const sorted = [...artifacts].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  return (
-    <div style={card}>
-      <h3 style={h3}>Artifact registry</h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-        <thead>
-          <tr style={{ color: '#9aa0a6', textAlign: 'left' }}>
-            <th style={th}>Kind</th><th style={th}>v</th><th style={th}>Summary</th><th style={th}>Created</th><th style={th}></th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((a) => (
-            <tr key={a.artifactId} style={{ borderTop: '1px solid #1c1c20' }}>
-              <td style={td}>{ARTIFACT_LABEL[a.artifactKind]}</td>
-              <td style={td}>{a.version}</td>
-              <td style={td}>{a.summary}</td>
-              <td style={td}>{new Date(a.createdAt).toLocaleString()}</td>
-              <td style={td}><button style={ghostBtnSm} onClick={() => download(a)}>JSON</button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function download(a: VentureArtifact) {
-  const blob = new Blob([JSON.stringify(a, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `${a.artifactKind}-v${a.version}-${a.artifactId}.json`;
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
 function latestOf(arts: VentureArtifact[], kind: VentureArtifactKind): VentureArtifact | null {
   const list = arts.filter((a) => a.artifactKind === kind);
   if (list.length === 0) return null;
   return list.reduce((a, b) => (a.version >= b.version ? a : b));
 }
 
-function Ring({ score }: { score: number }) {
-  const r = 32; const c = 2 * Math.PI * r; const off = c - (score / 100) * c;
-  return (
-    <svg width={80} height={80} viewBox="0 0 80 80">
-      <circle cx={40} cy={40} r={r} fill="none" stroke="#2a2a2a" strokeWidth={6} />
-      <circle cx={40} cy={40} r={r} fill="none" stroke="#56c596" strokeWidth={6} strokeDasharray={c} strokeDashoffset={off} transform="rotate(-90 40 40)" strokeLinecap="round" />
-      <text x={40} y={45} textAnchor="middle" fontSize={18} fill="#e8e8ea" fontWeight={600}>{score}</text>
-    </svg>
-  );
-}
-
-function Bar({ label, value }: { label: string; value: number }) {
-  return (
-    <div style={{ marginBottom: 4 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#9aa0a6' }}>
-        <span>{label}</span><span>{value}</span>
-      </div>
-      <div style={{ height: 5, background: '#2a2a2a', borderRadius: 2 }}>
-        <div style={{ height: '100%', width: `${value}%`, background: '#7aa3ff', borderRadius: 2 }} />
-      </div>
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div style={{ ...card, padding: '0.5rem', textAlign: 'center' }}>
-      <div style={{ fontSize: '0.7rem', color: '#9aa0a6' }}>{label}</div>
-      <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>{value}</div>
-    </div>
-  );
-}
-
-const card: React.CSSProperties = { border: '1px solid #2a2a2a', borderRadius: 8, padding: '1rem', background: '#101015' };
-const badge: React.CSSProperties = { fontSize: '0.7rem', padding: '0.15rem 0.6rem', borderRadius: 999, border: '1px solid', textTransform: 'uppercase', letterSpacing: '0.04em' };
-const h3: React.CSSProperties = { margin: '0 0 0.6rem', fontSize: '0.95rem' };
-const h4: React.CSSProperties = { margin: '0.75rem 0 0.25rem', fontSize: '0.8rem', color: '#9aa0a6', textTransform: 'uppercase', letterSpacing: '0.05em' };
-const sectionHead: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' };
 const inputStyle: React.CSSProperties = { padding: '0.4rem 0.5rem', background: '#101015', color: '#e8e8ea', border: '1px solid #2a2a2a', borderRadius: 6, fontSize: '0.85rem' };
-const primaryBtnSm: React.CSSProperties = { padding: '0.4rem 0.75rem', background: '#7aa3ff', color: '#0b0b0e', borderRadius: 6, fontWeight: 600, textDecoration: 'none', fontSize: '0.8rem' };
-const ghostBtnSm: React.CSSProperties = { padding: '0.2rem 0.5rem', background: 'transparent', color: '#9aa0a6', border: '1px solid #2a2a2a', borderRadius: 4, fontSize: '0.75rem', cursor: 'pointer' };
-const th: React.CSSProperties = { padding: '0.4rem 0.5rem', fontWeight: 500, fontSize: '0.75rem' };
-const td: React.CSSProperties = { padding: '0.4rem 0.5rem', verticalAlign: 'top' };
-const preStyle: React.CSSProperties = { background: '#0b0b0e', padding: '0.5rem', borderRadius: 4, fontSize: '0.7rem', maxHeight: 240, overflow: 'auto', color: '#cbcbd1' };
-const tab = (active: boolean): React.CSSProperties => ({
+const tabStyle = (active: boolean): React.CSSProperties => ({
   padding: '0.5rem 0.85rem', background: 'transparent', border: 'none',
   borderBottom: active ? '2px solid #7aa3ff' : '2px solid transparent',
-  color: active ? '#e8e8ea' : '#9aa0a6', cursor: 'pointer',
-  fontSize: '0.85rem', textTransform: 'capitalize',
+  color: active ? '#e8e8ea' : '#9aa0a6', cursor: 'pointer', fontSize: '0.85rem', whiteSpace: 'nowrap',
 });

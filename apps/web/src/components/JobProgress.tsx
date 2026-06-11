@@ -1,14 +1,26 @@
 /**
- * JobProgress + useJob (Sprint 2A.6 / PR3).
+ * JobProgress + useJob (Sprint 2A.6 / PR3, productized).
  *
- * Polls /api/jobs/[id] every 750ms until the job hits a terminal state.
- * The component is intentionally small — render it next to whatever
- * triggered the job and unmount when the caller has consumed the result.
+ * Polls /api/jobs/[id] every 750ms until the job hits a terminal state and
+ * renders a transparent status card: live elapsed time, step label, progress,
+ * provider · model · cost, and — on failure — sanitised error guidance plus a
+ * re-run CTA that deep-links back to the originating lab (no retry endpoint
+ * exists, so we send the user to re-run with the same prebound ventureId).
  */
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { VentureJob } from '@ventureos/contracts';
+
+import {
+  cx,
+  fmtCostCents,
+  fmtDuration,
+  JOB_KIND_LABEL,
+  JobStatusBadge,
+  labLinkForJob,
+  styles,
+} from './artifacts';
 
 const TERMINAL = new Set(['succeeded', 'failed', 'cancelled']);
 
@@ -46,6 +58,26 @@ export function useJob(jobId: string | null, pollMs = 750): { job: VentureJob | 
   return { job, error };
 }
 
+/** A live, ticking clock (1s) that stops once the job reaches a terminal state. */
+function useNow(active: boolean): number {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!active) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [active]);
+  return now;
+}
+
+function elapsedMs(job: VentureJob, now: number): number | null {
+  if (job.executionDurationMs != null) return job.executionDurationMs;
+  const start = job.startedAt ?? job.createdAt;
+  if (!start) return null;
+  const t = new Date(start).getTime();
+  if (Number.isNaN(t)) return null;
+  return Math.max(0, now - t);
+}
+
 export interface JobProgressProps {
   jobId: string | null;
   onCancel?: () => void;
@@ -53,6 +85,9 @@ export interface JobProgressProps {
 
 export function JobProgress({ jobId, onCancel }: JobProgressProps) {
   const { job, error } = useJob(jobId);
+  const running = !!job && !TERMINAL.has(job.status);
+  const now = useNow(running);
+
   const cancel = useCallback(async () => {
     if (!jobId) return;
     await fetch(`/api/jobs/${jobId}/cancel`, { method: 'POST' });
@@ -60,58 +95,49 @@ export function JobProgress({ jobId, onCancel }: JobProgressProps) {
   }, [jobId, onCancel]);
 
   if (!jobId) return null;
-  if (error) return <div style={{ color: '#ef6a6a', fontSize: '0.85rem' }}>{error}</div>;
-  if (!job) return <div style={{ color: '#9aa0a6', fontSize: '0.85rem' }}>Starting…</div>;
+  if (error) return <div className={cx(styles.jobError)}>{error}</div>;
+  if (!job) return <div className={cx(styles.jobCard)}>Starting…</div>;
 
-  const pct = Math.round((job.progress ?? 0) * 100);
-  const colour = colourForStatus(job.status);
+  const pctDone = Math.round((job.progress ?? 0) * 100);
+  const elapsed = elapsedMs(job, now);
+  const meta: string[] = [];
+  if (job.providerName && job.providerModel) meta.push(`${job.providerName} · ${job.providerModel}`);
+  if (elapsed != null) meta.push(fmtDuration(elapsed));
+  if (job.estimatedCostCents != null) meta.push(fmtCostCents(job.estimatedCostCents));
+  const rerun = labLinkForJob(job.jobKind, job.ventureId);
 
   return (
-    <div style={{
-      border: '1px solid #2a2a2a',
-      borderRadius: 6,
-      padding: '0.75rem',
-      background: '#161616',
-      fontSize: '0.85rem',
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
-        <span style={{ color: colour, fontWeight: 600 }}>{job.status}</span>
-        <span style={{ color: '#9aa0a6' }}>{job.jobKind}</span>
-        {(job.status === 'queued' || job.status === 'running') && (
-          <button onClick={() => void cancel()} style={{
-            background: 'transparent', border: '1px solid #5a5a5a',
-            color: '#d0d0d0', borderRadius: 4, padding: '0.15rem 0.5rem',
-            fontSize: '0.75rem', cursor: 'pointer',
-          }}>Cancel</button>
-        )}
+    <div className={cx(styles.jobCard)}>
+      <div className={cx(styles.jobHead)}>
+        <JobStatusBadge status={job.status} />
+        <span className={cx(styles.jobKind)}>{JOB_KIND_LABEL[job.jobKind]}</span>
+        <span className={cx(styles.jobSpacer)} />
+        {(job.status === 'queued' || job.status === 'running') ? (
+          <button type="button" onClick={() => void cancel()} className={cx(styles.btn, styles.btnGhost)}>Cancel</button>
+        ) : null}
       </div>
-      {job.stepLabel && <div style={{ color: '#d0d0d0', marginTop: '0.25rem' }}>{job.stepLabel}</div>}
-      <div style={{ height: 4, background: '#1f1f1f', borderRadius: 2, marginTop: '0.5rem', overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: colour, transition: 'width 200ms' }} />
+
+      {job.stepLabel ? <div className={cx(styles.jobStep)}>{job.stepLabel}</div> : null}
+
+      <div className={cx(styles.barTrack)}>
+        <div
+          className={cx(styles.barFill, job.status === 'failed' && styles.barFillAmber, job.status === 'succeeded' && styles.barFillGreen)}
+          style={{ width: `${job.status === 'succeeded' ? 100 : pctDone}%`, transition: 'width 200ms' }}
+        />
       </div>
-      <Metrics job={job} />
-      {job.status === 'failed' && job.errorMessage && (
-        <div style={{ color: '#ef6a6a', marginTop: '0.5rem' }}>{job.errorMessage}</div>
-      )}
+
+      {meta.length > 0 ? <div className={cx(styles.jobMeta)}>{meta.join('  ·  ')}</div> : null}
+
+      {job.status === 'failed' ? (
+        <div className={cx(styles.jobError)}>
+          <p className={cx(styles.jobErrorTitle)}>Job failed{job.errorCode ? ` · ${job.errorCode}` : ''}</p>
+          {job.errorMessage ? <p style={{ margin: '0 0 0.4rem' }}>{job.errorMessage}</p> : null}
+          <p style={{ margin: '0 0 0.5rem' }} className={cx(styles.muted)}>
+            Nothing was saved. Check the related provider key is valid, then re-run — your venture context is preserved.
+          </p>
+          <a className={cx(styles.btn, styles.btnPrimary)} href={rerun.href}>{rerun.label} →</a>
+        </div>
+      ) : null}
     </div>
   );
-}
-
-function Metrics({ job }: { job: VentureJob }) {
-  const bits: string[] = [];
-  if (job.providerName && job.providerModel) bits.push(`${job.providerName} · ${job.providerModel}`);
-  if (job.executionDurationMs != null) bits.push(`${(job.executionDurationMs / 1000).toFixed(1)}s`);
-  if (job.estimatedCostCents != null) bits.push(`~$${(job.estimatedCostCents / 100).toFixed(3)}`);
-  if (bits.length === 0) return null;
-  return <div style={{ color: '#7a7a7a', fontSize: '0.75rem', marginTop: '0.5rem' }}>{bits.join('  ·  ')}</div>;
-}
-
-function colourForStatus(s: VentureJob['status']): string {
-  switch (s) {
-    case 'queued':    return '#9aa0a6';
-    case 'running':   return '#7aa3ff';
-    case 'succeeded': return '#56c596';
-    case 'failed':    return '#ef6a6a';
-    case 'cancelled': return '#d589ff';
-  }
 }

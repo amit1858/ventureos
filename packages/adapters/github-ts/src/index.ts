@@ -17,9 +17,22 @@ export class NotImplementedError extends Error {
 export class GitHubExporterError extends Error {
   override readonly name = 'GitHubExporterError';
   readonly status: number;
-  constructor(message: string, status: number) {
+  /** Captured GitHub API message (verbatim) if available — never includes the PAT. */
+  readonly apiMessage?: string;
+  /** Captured `x-ratelimit-remaining` header value, if present. */
+  readonly rateLimitRemaining?: number;
+  /** Captured GitHub primary error code from the response body (e.g. `already_exists`). */
+  readonly apiCode?: string;
+  constructor(
+    message: string,
+    status: number,
+    opts: { apiMessage?: string; rateLimitRemaining?: number; apiCode?: string } = {},
+  ) {
     super(message);
     this.status = status;
+    if (opts.apiMessage !== undefined) this.apiMessage = opts.apiMessage;
+    if (opts.rateLimitRemaining !== undefined) this.rateLimitRemaining = opts.rateLimitRemaining;
+    if (opts.apiCode !== undefined) this.apiCode = opts.apiCode;
   }
 }
 
@@ -284,12 +297,139 @@ function buildHeaders(token: string): Record<string, string> {
 }
 
 async function asError(resp: Response, label: string): Promise<GitHubExporterError> {
-  let detail = '';
+  let apiMessage: string | undefined;
+  let apiCode: string | undefined;
   try {
-    const body = (await resp.json()) as { message?: string };
-    if (body.message) detail = `: ${body.message}`;
+    const body = (await resp.json()) as {
+      message?: string;
+      errors?: Array<{ code?: string; message?: string; field?: string }>;
+    };
+    if (body.message) apiMessage = body.message;
+    const firstCode = body.errors?.find((e) => e.code)?.code;
+    if (firstCode) apiCode = firstCode;
   } catch {
     // ignore
   }
-  return new GitHubExporterError(`GitHub ${label} failed (${resp.status})${detail}`, resp.status);
+  const rateLimitHeader = resp.headers.get('x-ratelimit-remaining');
+  const rateLimitRemaining = rateLimitHeader != null ? Number(rateLimitHeader) : undefined;
+  const detail = apiMessage ? `: ${apiMessage}` : '';
+  return new GitHubExporterError(
+    `GitHub ${label} failed (${resp.status})${detail}`,
+    resp.status,
+    {
+      ...(apiMessage !== undefined ? { apiMessage } : {}),
+      ...(apiCode !== undefined ? { apiCode } : {}),
+      ...(rateLimitRemaining !== undefined && Number.isFinite(rateLimitRemaining)
+        ? { rateLimitRemaining }
+        : {}),
+    },
+  );
+}
+
+// ──────────── Error classification ───────────────────────────────────────
+
+export type GitHubErrorCode =
+  | 'repo_exists'
+  | 'invalid_token'
+  | 'insufficient_scope'
+  | 'rate_limited'
+  | 'not_found'
+  | 'network'
+  | 'unknown';
+
+export interface ClassifiedGithubError {
+  code: GitHubErrorCode;
+  /** User-facing message. Never includes the PAT. */
+  message: string;
+  /** A short actionable hint the UI can render next to the message. */
+  hint: string;
+}
+
+/**
+ * Map any thrown error from the export flow into a structured, actionable
+ * shape. Safe to call on non-`GitHubExporterError` values (returns
+ * `{code:'unknown',…}`). Never echoes the PAT.
+ */
+export function classifyGithubError(err: unknown): ClassifiedGithubError {
+  if (err instanceof GitHubExporterError) {
+    if (err.status === 401) {
+      return {
+        code: 'invalid_token',
+        message: 'GitHub rejected the PAT (401).',
+        hint: 'Re-validate this credential in Settings → BYOK, or replace it with a new fine-grained PAT.',
+      };
+    }
+    if (err.status === 403) {
+      if (err.rateLimitRemaining === 0) {
+        return {
+          code: 'rate_limited',
+          message: 'GitHub rate limit hit.',
+          hint: 'Wait a few minutes for the limit to reset, then re-export.',
+        };
+      }
+      const msg = (err.apiMessage ?? '').toLowerCase();
+      if (
+        msg.includes('not accessible by') ||
+        msg.includes('must have admin') ||
+        msg.includes('does not have') ||
+        msg.includes('insufficient') ||
+        msg.includes('forbidden')
+      ) {
+        return {
+          code: 'insufficient_scope',
+          message: 'PAT does not have permission to perform this action.',
+          hint: 'Grant the `repo` scope (classic PAT) or the `contents: write` + `administration: write` permissions on the target owner (fine-grained PAT), then re-validate in BYOK.',
+        };
+      }
+      return {
+        code: 'insufficient_scope',
+        message: err.apiMessage ?? 'GitHub returned 403.',
+        hint: 'Check PAT scopes and that the owner/org allows third-party access.',
+      };
+    }
+    if (err.status === 404) {
+      return {
+        code: 'not_found',
+        message: err.apiMessage ?? 'GitHub returned 404.',
+        hint: 'Check the org name and that the PAT can see it (SSO authorisation may be required).',
+      };
+    }
+    if (err.status === 422) {
+      const msg = (err.apiMessage ?? '').toLowerCase();
+      if (
+        err.apiCode === 'already_exists' ||
+        msg.includes('name already exists') ||
+        msg.includes('repository creation failed') ||
+        msg.includes('already exists')
+      ) {
+        return {
+          code: 'repo_exists',
+          message: 'A repository with that name already exists on the chosen owner.',
+          hint: 'Pick a different name, or open the existing repo in GitHub and import the scaffold manually.',
+        };
+      }
+      return {
+        code: 'unknown',
+        message: err.apiMessage ?? 'GitHub returned 422.',
+        hint: 'The request was understood but rejected. Adjust the repo name or visibility and retry.',
+      };
+    }
+    return {
+      code: 'unknown',
+      message: err.apiMessage ?? `GitHub returned ${err.status}.`,
+      hint: 'Re-run the export. If it persists, check the GitHub status page or the PAT scopes.',
+    };
+  }
+  if (err instanceof Error && /fetch|network|ENOTFOUND|ECONNRESET/i.test(err.message)) {
+    return {
+      code: 'network',
+      message: 'Could not reach GitHub.',
+      hint: 'Check your network connection and re-run the export.',
+    };
+  }
+  return {
+    code: 'unknown',
+    message: err instanceof Error ? err.message : 'Export failed.',
+    hint: 'Re-run the export. If it persists, check the BYOK PAT in Settings.',
+  };
 }

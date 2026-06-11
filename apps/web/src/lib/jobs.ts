@@ -43,7 +43,7 @@ import { runPersonaLabAction, type PersonaLabAction, type PersonaLabEngine } fro
 import { runGraphifyBuild } from './graphify';
 import { runVentureLabAnalyze } from './venturelab';
 import { runBuildSquad } from './buildsquad';
-import { runGitHubExport, type GitHubExportInput } from './github-export';
+import { runGitHubExport, encodeJobErrorMessage, type GitHubExportInput } from './github-export';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -241,7 +241,12 @@ const githubExportHandler: JobHandler = async (ctx) => {
     input,
     onProgress: (progress, stepLabel) => ctx.reportProgress({ progress, stepLabel }),
   });
-  if (!result.ok) throw new Error(result.reason);
+  if (!result.ok) {
+    // Surface reasonCode via a stable `[code] message` prefix so the workspace
+    // panel can render structured guidance (e.g. for repo_exists or
+    // insufficient_scope) without parsing free-form English from us or GitHub.
+    throw new Error(encodeJobErrorMessage(result.reasonCode, result.reason));
+  }
   // The runner attaches the evaluation_report artifact internally so the
   // timeline reads naturally (eval first, then repo). The orchestrator-managed
   // artifact is the github_repo payload returned here.

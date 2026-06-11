@@ -131,6 +131,12 @@ export function Walkthrough({ demo, evaluation, exportFiles }: WalkthroughProps)
     <div className={styles.page}>
       <DemoBanner />
 
+      <div className={styles.swarmStrip} role="note" aria-label="Agent Swarms framing">
+        <strong>Agent Swarms:</strong> persona, committee, research-graph, venture-validation,
+        BuildSquad and evaluation agents collaborate on a shared Venture context to produce
+        versioned, GitHub-ready artifacts.
+      </div>
+
       <nav className={styles.stepNav} aria-label="Demo sections">
         {STEP_NAV.map((s) => (
           <a key={s.id} href={`#${s.id}`} className={styles.stepPill}>
@@ -335,6 +341,10 @@ export function Walkthrough({ demo, evaluation, exportFiles }: WalkthroughProps)
           <Link href="/demo" className={styles.btnGhost + ' ' + styles.btn}>← All demos</Link>
         </div>
       </div>
+
+      <p className={styles.demoFooterNote}>
+        This is a seeded demo. Real Mode uses BYOK and real GitHub export.
+      </p>
     </div>
   );
 }
