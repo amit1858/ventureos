@@ -54,7 +54,7 @@ export default function ByokSettings() {
     try {
       const r = await fetch('/api/byok/providers', { cache: 'no-store' });
       if (r.status === 401) {
-        setTopError('Real Mode requires workspace access. Continue to the alpha workspace to manage BYOK providers, or open Demo Mode.');
+        setTopError('Real Mode requires sign-in. Sign in with Google for a private workspace, or use Demo Mode without any keys.');
         setProfiles([]);
         return;
       }
@@ -93,7 +93,7 @@ export default function ByokSettings() {
             Demo Mode is available without sign-in.
           </p>
           <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <a href="/access?next=/settings/byok" style={primaryBtn}>Continue to Alpha Workspace</a>
+            <a href="/signin?next=/settings/byok" style={primaryBtn}>Sign in with Google</a>
             <a href="/demo" style={secondaryBtn}>Open Demo Mode</a>
           </div>
         </div>

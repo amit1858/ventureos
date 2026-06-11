@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { AuthMenu } from './AuthMenu';
+
 const links: { href: string; label: string; accent?: boolean }[] = [
   { href: '/demo', label: 'Demo', accent: true },
   { href: '/ventures', label: 'My Ventures' },
@@ -49,6 +51,8 @@ export function Nav() {
           {l.label}
         </Link>
       ))}
+      <span style={{ flex: 1 }} />
+      <AuthMenu />
     </nav>
   );
 }

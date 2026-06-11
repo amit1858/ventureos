@@ -82,7 +82,7 @@ export default function PersonaLabPage() {
       try {
         const r = await fetch('/api/byok/providers', { cache: 'no-store' });
         if (r.status === 401) {
-          setProviderError('Real Mode requires workspace access. Continue to the alpha workspace to use PersonaLab, or open Demo Mode.');
+          setProviderError('Real Mode requires sign-in. Sign in with Google for a private workspace, or use Demo Mode without any keys.');
           return;
         }
         const body = await r.json() as { profiles?: ProviderProfile[] };
@@ -236,7 +236,7 @@ export default function PersonaLabPage() {
         }}>
           <p style={{ color: '#ef6a6a', margin: 0 }}>{providerError}</p>
           <p style={{ color: '#9aa0a6', margin: '0.5rem 0 0.75rem', fontSize: '0.85rem' }}>
-            <a href="/access?next=/labs/persona" style={{ color: '#7aa3ff' }}>Continue to Alpha Workspace</a>
+            <a href="/signin?next=/labs/persona" style={{ color: '#7aa3ff' }}>Sign in with Google</a>
             {' · '}
             <a href="/demo" style={{ color: '#7aa3ff' }}>Open Demo Mode</a>
           </p>

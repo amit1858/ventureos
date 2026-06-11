@@ -39,7 +39,7 @@ export default function MyVenturesPage() {
     setError(null);
     try {
       const r = await fetch('/api/ventures', { cache: 'no-store' });
-      if (r.status === 401) { setError('Real Mode requires workspace access. Continue to the alpha workspace or open Demo Mode.'); return; }
+      if (r.status === 401) { setError('Real Mode requires sign-in. Sign in with Google for a private workspace, or use Demo Mode without any keys.'); return; }
       const body = (await r.json()) as { ok: boolean; ventures?: VentureSummary[]; reason?: string };
       if (!body.ok) { setError(body.reason ?? 'Failed to load ventures.'); return; }
       setVentures(body.ventures ?? []);
@@ -104,7 +104,7 @@ export default function MyVenturesPage() {
         <div style={{ ...card, padding: '1rem 1.25rem', marginBottom: '1rem' }}>
           <p style={{ color: '#ef6a6a', margin: 0 }}>{error}</p>
           <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <a href="/access?next=/ventures" style={{ ...primaryBtn, fontSize: '0.85rem' }}>Continue to Alpha Workspace</a>
+            <a href="/signin?next=/ventures" style={{ ...primaryBtn, fontSize: '0.85rem' }}>Sign in with Google</a>
             <a
               href="/demo"
               style={{
