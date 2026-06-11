@@ -1,11 +1,22 @@
 # VentureOS
 
-> AI-native multi-agent venture operating system. **Turn raw ideas into validated, build-ready ventures with agent swarms.**
+[![Live demo](https://img.shields.io/badge/Live%20demo-ventureos--dun.vercel.app-blueviolet?logo=vercel)](https://ventureos-dun.vercel.app/demo/faceless-crm)
+[![Sign in](https://img.shields.io/badge/Sign%20in-Google%20OAuth-4285F4?logo=google)](https://ventureos-dun.vercel.app/signin)
+[![Tag](https://img.shields.io/badge/release-v0.3--alpha-success)](https://github.com/amit1858/ventureos/releases)
+[![License](https://img.shields.io/badge/license-TBD-lightgrey)](#license)
 
-VentureOS orchestrates synthetic customers, buying committees, research graph agents, venture validation agents, BuildSquad planners and evaluation agents to help teams decide what to build — *before* they write code.
+> **AI-native multi-agent venture operating system.** Turn raw ideas into validated, build-ready ventures with a governed swarm of specialized agents — not a single chatbot.
 
-- 🎬 **Try the demo (zero keys):** [`/demo/faceless-crm`](apps/web/src/app/demo) — a fully seeded "Faceless CRM for SMB" venture taken from idea to GitHub-ready artifacts.
-- 🛠️ **Run it on your own idea (BYOK):** Configure your own OpenAI / Anthropic / Gemini / Azure OpenAI key + a GitHub PAT, create a venture, and let the swarm produce a real evaluation and a real GitHub repo.
+## What is this?
+
+VentureOS takes a one-paragraph idea brief and produces a **simulated buying committee**, a **typed research graph**, a **Proceed / Pivot / Kill recommendation** with confidence, a **BuildSquad plan** (PRD · architecture · roadmap · user stories), an **evaluation report** with provenance, and a **real GitHub repository** under your account — all produced by specialized agents collaborating through typed artifacts on a single `Venture` object.
+
+**Read [`docs/product.md`](docs/product.md) for the full product story** — what it does, who it's for, why it's different, and the concrete value it delivers.
+
+- 🎬 **Try the demo (zero keys):** [`/demo/faceless-crm`](https://ventureos-dun.vercel.app/demo/faceless-crm) — a fully seeded "Faceless CRM for SMB" venture taken from idea to GitHub-ready artifacts
+- 🛠️ **Run it on your own idea (BYOK):** [`/signin`](https://ventureos-dun.vercel.app/signin) — sign in with Google, add your own OpenAI / Anthropic / Gemini / Azure OpenAI key + a GitHub PAT, create a venture, and let the swarm produce a real evaluation and a real GitHub repo
+- 🧠 **Read the product narrative:** [`docs/product.md`](docs/product.md) — value, audience, differentiation, architecture, access modes, status
+- 📚 **Read the architecture:** [`docs/architecture-overview.md`](docs/architecture-overview.md) — five-plane monorepo, contracts-first agents, VentureJob primitive, provider isolation
 
 ---
 
@@ -201,6 +212,7 @@ See **[`docs/security-byok.md`](docs/security-byok.md)** and **[`docs/security.m
 
 Public-facing:
 
+- **[Product overview (start here)](docs/product.md)** — what VentureOS is, who it's for, why it's different, value it offers
 - [Agent Swarms](docs/agent-swarms.md) — the multi-agent design
 - [Architecture overview](docs/architecture-overview.md)
 - [BYOK & security](docs/security-byok.md)
