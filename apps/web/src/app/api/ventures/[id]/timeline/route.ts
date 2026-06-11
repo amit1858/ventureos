@@ -6,6 +6,7 @@
 import { NextResponse } from 'next/server';
 
 import { requireUser, UnauthorizedError } from '../../../../../lib/auth';
+import { sanitizeApiError } from '../../../../../lib/api-errors';
 import { getVentureService } from '../../../../../lib/ventures';
 
 export const dynamic = 'force-dynamic';
@@ -20,6 +21,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
     if (e instanceof UnauthorizedError) {
       return NextResponse.json({ ok: false, reason: 'Unauthorized' }, { status: 401 });
     }
-    return NextResponse.json({ ok: false, reason: (e as Error).message }, { status: 404 });
+    const sn = sanitizeApiError(e, 404);
+    return NextResponse.json(sn.body, { status: sn.status });
   }
 }
