@@ -32,6 +32,7 @@ import type {
 
 import { JobProgress } from '../../../components/JobProgress';
 import { RecentJobs } from '../../../components/RecentJobs';
+import { GithubExportPanel } from '../../../components/GithubExportPanel';
 import {
   ArtifactsView,
   Bar,
@@ -255,7 +256,12 @@ export default function VentureWorkspacePage({ params }: Props) {
           derived.pack ? (
             <div className={cx(styles.stack)}>
               <BuildPlanView pack={derived.pack} />
-              <ExportToGithubPanel ventureId={v.ventureId} defaultRepoName={defaultRepoName(v.title)} github={derived.github} />
+              <GithubExportPanel
+                ventureId={v.ventureId}
+                defaultRepoName={defaultRepoName(v.title)}
+                github={derived.github}
+                onJobChange={() => void load()}
+              />
             </div>
           ) : (
             <EmptyState
@@ -385,7 +391,8 @@ function OverviewTab({
             {derived.github ? (
               <>
                 <p className={cx(styles.docText)} style={{ marginBottom: '0.4rem' }}>
-                  Exported to <strong>{derived.github.owner}/{derived.github.name}</strong> · {derived.github.files.length} files on <code className={cx(styles.mono)}>{derived.github.defaultBranch}</code>.
+                  Exported to <strong>{derived.github.owner}/{derived.github.name}</strong> · {derived.github.files.length} files on <code className={cx(styles.mono)}>{derived.github.defaultBranch}</code>
+                  {' · commit '}<code className={cx(styles.mono)}>{derived.github.commitSha.slice(0, 7)}</code>.
                 </p>
                 <a className={cx(styles.btn, styles.btnPrimary)} href={derived.github.htmlUrl} target="_blank" rel="noreferrer">Open repository →</a>
               </>
@@ -431,116 +438,6 @@ function defaultRepoName(title: string): string {
   return slug || 'venture-export';
 }
 
-interface GithubProfileLite {
-  id: string;
-  providerType: string;
-  displayName: string;
-  validationStatus: string;
-}
-
-function ExportToGithubPanel({
-  ventureId, defaultRepoName: dflt, github,
-}: {
-  ventureId: string;
-  defaultRepoName: string;
-  github: GitHubRepoArtifactPayload | null;
-}) {
-  const [profiles, setProfiles] = useState<GithubProfileLite[]>([]);
-  const [credId, setCredId] = useState<string>('');
-  const [repoName, setRepoName] = useState<string>(github?.name ?? dflt);
-  const [org, setOrg] = useState<string>('');
-  const [isPrivate, setIsPrivate] = useState<boolean>(true);
-  const [busy, setBusy] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [jobId, setJobId] = useState<string | null>(null);
-
-  useEffect(() => {
-    void (async () => {
-      try {
-        const r = await fetch('/api/byok/providers', { cache: 'no-store' });
-        const body = (await r.json()) as { profiles?: GithubProfileLite[] };
-        const gh = (body.profiles ?? []).filter((p) => p.providerType === 'github' && p.validationStatus === 'active');
-        setProfiles(gh);
-        if (gh.length > 0) setCredId(gh[0]!.id);
-      } catch {
-        setProfiles([]);
-      }
-    })();
-  }, []);
-
-  async function submit() {
-    setError(null);
-    if (!credId) { setError('Add a GitHub PAT in Settings → BYOK first.'); return; }
-    if (!repoName) { setError('Repo name is required.'); return; }
-    setBusy(true);
-    try {
-      const resp = await fetch(`/api/ventures/${ventureId}/export/github`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          providerCredentialId: credId,
-          repoName,
-          ...(org ? { org } : {}),
-          private: isPrivate,
-        }),
-      });
-      const body = (await resp.json()) as { ok: boolean; jobId?: string; reason?: string };
-      if (!body.ok) { setError(body.reason ?? 'Export failed.'); return; }
-      setJobId(body.jobId ?? null);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div className={cx(styles.card)}>
-      <p className={cx(styles.cardTitle)}>Export to GitHub</p>
-      {github ? (
-        <p className={cx(styles.muted)} style={{ marginBottom: '0.6rem' }}>
-          Already exported to <strong>{github.owner}/{github.name}</strong>. Re-exporting updates the repository with the latest artifacts.
-        </p>
-      ) : null}
-      {profiles.length === 0 ? (
-        <p style={{ color: '#f3b350', fontSize: '0.85rem', margin: 0 }}>
-          No active GitHub PAT. <a href="/settings/byok" style={{ color: '#7aa3ff' }}>Add one in BYOK</a> — your token never reaches the browser.
-        </p>
-      ) : (
-        <>
-          <div style={{ display: 'grid', gap: '0.5rem', maxWidth: 460 }}>
-            <label style={{ fontSize: '0.85rem' }}>
-              Credential
-              <select value={credId} onChange={(e) => setCredId(e.target.value)} style={selectStyle}>
-                {profiles.map((p) => <option key={p.id} value={p.id}>{p.displayName}</option>)}
-              </select>
-            </label>
-            <label style={{ fontSize: '0.85rem' }}>
-              Repo name
-              <input value={repoName} onChange={(e) => setRepoName(e.target.value)} style={selectStyle} />
-            </label>
-            <label style={{ fontSize: '0.85rem' }}>
-              Org (optional — leave blank for personal account)
-              <input value={org} onChange={(e) => setOrg(e.target.value)} placeholder="my-org" style={selectStyle} />
-            </label>
-            <label style={{ fontSize: '0.85rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} />
-              Private repo
-            </label>
-          </div>
-          {error ? <p style={{ color: '#ef6a6a', fontSize: '0.85rem' }}>{error}</p> : null}
-          <button onClick={() => void submit()} disabled={busy} className={cx(styles.btn, styles.btnPrimary)} style={{ marginTop: '0.6rem' }}>
-            {busy ? 'Enqueuing…' : github ? 'Re-export repo →' : 'Create repo →'}
-          </button>
-          {jobId ? (
-            <div style={{ marginTop: '0.75rem' }}>
-              <JobProgress jobId={jobId} />
-            </div>
-          ) : null}
-        </>
-      )}
-    </div>
-  );
-}
-
 function latestOf(arts: VentureArtifact[], kind: VentureArtifactKind): VentureArtifact | null {
   const list = arts.filter((a) => a.artifactKind === kind);
   if (list.length === 0) return null;
@@ -548,10 +445,6 @@ function latestOf(arts: VentureArtifact[], kind: VentureArtifactKind): VentureAr
 }
 
 const inputStyle: React.CSSProperties = { padding: '0.4rem 0.5rem', background: '#101015', color: '#e8e8ea', border: '1px solid #2a2a2a', borderRadius: 6, fontSize: '0.85rem' };
-const selectStyle: React.CSSProperties = {
-  display: 'block', width: '100%', marginTop: '0.25rem', padding: '0.4rem 0.5rem',
-  background: '#1a1a1f', color: '#e7e7ea', border: '1px solid #2a2a30', borderRadius: 4, fontSize: '0.85rem',
-};
 const tabStyle = (active: boolean): React.CSSProperties => ({
   padding: '0.5rem 0.85rem', background: 'transparent', border: 'none',
   borderBottom: active ? '2px solid #7aa3ff' : '2px solid transparent',

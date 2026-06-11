@@ -39,14 +39,25 @@ export async function POST(
 
   let body: Body;
   try { body = (await request.json()) as Body; }
-  catch { return NextResponse.json({ ok: false, reason: 'Invalid JSON body.' }, { status: 400 }); }
+  catch {
+    return NextResponse.json(
+      { ok: false, reason: 'Invalid JSON body.', reasonCode: 'invalid_input' },
+      { status: 400 },
+    );
+  }
 
   const { providerCredentialId, repoName, org, description } = body;
   if (typeof providerCredentialId !== 'string' || providerCredentialId.length === 0) {
-    return NextResponse.json({ ok: false, reason: '`providerCredentialId` is required.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, reason: '`providerCredentialId` is required.', reasonCode: 'invalid_input' },
+      { status: 400 },
+    );
   }
   if (typeof repoName !== 'string' || repoName.length === 0) {
-    return NextResponse.json({ ok: false, reason: '`repoName` is required.' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, reason: '`repoName` is required.', reasonCode: 'invalid_input' },
+      { status: 400 },
+    );
   }
 
   const input: GitHubExportInput = {

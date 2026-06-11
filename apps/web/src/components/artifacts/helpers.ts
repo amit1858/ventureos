@@ -139,6 +139,9 @@ export function labLinkForJob(jobKind: VentureJobKind, ventureId: string): { hre
   if (jobKind === 'buildsquad.plan') {
     return { href: `/labs/buildsquad?ventureId=${vid}`, label: 'Re-run in BuildSquad' };
   }
+  if (jobKind === 'github.export') {
+    return { href: `/ventures/${vid}?tab=buildplan`, label: 'Retry GitHub export' };
+  }
   return { href: `/ventures/${vid}`, label: 'Back to workspace' };
 }
 
