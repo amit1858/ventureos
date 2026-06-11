@@ -158,6 +158,7 @@ surface with a real database and real LLM calls.**
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public; shipped to the browser. |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Secret.** Server only. Bypasses RLS. Never expose to the browser. Mark as *Encrypted* in Vercel. |
 | `VENTUREOS_CREDENTIAL_ENCRYPTION_KEY` | **Secret.** 32-byte hex or base64 key for AES-256-GCM at-rest BYOK encryption. Generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Mark as *Encrypted*. |
+| `VENTUREOS_ALPHA_ACCESS` | Set to `true` to enable the shared Alpha Workspace screen at `/access` so deployed Real Mode is usable without a full sign-up flow. See [Alpha Access Mode](#alpha-access-mode-deployed-real-mode). |
 
 ### Optional Vercel environment variables
 
@@ -182,12 +183,59 @@ settings** unless explicitly required in the future.
    node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
    ```
    Store it in your password manager, never in the repo.
-2. In Vercel project settings, add the four required env vars from the table
+2. In Vercel project settings, add the five required env vars from the table
    above (and any optional ones you need).
 3. Run the [Required deployment procedure](#required-deployment-procedure-microsoft--azure-ad-machines).
-4. Visit `/settings/byok` on the deployed URL, sign in, and add at least one
-   LLM provider plus a GitHub PAT.
+4. Visit `/access`, click **Continue to Alpha Workspace**, then add at least
+   one LLM provider plus a GitHub PAT in BYOK.
 5. Create a venture at `/ventures/new` and walk it through the labs.
+
+---
+
+## Alpha Access Mode (deployed Real Mode)
+
+The deployed app does not include a full sign-up / sign-in flow yet. To make
+deployed Real Mode usable for hackathon judges and testers without leaking
+developer-only instructions, VentureOS ships a lightweight **Alpha Access**
+screen at `/access`.
+
+### How it works
+
+1. The operator sets `VENTUREOS_ALPHA_ACCESS=true` on the Vercel project and
+   redeploys.
+2. The visitor lands on `/access` (directly, or via a 401 redirect from a
+   Real Mode page). They see a polished card explaining Demo vs Real Mode and
+   two CTAs: **Continue to Alpha Workspace** and **Open Demo Mode**.
+3. Clicking **Continue to Alpha Workspace** POSTs to `/api/access/alpha`,
+   which sets the `ventureos_alpha_access=1` HttpOnly cookie and redirects to
+   the requested Real Mode page (defaults to `/settings/byok`).
+4. From that point on, the server resolves the visitor as the shared
+   `alpha-user` identity (id `alpha-user`, email `alpha@ventureos.local`).
+   BYOK, ventures, labs, jobs, artifacts, timeline and GitHub export all use
+   this identity.
+5. Visitors can revoke access at `/access/revoke`. Encrypted BYOK credentials
+   remain on the server until explicitly deleted from `/settings/byok`.
+
+### Security properties
+
+- The `vos_dev_user` JSON cookie used by local dev is **hard-disabled** in
+  production builds (`NODE_ENV === 'production'`). The deployed app never
+  honours it and never surfaces dev-cookie instructions in its UI.
+- Alpha Access requires **both** the env flag **and** the cookie. Either
+  alone resolves as no user.
+- A real Supabase session always outranks Alpha Access. If you later add a
+  real auth flow, signed-in users will not be downgraded to `alpha-user`.
+- The Alpha Workspace is a **shared** identity. Do not use it for
+  environments where multiple unrelated users will share the same workspace.
+- Provider API keys and the GitHub PAT are still entered through the BYOK UI
+  and encrypted at rest with AES-256-GCM. Alpha Access does not weaken any
+  BYOK guarantees.
+
+### Disabling Alpha Access
+
+Set `VENTUREOS_ALPHA_ACCESS=false` (or remove the variable) and redeploy.
+`/access` will then render the "Real Mode requires workspace access" setup
+guidance instead of the Continue CTA.
 
 ---
 

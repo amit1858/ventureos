@@ -70,13 +70,35 @@ $env:SUPABASE_SERVICE_ROLE_KEY = "<service-role-key>"
 node scripts/migrate.mjs
 ```
 
-### 3. Configure BYOK in the UI
+### 3. Authenticate as a workspace user
 
-Start the app:
+Real Mode pages require a user identity. Pick one of the following:
 
-```powershell
-corepack pnpm --filter "@ventureos/web" dev
+**Local dev: `vos_dev_user` cookie** (recommended for development)
+
+In your browser's devtools console at `http://localhost:3000/`:
+
+```js
+document.cookie = 'vos_dev_user=' + encodeURIComponent('{"id":"u1","email":"you@example.com"}');
 ```
+
+This cookie is only honoured when `NODE_ENV !== 'production'`. The deployed
+app cannot be unlocked with it — production never reads it.
+
+**Local or deployed: Alpha Workspace** (recommended for hackathon-style sharing)
+
+Add to `apps/web/.env.local`:
+
+```env
+VENTUREOS_ALPHA_ACCESS=true
+```
+
+Then restart the dev server, visit `http://localhost:3000/access` and click
+**Continue to Alpha Workspace**. You'll be resolved as the shared
+`alpha-user` identity. See [`deployment.md`](deployment.md#alpha-access-mode-deployed-real-mode)
+for the same flow on a deployed Vercel project.
+
+### 4. Configure BYOK in the UI
 
 Open `http://localhost:3000/settings/byok` and add:
 
@@ -85,7 +107,7 @@ Open `http://localhost:3000/settings/byok` and add:
 
 Each credential is validated with a minimal read-only call before being saved. See [`security-byok.md`](security-byok.md).
 
-### 4. Create your first Venture
+### 5. Create your first Venture
 
 `/ventures/new` — give it a brief and a target market. From the Workspace, run PersonaLab → Buying Committee → Research Graph → VentureLab → BuildSquad, then generate the Evaluation Report and export to GitHub.
 

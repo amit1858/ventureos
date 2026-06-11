@@ -97,7 +97,7 @@ export default function VentureLabPage() {
       try {
         const r = await fetch('/api/byok/providers', { cache: 'no-store' });
         if (r.status === 401) {
-          setProviderError('Not signed in. Set the dev cookie or sign in to use VentureLab.');
+          setProviderError('Real Mode requires workspace access. Continue to the alpha workspace to use VentureLab, or open Demo Mode.');
           return;
         }
         const body = await r.json() as { profiles?: ProviderProfile[] };
@@ -193,7 +193,12 @@ export default function VentureLabPage() {
 
       {providerError && (
         <div className="rounded border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
-          {providerError}
+          <div>{providerError}</div>
+          <div className="mt-2 text-rose-700">
+            <a href="/access?next=/labs/venture" className="underline">Continue to Alpha Workspace</a>
+            {' · '}
+            <a href="/demo" className="underline">Open Demo Mode</a>
+          </div>
         </div>
       )}
 

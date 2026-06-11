@@ -68,6 +68,32 @@ If the export fails, the user gets a stable failure code (`repo_exists`, `invali
 - We do not embed credentials in artifacts. Every artifact JSON is safe to export verbatim.
 - We do not ship our own provider keys in Demo Mode. Demo Mode is fully seeded and makes **zero** network calls to providers.
 
+## Workspace identity (auth model)
+
+VentureOS does not ship a full sign-up / sign-in flow in the hackathon
+alpha. The server resolves a workspace identity in this order:
+
+1. **Real Supabase session.** If `NEXT_PUBLIC_SUPABASE_URL` /
+   `NEXT_PUBLIC_SUPABASE_ANON_KEY` are configured and the user has a session
+   cookie, that real user wins.
+2. **Alpha Workspace** — opt-in via env + explicit click. When
+   `VENTUREOS_ALPHA_ACCESS=true` is set on the server AND the visitor has
+   clicked **Continue to Alpha Workspace** on `/access` (which sets the
+   `ventureos_alpha_access=1` HttpOnly cookie), the server resolves them as
+   the shared `alpha-user` identity (`alpha@ventureos.local`). Both pieces
+   are required — env alone or cookie alone fails closed.
+3. **Local dev cookie** — `vos_dev_user` JSON cookie. Honoured **only** when
+   `NODE_ENV !== 'production'`. The deployed app cannot be unlocked with it
+   and never surfaces dev-cookie instructions in its UI.
+4. **No user** → BYOK / venture / lab routes return 401 and the client
+   surfaces the polished "Real Mode requires workspace access" card with a
+   link to `/access`.
+
+The Alpha Workspace is a deliberate shortcut for hackathon judging and
+personal testing. It is **not** appropriate for environments where multiple
+unrelated users will share the same BYOK store — see
+[`known-limitations.md`](known-limitations.md#engineering-gaps).
+
 ## Reporting a security issue
 
 Please open a private issue or contact the maintainers at `@amit1858`. Do not file public issues for security reports.

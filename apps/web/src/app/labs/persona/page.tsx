@@ -82,7 +82,7 @@ export default function PersonaLabPage() {
       try {
         const r = await fetch('/api/byok/providers', { cache: 'no-store' });
         if (r.status === 401) {
-          setProviderError('Not signed in. Set the dev cookie or sign in to use PersonaLab.');
+          setProviderError('Real Mode requires workspace access. Continue to the alpha workspace to use PersonaLab, or open Demo Mode.');
           return;
         }
         const body = await r.json() as { profiles?: ProviderProfile[] };
@@ -226,7 +226,22 @@ export default function PersonaLabPage() {
         BYOK provider on the server — the browser never sees plaintext secrets.
       </p>
 
-      {providerError ? <p style={{ color: '#ef6a6a' }}>{providerError}</p> : null}
+      {providerError ? (
+        <div style={{
+          padding: '0.75rem 1rem',
+          border: '1px solid #2a2a2a',
+          borderRadius: 8,
+          background: '#15171c',
+          marginBottom: '1rem',
+        }}>
+          <p style={{ color: '#ef6a6a', margin: 0 }}>{providerError}</p>
+          <p style={{ color: '#9aa0a6', margin: '0.5rem 0 0.75rem', fontSize: '0.85rem' }}>
+            <a href="/access?next=/labs/persona" style={{ color: '#7aa3ff' }}>Continue to Alpha Workspace</a>
+            {' · '}
+            <a href="/demo" style={{ color: '#7aa3ff' }}>Open Demo Mode</a>
+          </p>
+        </div>
+      ) : null}
 
       <div style={{ ...cardStyle, marginTop: '1rem' }}>
         <h3 style={{ marginTop: 0 }}>1. Provider</h3>

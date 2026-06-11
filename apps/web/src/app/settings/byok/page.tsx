@@ -54,7 +54,7 @@ export default function ByokSettings() {
     try {
       const r = await fetch('/api/byok/providers', { cache: 'no-store' });
       if (r.status === 401) {
-        setTopError('Not signed in. In dev, set the `vos_dev_user` cookie to `{"id":"u1","email":"you@example.com"}`.');
+        setTopError('Real Mode requires workspace access. Continue to the alpha workspace to manage BYOK providers, or open Demo Mode.');
         setProfiles([]);
         return;
       }
@@ -79,7 +79,24 @@ export default function ByokSettings() {
       </p>
 
       {topError ? (
-        <p style={{ color: '#ef6a6a', marginTop: '1rem' }}>{topError}</p>
+        <div
+          style={{
+            marginTop: '1rem',
+            padding: '1rem 1.25rem',
+            border: '1px solid #2a2a2a',
+            borderRadius: 8,
+            background: '#15171c',
+          }}
+        >
+          <p style={{ color: '#ef6a6a', margin: 0 }}>{topError}</p>
+          <p style={{ color: '#9aa0a6', margin: '0.5rem 0 0', fontSize: '0.85rem' }}>
+            Demo Mode is available without sign-in.
+          </p>
+          <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <a href="/access?next=/settings/byok" style={primaryBtn}>Continue to Alpha Workspace</a>
+            <a href="/demo" style={secondaryBtn}>Open Demo Mode</a>
+          </div>
+        </div>
       ) : null}
 
       <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'baseline' }}>

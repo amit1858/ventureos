@@ -31,7 +31,8 @@ We are honest about what VentureOS is and is not. This list is the single source
 
 - **Test coverage is selective.** Web, BuildSquad, contracts, the GitHub adapter and the reason-code helpers have meaningful tests. Some labs have fewer unit tests; integration tests are the priority once the E2E bug bash starts.
 - **No load/performance testing.** Latency under concurrent VentureJobs has not been benchmarked.
-- **Auth is light.** The product runs as the local user; the BYOK store is per-tenant but there is no full auth flow shipped in this hackathon build.
+- **Auth is light — Alpha Workspace only.** The deployed product does not include a full sign-up / sign-in flow yet. Real Mode is gated by the Alpha Workspace screen at `/access`, which sets an HttpOnly cookie that resolves all visitors to a shared `alpha-user` identity. This is appropriate for hackathon judges and personal testing; it is **not** appropriate for multi-tenant production where unrelated users must not share BYOK credentials and ventures. A real per-user auth flow (Supabase Auth or otherwise) is on the roadmap.
+- **Local dev cookie is dev-only.** The legacy `vos_dev_user` cookie is honoured only when `NODE_ENV !== 'production'`. The deployed app never reads it and never surfaces dev-cookie instructions.
 
 ## What this does **not** mean
 

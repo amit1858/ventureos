@@ -78,7 +78,7 @@ export default function ResearchGraphPage() {
       try {
         const r = await fetch('/api/byok/providers', { cache: 'no-store' });
         if (r.status === 401) {
-          setProviderError('Not signed in. Set the dev cookie or sign in to use the Research Graph.');
+          setProviderError('Real Mode requires workspace access. Continue to the alpha workspace to use the Research Graph, or open Demo Mode.');
           return;
         }
         const body = await r.json() as { profiles?: ProviderProfile[] };
@@ -180,7 +180,14 @@ export default function ResearchGraphPage() {
       </header>
 
       {providerError && (
-        <div className="rounded border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">{providerError}</div>
+        <div className="rounded border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
+          <div>{providerError}</div>
+          <div className="mt-2 text-rose-700">
+            <a href="/access?next=/labs/research-graph" className="underline">Continue to Alpha Workspace</a>
+            {' · '}
+            <a href="/demo" className="underline">Open Demo Mode</a>
+          </div>
+        </div>
       )}
 
       <section className="rounded border border-gray-200 p-4">
