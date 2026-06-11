@@ -1,0 +1,31 @@
+{
+  "ventureId": "v-faceless-crm",
+  "brief": {
+    "businessIdea": "Faceless CRM — an AI-first CRM for solo operators and AI-first agencies who never want to see a contact record. Notes, calls and emails flow in; the system surfaces the next best action as a one-line nudge with a draft reply.",
+    "targetMarket": "Solo founders, indie consultants, micro-agencies (1-5 people) running on Gmail/Outlook + a notes app.",
+    "customerType": "Owner-led / solo operator",
+    "region": "Global (English-speaking)",
+    "businessSize": "1 to 5 employees",
+    "additionalContext": "Zero forms, zero pipeline stages, zero required fields. AI drafts the next reply; the user edits it."
+  },
+  "notes": [
+    "Solo consultants report abandoning HubSpot Free within 30 days due to manual data entry; they prefer WhatsApp follow-ups over structured pipelines.",
+    "Micro-agency owners complain that pipeline hygiene erodes after two weeks because their team forgets to update stages — workflow disruption is the #1 reason cited.",
+    "Existing competitors: HubSpot Free, Folk, Attio, Pipedrive. All require structured forms. Folk leans into Gmail integration but still asks for stages.",
+    "Market signal: r/sales and Indie Hackers threads report >40% CRM abandonment in <90 days for solo operators on $0-$30/mo plans.",
+    "Risk: BYOK + inbox read permission is a high-trust posture. Two design-partner candidates declined a 15-minute call when 'we will read your sent items' was mentioned.",
+    "Counter-signal: One founder said 'I have tried four CRMs, I would pay $50/mo for one that just drafted the reply for me' — opportunity for AI-drafted follow-ups.",
+    "Substitute: many solo operators use a single Notion database + Gmail labels as their de-facto CRM."
+  ],
+  "personas": [
+    { "id": "p_maya", "name": "Maya — solo growth consultant", "summary": "Books 10-15 calls/week, lives in inbox, refuses to maintain pipeline stages." },
+    { "id": "p_dev", "name": "Dev — 4-person AI agency owner", "summary": "Wants accountability without nagging the team; tried HubSpot, Folk and Notion CRMs in 6 months." }
+  ],
+  "assumptions": [
+    { "id": "a_drafted_replies", "statement": "Solo operators will pay $30+/mo if the system drafts the next reply rather than asking them to log activity.", "confidence": "medium" },
+    { "id": "a_no_pipeline", "statement": "Eliminating pipeline stages entirely will not hurt forecast quality for <5-person teams.", "confidence": "low" }
+  ],
+  "risks": [
+    { "id": "r_inbox_trust", "statement": "Inbox read permission + BYOK key together is a high-trust ask that may halve top-of-funnel conversion.", "severity": "high" }
+  ]
+}

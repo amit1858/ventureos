@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ventureos.dev/schema/recommendation.json",
+  "title": "Recommendation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "decision", "confidence", "rationale"],
+  "properties": {
+    "kind":       { "const": "Recommendation" },
+    "decision":   { "type": "string", "enum": ["PROCEED", "PROCEED_WITH_PIVOT_NOTES", "PIVOT", "KILL"] },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "rationale":  { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "assumptionAudit": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["assumption", "status"],
+        "properties": {
+          "assumption": { "type": "string" },
+          "status":     { "type": "string", "enum": ["SUPPORTED", "WEAK", "CONTRADICTED"] },
+          "evidence":   { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "riskRegister": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["risk", "severity", "likelihood"],
+        "properties": {
+          "risk":       { "type": "string" },
+          "severity":   { "type": "string", "enum": ["low", "medium", "high"] },
+          "likelihood": { "type": "string", "enum": ["low", "medium", "high"] },
+          "mitigation": { "type": "string" }
+        }
+      }
+    },
+    "pivotNotes":    { "type": "array", "items": { "type": "string" } },
+    "goConditions":  { "type": "array", "items": { "type": "string" } },
+    "evidenceRefs":  { "type": "array", "items": { "type": "string" } },
+    "qualityScore":  { "type": "number", "minimum": 0, "maximum": 1 }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "kind": "Recommendation",
+  "decision": "PROCEED_WITH_PIVOT_NOTES",
+  "confidence": 0.71,
+  "rationale": [
+    "Two of three personas show strong pain + buying power at target price point.",
+    "Maya (solo consultant) is a clear champion; Diego (agency owner) requires team / data-residency story.",
+    "The 'zero forms' wedge is genuinely differentiated; no incumbent ships this as the default experience.",
+    "Skeptic persona Priya signals that the bottom of the ICP ($15/mo ceiling, AI-distrustful) is NOT the wedge."
+  ],
+  "assumptionAudit": [
+    { "assumption": "Solo operators abandon traditional CRMs within 30 days.", "status": "SUPPORTED", "evidence": ["g2_review_cluster_a", "reddit_r_freelance_sample"] },
+    { "assumption": "Users will trust an LLM to read their inbox if data stays in their tenant.", "status": "WEAK", "evidence": ["persona_priya_objection", "missing_enterprise_validation"] },
+    { "assumption": "Pricing at <$30/mo removes the 'do I need this?' objection.", "status": "SUPPORTED", "evidence": ["maya_explicit_ceiling", "diego_team_math"] },
+    { "assumption": "Gmail + Calendar integration covers 80% of the market.", "status": "WEAK", "evidence": ["graph_node_outlook_share_25pct", "persona_diego_uses_google_only"] }
+  ],
+  "riskRegister": [
+    { "risk": "BYOK + inbox read access is a high-trust posture; objection rate may suppress trial-to-paid.", "severity": "high", "likelihood": "medium", "mitigation": "Lead with 'your tenant, your key' messaging; offer on-device summarisation tier." },
+    { "risk": "Incumbent (HubSpot Free) is sticky and free.", "severity": "medium", "likelihood": "high", "mitigation": "Position against effort, not features; '0 fields to fill' as the headline." },
+    { "risk": "Outlook gap excludes ~25% of SMB market in year 1.", "severity": "medium", "likelihood": "high", "mitigation": "Ship Outlook integration by month 6; gate enterprise outreach until then." }
+  ],
+  "pivotNotes": [
+    "Drop bottom-end persona (Priya). Anchor pricing at $29 solo / $79 team — not $15.",
+    "Lead with 'AI-drafts-your-next-email' demo, not pipeline visualisation.",
+    "Add 'data stays in your Google tenant' as a first-class trust message; defer Outlook to v1.1."
+  ],
+  "goConditions": [
+    "5 solo-consultant design partners signed before scaffolding starts.",
+    "BYOK story validated with 3 of those 5 in writing.",
+    "<$120 blended CAC modelled on a 90-day plan."
+  ],
+  "evidenceRefs": [
+    "examples/faceless-crm/expected-personas.json",
+    "research-graph://faceless-crm/v1"
+  ],
+  "qualityScore": 0.78
+}

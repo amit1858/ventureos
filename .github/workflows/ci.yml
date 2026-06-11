@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  node:
+    name: Node (TypeScript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.0'
+          cache: 'pnpm'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Import-boundary check
+        run: pnpm lint:arch
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Audit (advisory)
+        run: pnpm audit --audit-level=high || true
+
+  python:
+    name: Python (uv)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        run: pip install uv==0.4.30
+
+      - name: Sync workspace
+        run: uv sync --all-packages
+
+      - name: Ruff
+        run: uv run ruff check packages
+
+      - name: Mypy
+        run: uv run mypy packages || true   # advisory until adapter bodies land
+
+      - name: pip-audit (advisory)
+        run: |
+          pip install pip-audit
+          pip-audit || true

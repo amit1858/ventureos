@@ -1,0 +1,50 @@
+# Architectural rules (mirrors scripts/check-import-boundaries.mjs for Python).
+# Run with:  uv run lint-imports
+
+[importlinter]
+root_packages =
+  ventureos_contracts
+  ventureos_providers
+  ventureos_security
+  ventureos_tinytroupe
+  ventureos_graphify
+
+# --- TinyTroupe must only be imported from the adapter package -------------
+[importlinter:contract:tinytroupe-isolation]
+name = TinyTroupe SDK is confined to its adapter
+type = forbidden
+source_modules =
+  ventureos_contracts
+  ventureos_providers
+  ventureos_security
+  ventureos_graphify
+forbidden_modules =
+  tinytroupe
+
+# --- Graphify must only be imported from the adapter package ---------------
+[importlinter:contract:graphify-isolation]
+name = Graphify SDK is confined to its adapter
+type = forbidden
+source_modules =
+  ventureos_contracts
+  ventureos_providers
+  ventureos_security
+  ventureos_tinytroupe
+forbidden_modules =
+  graphify
+  graphifyy
+
+# --- No provider SDKs anywhere in Python (provider layer is TS-only) -------
+[importlinter:contract:no-provider-sdks-in-python]
+name = Python code must not import provider SDKs directly
+type = forbidden
+source_modules =
+  ventureos_contracts
+  ventureos_providers
+  ventureos_security
+  ventureos_tinytroupe
+  ventureos_graphify
+forbidden_modules =
+  openai
+  anthropic
+  google.generativeai

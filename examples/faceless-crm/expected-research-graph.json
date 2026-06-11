@@ -1,0 +1,65 @@
+{
+  "graphId": "g-faceless-crm-001",
+  "createdAt": "2026-06-01T00:00:00.000Z",
+  "stats": {
+    "nodes": 14,
+    "edges": 15,
+    "communities": 2,
+    "confidence": { "EXTRACTED": 9, "INFERRED": 4, "AMBIGUOUS": 1 }
+  },
+  "sources": [
+    { "id": "s_1", "kind": "brief", "label": "Idea brief: Faceless CRM" },
+    { "id": "s_2", "kind": "note", "label": "Note 1", "excerpt": "Solo consultants report abandoning HubSpot Free within 30 days..." },
+    { "id": "s_3", "kind": "note", "label": "Note 2", "excerpt": "Micro-agency owners complain that pipeline hygiene erodes after two weeks..." },
+    { "id": "s_4", "kind": "note", "label": "Note 3", "excerpt": "Existing competitors: HubSpot Free, Folk, Attio, Pipedrive..." },
+    { "id": "s_5", "kind": "note", "label": "Note 4", "excerpt": "r/sales and Indie Hackers threads report >40% CRM abandonment..." },
+    { "id": "s_6", "kind": "note", "label": "Note 5", "excerpt": "Risk: BYOK + inbox read permission is a high-trust posture..." },
+    { "id": "s_7", "kind": "note", "label": "Note 6", "excerpt": "I would pay $50/mo for one that just drafted the reply for me." },
+    { "id": "s_8", "kind": "note", "label": "Note 7", "excerpt": "many solo operators use a single Notion database + Gmail labels as their de-facto CRM." },
+    { "id": "s_9", "kind": "persona_set", "label": "Persona set" },
+    { "id": "s_10", "kind": "venture_assumption", "label": "Assumption a_drafted_replies" },
+    { "id": "s_11", "kind": "venture_assumption", "label": "Assumption a_no_pipeline" },
+    { "id": "s_12", "kind": "venture_risk", "label": "Risk r_inbox_trust" }
+  ],
+  "nodes": [
+    { "id": "n_p_manual_entry", "type": "problem", "label": "Manual data entry kills CRM adoption", "summary": "Solo operators abandon CRMs within 30 days when forced to log activity.", "confidence": 0.92, "evidence": ["abandoning HubSpot Free within 30 days due to manual data entry"], "provenance": [{ "sourceId": "s_2" }] },
+    { "id": "n_p_pipeline_hygiene", "type": "problem", "label": "Pipeline hygiene erodes within two weeks", "confidence": 0.85, "evidence": ["pipeline hygiene erodes after two weeks"], "provenance": [{ "sourceId": "s_3" }] },
+    { "id": "n_seg_solo", "type": "segment", "label": "Solo operators ($0-$30/mo)", "confidence": 0.8, "provenance": [{ "sourceId": "s_5" }] },
+    { "id": "n_seg_micro_agency", "type": "segment", "label": "Micro-agencies 1-5 people", "confidence": 0.78, "provenance": [{ "sourceId": "s_3" }] },
+    { "id": "n_c_hubspot", "type": "competitor", "label": "HubSpot Free", "confidence": 0.95, "provenance": [{ "sourceId": "s_4" }] },
+    { "id": "n_c_folk", "type": "competitor", "label": "Folk", "confidence": 0.9, "provenance": [{ "sourceId": "s_4" }] },
+    { "id": "n_c_attio", "type": "competitor", "label": "Attio", "confidence": 0.9, "provenance": [{ "sourceId": "s_4" }] },
+    { "id": "n_c_pipedrive", "type": "competitor", "label": "Pipedrive", "confidence": 0.9, "provenance": [{ "sourceId": "s_4" }] },
+    { "id": "n_alt_notion", "type": "alternative", "label": "Notion + Gmail labels DIY CRM", "confidence": 0.7, "provenance": [{ "sourceId": "s_8" }] },
+    { "id": "n_ms_abandonment", "type": "market_signal", "label": ">40% CRM abandonment in <90 days for solo operators", "confidence": 0.82, "provenance": [{ "sourceId": "s_5" }] },
+    { "id": "n_ms_pay_for_drafts", "type": "market_signal", "label": "Willingness to pay $30-50/mo for AI-drafted replies", "confidence": 0.6, "provenance": [{ "sourceId": "s_7" }] },
+    { "id": "n_f_ai_drafted_reply", "type": "feature", "label": "AI-drafted next reply (one-line nudge)", "confidence": 0.85, "provenance": [{ "sourceId": "s_1" }, { "sourceId": "s_7" }] },
+    { "id": "n_o_faceless_crm", "type": "opportunity", "label": "Faceless CRM — zero forms, zero stages", "confidence": 0.78, "provenance": [{ "sourceId": "s_1" }] },
+    { "id": "n_r_inbox_trust", "type": "risk", "label": "Inbox read + BYOK key trust ask halves conversion", "confidence": 0.65, "provenance": [{ "sourceId": "s_6" }, { "sourceId": "s_12" }] }
+  ],
+  "edges": [
+    { "id": "e_1", "type": "experiences", "from": "n_seg_solo", "to": "n_p_manual_entry", "confidence": 0.9, "provenance": [{ "sourceId": "s_2" }] },
+    { "id": "e_2", "type": "experiences", "from": "n_seg_micro_agency", "to": "n_p_pipeline_hygiene", "confidence": 0.88, "provenance": [{ "sourceId": "s_3" }] },
+    { "id": "e_3", "type": "competes_with", "from": "n_o_faceless_crm", "to": "n_c_hubspot", "confidence": 0.92, "provenance": [{ "sourceId": "s_4" }] },
+    { "id": "e_4", "type": "competes_with", "from": "n_o_faceless_crm", "to": "n_c_folk", "confidence": 0.9, "provenance": [{ "sourceId": "s_4" }] },
+    { "id": "e_5", "type": "competes_with", "from": "n_o_faceless_crm", "to": "n_c_attio", "confidence": 0.9, "provenance": [{ "sourceId": "s_4" }] },
+    { "id": "e_6", "type": "competes_with", "from": "n_o_faceless_crm", "to": "n_c_pipedrive", "confidence": 0.85, "provenance": [{ "sourceId": "s_4" }] },
+    { "id": "e_7", "type": "substitutes", "from": "n_alt_notion", "to": "n_o_faceless_crm", "confidence": 0.7, "provenance": [{ "sourceId": "s_8" }] },
+    { "id": "e_8", "type": "validates", "from": "n_ms_abandonment", "to": "n_p_manual_entry", "confidence": 0.85, "provenance": [{ "sourceId": "s_5" }] },
+    { "id": "e_9", "type": "validates", "from": "n_ms_pay_for_drafts", "to": "n_f_ai_drafted_reply", "confidence": 0.7, "provenance": [{ "sourceId": "s_7" }] },
+    { "id": "e_10", "type": "enables", "from": "n_f_ai_drafted_reply", "to": "n_o_faceless_crm", "confidence": 0.85, "provenance": [{ "sourceId": "s_1" }] },
+    { "id": "e_11", "type": "blocks", "from": "n_r_inbox_trust", "to": "n_o_faceless_crm", "confidence": 0.7, "provenance": [{ "sourceId": "s_6" }] },
+    { "id": "e_12", "type": "needs", "from": "persona:p_maya", "to": "n_f_ai_drafted_reply", "confidence": 0.75, "provenance": [{ "sourceId": "s_9" }] },
+    { "id": "e_13", "type": "needs", "from": "persona:p_dev", "to": "n_f_ai_drafted_reply", "confidence": 0.7, "provenance": [{ "sourceId": "s_9" }] },
+    { "id": "e_14", "type": "depends_on", "from": "assumption:a_drafted_replies", "to": "n_ms_pay_for_drafts", "confidence": 0.6, "provenance": [{ "sourceId": "s_10" }] },
+    { "id": "e_15", "type": "contradicts", "from": "assumption:a_no_pipeline", "to": "n_p_pipeline_hygiene", "confidence": 0.55, "provenance": [{ "sourceId": "s_11" }, { "sourceId": "s_3" }] }
+  ],
+  "godNodes": [
+    { "label": "Faceless CRM — zero forms, zero stages", "degree": 8, "community": 0 },
+    { "label": "AI-drafted next reply (one-line nudge)", "degree": 5, "community": 0 },
+    { "label": "HubSpot Free", "degree": 1, "community": 0 }
+  ],
+  "contradictions": [
+    "Assumption 'no pipeline stages' contradicts observed problem 'pipeline hygiene erodes within two weeks'."
+  ]
+}

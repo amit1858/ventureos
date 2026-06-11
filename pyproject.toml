@@ -1,0 +1,30 @@
+# VentureOS root Python workspace (uv).
+# Python packages live under packages/**/python and packages/adapters/*-py.
+
+[project]
+name = "ventureos-workspace"
+version = "0.0.0"
+description = "VentureOS Python workspace root (not installable; aggregates member packages)."
+requires-python = ">=3.11"
+
+[tool.uv.workspace]
+members = [
+  "packages/contracts",
+  "packages/providers/core-py",
+  "packages/security-py",
+  "packages/adapters/tinytroupe-py",
+  "packages/adapters/graphify-py",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+warn_return_any = true

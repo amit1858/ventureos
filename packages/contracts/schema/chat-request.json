@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ventureos.dev/schema/chat-request.json",
+  "title": "ChatRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["model", "messages", "ctx"],
+  "properties": {
+    "model": {
+      "oneOf": [
+        { "type": "string", "enum": ["flagship", "standard", "fast", "embed", "vision"] },
+        { "type": "string", "minLength": 1 }
+      ]
+    },
+    "messages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role":    { "type": "string", "enum": ["system", "user", "assistant", "tool"] },
+          "content": { "type": "string" },
+          "name":    { "type": "string" },
+          "toolCallId": { "type": "string" }
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "parametersSchema"],
+        "properties": {
+          "name":             { "type": "string" },
+          "description":      { "type": "string" },
+          "parametersSchema": { "type": "object" }
+        }
+      }
+    },
+    "toolChoice":  { "type": ["string", "object"] },
+    "temperature": { "type": "number", "minimum": 0, "maximum": 2 },
+    "topP":        { "type": "number", "minimum": 0, "maximum": 1 },
+    "maxTokens":   { "type": "integer", "minimum": 1 },
+    "responseFormat": {
+      "oneOf": [
+        { "type": "string", "enum": ["text", "json"] },
+        { "type": "object", "required": ["jsonSchema"], "properties": { "jsonSchema": { "type": "object" } } }
+      ]
+    },
+    "seed":      { "type": "integer" },
+    "cacheable": { "type": "boolean" },
+    "ctx": {
+      "type": "object",
+      "required": ["tenantId", "traceId"],
+      "properties": {
+        "tenantId":       { "type": "string" },
+        "userId":         { "type": "string" },
+        "ventureId":      { "type": "string" },
+        "artifactId":     { "type": "string" },
+        "traceId":        { "type": "string" },
+        "idempotencyKey": { "type": "string" }
+      }
+    }
+  }
+}

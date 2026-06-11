@@ -1,0 +1,52 @@
+{
+  "kind": "VentureRecommendation",
+  "recommendationId": "rec-faceless-crm-1e-reference",
+  "ventureId": "v-faceless-crm",
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "decision": "PIVOT",
+  "overallScore": 62,
+  "confidenceScore": 0.68,
+  "executiveSummary": "Strong problem signal from solo operators and clear willingness-to-pay for an AI-first inbox-driven CRM, but adoption friction (BYOK + inbox access) and lack of Outlook coverage hold the composite below the PROCEED threshold. Pivot: anchor on solo consultants on Google Workspace, lead with 'your tenant, your key' trust messaging.",
+  "scores": [
+    { "dimension": "problemStrength",     "score": 78, "higherIsBetter": true,  "explanation": "Multiple personas describe abandoning prior CRMs within 30 days; urgent admin pain.", "supportingEvidence": [], "opposingEvidence": [] },
+    { "dimension": "buyerUrgency",        "score": 64, "higherIsBetter": true,  "explanation": "Lost-revenue triggers cited but no contractual deadline.",                              "supportingEvidence": [], "opposingEvidence": [] },
+    { "dimension": "willingnessToPay",    "score": 58, "higherIsBetter": true,  "explanation": "Maya signals <$30/mo ceiling; agency owner accepts $79 team tier.",                     "supportingEvidence": [], "opposingEvidence": [] },
+    { "dimension": "differentiation",     "score": 72, "higherIsBetter": true,  "explanation": "'Zero forms' wedge is genuinely novel vs HubSpot/Salesforce.",                          "supportingEvidence": [], "opposingEvidence": [] },
+    { "dimension": "committeeConfidence", "score": 60, "higherIsBetter": true,  "explanation": "Buy with conditions; trust/data-residency objection unresolved.",                       "supportingEvidence": [], "opposingEvidence": [] },
+    { "dimension": "marketClarity",       "score": 55, "higherIsBetter": true,  "explanation": "Solo consultants on Google Workspace is a clear wedge; Outlook 25% gap.",              "supportingEvidence": [], "opposingEvidence": [] },
+    { "dimension": "adoptionFriction",    "score": 65, "higherIsBetter": false, "explanation": "BYOK + inbox read permission is a high-trust posture.",                                "supportingEvidence": [], "opposingEvidence": [] },
+    { "dimension": "executionRisk",       "score": 55, "higherIsBetter": false, "explanation": "Outlook gap + trust messaging required before scaling.",                               "supportingEvidence": [], "opposingEvidence": [] }
+  ],
+  "evidence": [
+    { "kind": "persona",   "source": "p1.maya.painPoint",     "quote": "Manual CRM data entry kills 30 minutes a day; I abandoned the last 3 CRMs.", "weight": 0.9, "confidence": "high" },
+    { "kind": "persona",   "source": "p1.maya.buyingTrigger", "quote": "Lost a $12k retainer because I forgot to follow up.",                          "weight": 0.85, "confidence": "high" },
+    { "kind": "committee", "source": "deliberation.consensus", "quote": "Buy with conditions: BYOK trust story must be first-class.",                  "weight": 0.7,  "confidence": "medium" }
+  ],
+  "counterSignals": [
+    { "kind": "persona",   "source": "p3.priya.objection",    "quote": "I don't trust an LLM to read my inbox even if it stays in my tenant.",         "weight": 0.7,  "confidence": "medium" },
+    { "kind": "committee", "source": "deliberation.unresolvedObjection", "quote": "No SOC2 yet — blocks enterprise pilots.",                          "weight": 0.6,  "confidence": "medium" }
+  ],
+  "assumptions": [
+    { "id": "a1", "text": "Solo operators will trust an LLM with inbox read access if the key stays in their tenant.", "type": "risky",    "confidence": "low",    "evidence": [], "riskLevel": "high",     "validationStrategy": "5 design partners, written BYOK acceptance before scaffolding." },
+    { "id": "a2", "text": "Pricing at <$30/mo solo / $79 team removes the 'do I need this?' objection.",               "type": "explicit", "confidence": "medium", "evidence": [], "riskLevel": "medium",   "validationStrategy": "Smoke-test landing page with the two prices; measure click-through to checkout." },
+    { "id": "a3", "text": "Gmail + Calendar integration covers ≥80% of the wedge market.",                              "type": "implicit", "confidence": "low",    "evidence": [], "riskLevel": "high",     "validationStrategy": "Survey 50 design-partner prospects on email platform." }
+  ],
+  "risks": [
+    { "id": "r1", "risk": "BYOK + inbox-read posture suppresses trial-to-paid conversion.",                "impact": "high",   "likelihood": "medium", "mitigation": "Lead with 'your tenant, your key' on landing page; offer on-device summarisation tier.", "relatedAssumptionIds": ["a1"], "relatedDimension": "adoptionFriction" },
+    { "id": "r2", "risk": "HubSpot Free is sticky and free — incumbent retention is the real moat.",       "impact": "medium", "likelihood": "high",   "mitigation": "Position against effort, not features. '0 fields to fill' as the headline.",                "relatedDimension": "differentiation" },
+    { "id": "r3", "risk": "Outlook gap excludes ~25% of SMB in year 1.",                                   "impact": "medium", "likelihood": "high",   "mitigation": "Ship Outlook integration by month 6; gate enterprise outreach until then.",                "relatedAssumptionIds": ["a3"], "relatedDimension": "marketClarity" }
+  ],
+  "nextSteps": [
+    { "id": "n1", "title": "Sign 5 solo-consultant design partners with written BYOK acceptance",         "category": "user_research",      "priority": 1, "rationale": "Validates the riskiest assumption before scaffolding.",                       "effort": "medium", "blocksDecision": true,  "relatedDimension": "adoptionFriction" },
+    { "id": "n2", "title": "Smoke-test landing page at $29 solo / $79 team",                              "category": "pricing_test",       "priority": 1, "rationale": "Quantifies willingness-to-pay before committing engineering effort.",          "effort": "low",    "blocksDecision": true,  "relatedDimension": "willingnessToPay" },
+    { "id": "n3", "title": "Build trust narrative: 'your tenant, your key' demo + 2-min explainer",       "category": "positioning_test",   "priority": 2, "rationale": "Addresses the unresolved buying-committee objection.",                         "effort": "low",    "blocksDecision": false, "relatedDimension": "committeeConfidence" },
+    { "id": "n4", "title": "Email-platform survey across 50 prospects (Gmail vs Outlook vs other)",       "category": "market_sizing",      "priority": 2, "rationale": "De-risks the Gmail-only wedge claim.",                                         "effort": "low",    "blocksDecision": false, "relatedDimension": "marketClarity" },
+    { "id": "n5", "title": "Competitive teardown: HubSpot Free, Folk, Attio — 'zero-forms' wedge audit", "category": "competitive_analysis","priority": 3, "rationale": "Confirms differentiation is durable and not a feature war.",                  "effort": "low",    "blocksDecision": false, "relatedDimension": "differentiation" }
+  ],
+  "decisionRationale": [
+    "Composite score 62 < PROCEED threshold (68): strong problem but trust/coverage gaps.",
+    "Adoption friction 65 with willingness-to-pay 58 — pivot required to anchor on trust-tolerant Google-Workspace solos.",
+    "Buying-committee consensus is 'buy with conditions', not 'buy outright' → unresolved objections must be retired before PROCEED.",
+    "Differentiation 72 and problem 78 are too strong to KILL: pivot is the rational stance."
+  ]
+}

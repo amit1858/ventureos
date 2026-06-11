@@ -1,0 +1,63 @@
+# Node / pnpm
+node_modules/
+.pnpm-store/
+.pnp.*
+.turbo/
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Python / uv
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.uv-cache/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Env / secrets
+.env
+.env.*
+.env.*.local
+.env.local
+!.env.example
+!**/.env.example
+*.pem
+*.key
+
+# Local DB / state
+*.db
+*.sqlite
+*.sqlite3
+
+# Temp files
+tmp/
+temp/
+*.tmp
+*.swp
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+coverage/
+
+# Memory (workspace-local scope)
+/memories/

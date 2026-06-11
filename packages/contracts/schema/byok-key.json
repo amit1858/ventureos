@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ventureos.dev/schema/byok-key.json",
+  "title": "ByokKey",
+  "description": "A user-supplied provider key. The plaintext secret never appears in this object once persisted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "tenantId", "provider", "alias", "maskedSecret", "createdAt", "status"],
+  "properties": {
+    "id":            { "type": "string", "pattern": "^k_[0-9A-HJKMNP-TV-Z]{26}$" },
+    "tenantId":      { "type": "string", "minLength": 1 },
+    "userId":        { "type": "string", "minLength": 1 },
+    "provider":      { "type": "string", "enum": ["openai", "azure_openai", "anthropic", "gemini", "github_models", "ollama", "azure_ai_foundry"] },
+    "alias":         { "type": "string", "minLength": 1, "maxLength": 64 },
+    "maskedSecret":  { "type": "string", "description": "Display-only mask; never the plaintext.", "pattern": "^.{0,4}\\*{3,}.{0,4}$" },
+    "scope":         { "type": "array", "items": { "type": "string" }, "default": [] },
+    "monthlyBudgetUsd": { "type": ["number", "null"], "minimum": 0 },
+    "regions":       { "type": "array", "items": { "type": "string" } },
+    "metadata":      { "type": "object", "additionalProperties": { "type": "string" } },
+    "status":        { "type": "string", "enum": ["pending_validation", "active", "revoked", "invalid"] },
+    "lastValidatedAt": { "type": ["string", "null"], "format": "date-time" },
+    "createdAt":     { "type": "string", "format": "date-time" },
+    "updatedAt":     { "type": "string", "format": "date-time" }
+  }
+}

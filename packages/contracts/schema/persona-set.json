@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ventureos.dev/schema/persona-set.json",
+  "title": "PersonaSet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "personas"],
+  "properties": {
+    "kind": { "const": "PersonaSet" },
+    "personas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "name"],
+        "properties": {
+          "id":   { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 },
+          "role": { "type": "string" },
+          "demographics": { "type": "object" },
+          "toolsToday":  { "type": "array", "items": { "type": "string" } },
+          "pain":        { "type": "string" },
+          "buyingPower": { "type": "string" },
+          "aiTrust":     { "type": "string" },
+          "validatorScore": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "buyingCommitteeComposition": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "personas"],
+        "properties": {
+          "role": { "type": "string" },
+          "personas": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

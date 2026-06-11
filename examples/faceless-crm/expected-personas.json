@@ -1,0 +1,43 @@
+{
+  "kind": "PersonaSet",
+  "personas": [
+    {
+      "id": "p_solo_consultant",
+      "name": "Maya Okafor",
+      "role": "Independent brand consultant",
+      "demographics": { "age": 34, "location": "Brooklyn, NY", "yearsIndependent": 6 },
+      "toolsToday": ["Gmail", "Notion", "Calendly", "Stripe"],
+      "pain": "Loses thread of 40+ active client conversations; bounced off HubSpot and Pipedrive after a week each.",
+      "buyingPower": "Self-pay, decides in <1 hour, ceiling $50/mo without justification.",
+      "aiTrust": "High — already uses ChatGPT daily; will paste client emails into it.",
+      "validatorScore": 0.82
+    },
+    {
+      "id": "p_agency_owner",
+      "name": "Diego Marín",
+      "role": "Owner, 4-person AI marketing agency",
+      "demographics": { "age": 41, "location": "Austin, TX", "teamSize": 4 },
+      "toolsToday": ["Google Workspace", "Slack", "Linear", "Airtable (CRM hack)"],
+      "pain": "Airtable CRM rotted; team forgets to log calls; pipeline reviews are fiction.",
+      "buyingPower": "Decides for team; comfortable at $200–$400/mo total.",
+      "aiTrust": "Medium-high — needs data residency story for client emails.",
+      "validatorScore": 0.74
+    },
+    {
+      "id": "p_skeptical_freelancer",
+      "name": "Priya Raman",
+      "role": "Freelance technical writer",
+      "demographics": { "age": 29, "location": "Bengaluru, IN", "yearsIndependent": 3 },
+      "toolsToday": ["Gmail", "Google Docs", "spreadsheet"],
+      "pain": "Doesn't believe she has a 'sales process'; just wants reminders, not software.",
+      "buyingPower": "Self-pay, ceiling $15/mo.",
+      "aiTrust": "Low — worried about emails being used for training.",
+      "validatorScore": 0.41
+    }
+  ],
+  "buyingCommitteeComposition": [
+    { "role": "Economic buyer", "personas": ["p_solo_consultant", "p_agency_owner"] },
+    { "role": "Champion", "personas": ["p_solo_consultant"] },
+    { "role": "Skeptic", "personas": ["p_skeptical_freelancer"] }
+  ]
+}

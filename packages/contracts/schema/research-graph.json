@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ventureos.dev/schema/research-graph.json",
+  "title": "ResearchGraph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "stats", "godNodes"],
+  "properties": {
+    "kind": { "const": "ResearchGraph" },
+    "ventureId": { "type": "string" },
+    "stats": {
+      "type": "object",
+      "required": ["nodes", "edges", "communities", "confidence"],
+      "properties": {
+        "nodes":       { "type": "integer", "minimum": 0 },
+        "edges":       { "type": "integer", "minimum": 0 },
+        "communities": { "type": "integer", "minimum": 0 },
+        "confidence": {
+          "type": "object",
+          "required": ["EXTRACTED", "INFERRED", "AMBIGUOUS"],
+          "properties": {
+            "EXTRACTED": { "type": "number", "minimum": 0, "maximum": 1 },
+            "INFERRED":  { "type": "number", "minimum": 0, "maximum": 1 },
+            "AMBIGUOUS": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+    "godNodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["label", "degree", "community"],
+        "properties": {
+          "label":     { "type": "string" },
+          "degree":    { "type": "integer", "minimum": 0 },
+          "community": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "surprisingConnections": { "type": "array", "items": { "type": "string" } },
+    "evidenceUri": { "type": "string", "format": "uri" }
+  }
+}

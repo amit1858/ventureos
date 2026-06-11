@@ -1,0 +1,137 @@
+{
+  "kind": "BuildSquadArtifactPack",
+  "artifactId": "bsq_faceless_001",
+  "ventureId": "v-faceless-crm",
+  "createdAt": "2026-06-01T00:00:00.000Z",
+  "mode": "proceed",
+  "inputReferences": {
+    "ventureId": "v-faceless-crm",
+    "recommendationId": "rec_faceless_001",
+    "graphId": "g-faceless-crm-001"
+  },
+  "productVision": {
+    "problem": "Solo operators and 1-5 person agencies abandon CRMs within 30 days because data entry and pipeline hygiene break their flow.",
+    "targetUsers": ["Solo consultants", "Indie SaaS founders", "Micro-agency owners (1-5 people)"],
+    "productPromise": "Your inbox is your CRM. We draft the next reply; you click send.",
+    "whyNow": "AI-drafted replies are now reliable enough that the user never needs to see a contact record.",
+    "differentiation": [
+      "Zero forms, zero pipeline stages, zero required fields.",
+      "BYOK model keys — the user's data and their AI key, not ours."
+    ],
+    "successMetrics": [
+      "Activation in <5 minutes from sign-up to first drafted reply.",
+      "60-day retention >50% for solo plan."
+    ]
+  },
+  "prd": {
+    "overview": "Faceless CRM ingests Gmail/Outlook threads, ranks the next-best-action, and presents a one-line nudge with a drafted reply.",
+    "goals": [
+      "Make the system usable inside 5 minutes of sign-up.",
+      "Surface the next best action without asking the user to update fields.",
+      "Respect user privacy: BYOK, no inbox content in logs."
+    ],
+    "nonGoals": [
+      "Replace the email client.",
+      "Provide pipeline forecasting dashboards.",
+      "Build a team-collaboration mode in MVP."
+    ],
+    "personas": [
+      { "id": "p_maya", "name": "Maya — solo growth consultant", "summary": "Books 10-15 calls/week; lives in inbox." },
+      { "id": "p_dev", "name": "Dev — 4-person AI agency owner", "summary": "Wants accountability without nagging the team." }
+    ],
+    "requirements": [
+      { "id": "req_1", "text": "OAuth-based ingest for Gmail and Outlook threads.", "type": "functional" },
+      { "id": "req_2", "text": "Generate a draft reply per nudge using the user's BYOK model key.", "type": "functional" },
+      { "id": "req_3", "text": "Nudge feed sorted by next-best-action score.", "type": "functional" },
+      { "id": "req_4", "text": "P95 reply suggestion latency < 4s.", "type": "non_functional" },
+      { "id": "req_5", "text": "No raw inbox content in logs or audit metadata.", "type": "non_functional" }
+    ],
+    "userJourneys": [
+      { "id": "j_1", "personaId": "p_maya", "title": "First inbox connect", "steps": ["Sign up", "Connect Gmail via OAuth", "Wait for initial index", "See first nudge with drafted reply"] },
+      { "id": "j_2", "personaId": "p_dev", "title": "Daily morning review", "steps": ["Open feed", "Skim three nudges", "Send drafts with one edit each"] }
+    ],
+    "metrics": ["DAU/MAU > 0.4 by week 8.", "Median nudge-to-send time < 60s."],
+    "risks": ["Inbox-trust ask reduces top-of-funnel conversion.", "Spam-like nudges erode trust quickly."]
+  },
+  "mvpScope": {
+    "mustHave": [
+      "Gmail OAuth ingest",
+      "LLM-drafted reply per nudge",
+      "Nudge feed ranked by next-best-action",
+      "Snooze + dismiss controls"
+    ],
+    "shouldHave": [
+      "Outlook ingest",
+      "WhatsApp ingest (read-only)",
+      "Per-tenant usage analytics"
+    ],
+    "later": [
+      "Team mode (multi-seat assignment)",
+      "CRM data import from HubSpot/Folk",
+      "Workflow automations"
+    ],
+    "explicitCuts": [
+      { "item": "Pipeline view", "reason": "Defeats the 'no pipeline' promise." },
+      { "item": "Contact record CRUD", "reason": "Defeats the 'faceless' promise; contacts are inferred." },
+      { "item": "Custom fields", "reason": "Forms-first thinking; explicitly out-of-scope." }
+    ]
+  },
+  "userStories": [
+    { "id": "us_1", "title": "Connect inbox", "personaId": "p_maya", "story": "As a solo consultant I want to connect my Gmail inbox so that the system can surface relevant nudges.", "acceptanceCriteria": ["OAuth completes in <60 seconds.", "First nudge appears within 5 minutes of connect.", "Connection state survives a page refresh."], "priority": "must" },
+    { "id": "us_2", "title": "Receive drafted reply", "personaId": "p_maya", "story": "As a solo consultant I want each nudge to come with a drafted reply so that I can send in one click.", "acceptanceCriteria": ["Draft addresses the correct sender by name.", "Tone matches the user's recent sent items.", "Draft can be edited inline before sending."], "priority": "must" },
+    { "id": "us_3", "title": "Snooze a nudge", "personaId": "p_maya", "story": "As a solo consultant I want to snooze a nudge until tomorrow so that I can act on it later without losing it.", "acceptanceCriteria": ["Snooze persists across browser refresh.", "Snoozed nudges re-appear at the chosen time in the user's timezone."], "priority": "must" },
+    { "id": "us_4", "title": "Dismiss in bulk", "personaId": "p_dev", "story": "As an agency owner I want to dismiss many nudges at once so that I can clear noise quickly.", "acceptanceCriteria": ["Multi-select toggles dismiss state."], "priority": "should" },
+    { "id": "us_5", "title": "Bring my own model key", "personaId": "p_dev", "story": "As an agency owner I want to use my own OpenAI/Anthropic key so that my data stays under my control.", "acceptanceCriteria": ["Key is stored encrypted at rest.", "Key is never echoed back to the browser."], "priority": "must" }
+  ],
+  "architectureBrief": {
+    "components": [
+      { "name": "Inbox connector", "responsibility": "OAuth-based pull of Gmail/Outlook threads." },
+      { "name": "Embedding store", "responsibility": "Vector index of thread chunks for retrieval." },
+      { "name": "Nudge engine", "responsibility": "Ranks threads by next-best-action score." },
+      { "name": "Draft generator", "responsibility": "LLM call (BYOK) to produce reply drafts." },
+      { "name": "Web client", "responsibility": "Nudge feed + draft editor + settings." }
+    ],
+    "dataFlow": ["Inbox → ingest queue → chunker → embeddings → nudge engine → web client (BYOK draft on demand)."],
+    "integrations": ["Gmail API (OAuth)", "Outlook Graph API (OAuth)", "OpenAI/Anthropic/Gemini/Azure via BYOK."],
+    "storage": ["Postgres for thread metadata and nudge state.", "pgvector for thread embeddings.", "Object store for OAuth refresh tokens (encrypted)."],
+    "security": ["BYOK secrets are never logged or returned to the browser.", "Refresh tokens encrypted at rest with per-tenant DEK.", "No raw inbox content in logs or audit metadata."],
+    "scalabilityAssumptions": ["<100k threads per tenant in the first 6 months.", "<10 concurrent draft generations per tenant."]
+  },
+  "roadmap": {
+    "weeks": [
+      { "week": 1, "theme": "Connect", "deliverables": ["Gmail OAuth flow", "Thread sync MVP", "Postgres schema for threads/nudges"] },
+      { "week": 2, "theme": "Nudge", "deliverables": ["First ranked nudge feed", "Snooze + dismiss controls"] },
+      { "week": 3, "theme": "Draft", "deliverables": ["LLM-drafted reply behind BYOK key", "Inline edit + send"] },
+      { "week": 4, "theme": "Polish & instrument", "deliverables": ["Onboarding checklist", "Activation analytics", "Privacy-stance walkthrough"] }
+    ],
+    "futureBacklog": ["Outlook ingest", "WhatsApp ingest", "Team mode", "Workflow automations"]
+  },
+  "prototypeBrief": {
+    "pages": [
+      { "name": "Onboarding", "purpose": "OAuth connect + first-run privacy explainer." },
+      { "name": "Nudge feed", "purpose": "Daily list of next actions with drafted replies." },
+      { "name": "Draft pane", "purpose": "Edit and send a drafted reply inline." },
+      { "name": "Settings", "purpose": "BYOK key management + inbox connection state." }
+    ],
+    "flows": [
+      { "name": "First connect", "steps": ["Sign up", "Read privacy explainer", "OAuth Gmail", "See first nudge"] },
+      { "name": "Send a reply", "steps": ["Open nudge", "Review drafted reply", "Edit inline", "Send"] },
+      { "name": "Snooze a nudge", "steps": ["Open nudge", "Pick a time", "Confirm"] }
+    ],
+    "uiComponents": ["NudgeCard", "DraftEditor", "OAuthButton", "PrivacyExplainer", "BYOKKeyManager"],
+    "demoScenario": "Maya signs up, sees the privacy explainer, connects Gmail in under 60s, and sends her first AI-drafted reply within 5 minutes."
+  },
+  "agentCritiques": [
+    { "role": "pm", "targetSection": "mvp_scope", "severity": "info", "comment": "Explicit cuts are sharp; consider also cutting bulk import to keep onboarding fast." },
+    { "role": "ux", "targetSection": "prototype_brief", "severity": "warning", "comment": "Privacy explainer should appear before OAuth, not after, to avoid trust drop-off.", "suggestion": "Move privacy explainer to step 2 of the first-connect flow." },
+    { "role": "architect", "targetSection": "architecture_brief", "severity": "warning", "comment": "Embedding store choice (pgvector) should be revisited once thread volume crosses 1M." },
+    { "role": "backend", "targetSection": "prd", "severity": "info", "comment": "Add a non-functional requirement for OAuth refresh-token rotation cadence." },
+    { "role": "frontend", "targetSection": "prototype_brief", "severity": "info", "comment": "DraftEditor needs an empty-state when no nudges are ready." },
+    { "role": "qa", "targetSection": "user_stories", "severity": "warning", "comment": "Snooze story should specify timezone handling explicitly.", "suggestion": "Add an AC: 'Snoozed nudges re-appear in the user's stored timezone.'" },
+    { "role": "gtm", "targetSection": "product_vision", "severity": "info", "comment": "Add a leading indicator for week 1 (e.g. signup→OAuth conversion)." }
+  ],
+  "rationale": [
+    "Mode: PROCEED — running drafting + critique pass.",
+    "Drafting and critique pass produced 7 cross-agent critiques across 7 roles."
+  ]
+}

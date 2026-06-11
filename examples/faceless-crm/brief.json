@@ -1,0 +1,16 @@
+{
+  "kind": "IdeaBrief",
+  "title": "Faceless CRM",
+  "summary": "A CRM for solo operators and AI-first agencies who never want to see a 'contact' record. Notes, calls, and emails flow in; the system surfaces the next best action as a one-line nudge with a draft reply. The user only ever sees prose, not pipelines.",
+  "targetMarket": "Solo founders, indie consultants, micro-agencies (1–5 people) running on Gmail/Outlook + a notes app. Annual revenue $50k–$2M. AI-fluent, allergic to Salesforce-style data entry.",
+  "wedge": "Zero forms, zero pipeline stages, zero required fields. Everything is inferred from message history. The product writes the next email; the user edits it.",
+  "businessModelHypothesis": "B2C-style PLG SaaS: $29/mo solo, $79/mo team. Trial → paid in <14 days. CAC <$120 via founder content + integrations marketplace.",
+  "founderAssumptions": [
+    "Solo operators hate CRM data entry and abandon traditional CRMs within 30 days.",
+    "An AI that drafts the next reply is more valuable than a dashboard.",
+    "Integration with Gmail + Calendar is sufficient for 80% of the target market.",
+    "Users will trust an LLM to read their inbox if data stays in their tenant.",
+    "Pricing at <$30/mo removes the 'do I need this?' objection for solo users."
+  ],
+  "tags": ["crm", "solo-founder", "ai-native", "plg", "byok"]
+}

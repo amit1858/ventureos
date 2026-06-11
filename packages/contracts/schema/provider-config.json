@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ventureos.dev/schema/provider-config.json",
+  "title": "ProviderConfig",
+  "description": "Per-tenant routing of logical models to concrete (provider, model, key) tuples.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tenantId", "defaultProvider", "routes"],
+  "properties": {
+    "tenantId":        { "type": "string", "minLength": 1 },
+    "defaultProvider": { "$ref": "byok-key.json#/properties/provider" },
+    "routes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "flagship": { "type": "array", "items": { "$ref": "#/definitions/Route" }, "minItems": 1 },
+        "standard": { "type": "array", "items": { "$ref": "#/definitions/Route" }, "minItems": 1 },
+        "fast":     { "type": "array", "items": { "$ref": "#/definitions/Route" }, "minItems": 1 },
+        "embed":    { "type": "array", "items": { "$ref": "#/definitions/Route" } },
+        "vision":   { "type": "array", "items": { "$ref": "#/definitions/Route" } }
+      },
+      "required": ["flagship", "standard", "fast"]
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tenantMonthlyUsd":  { "type": "number", "minimum": 0 },
+        "ventureUsd":        { "type": "number", "minimum": 0 },
+        "perJobUsd":         { "type": ["number", "null"], "minimum": 0 }
+      },
+      "required": ["tenantMonthlyUsd", "ventureUsd"]
+    }
+  },
+  "definitions": {
+    "Route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "modelId", "keyId"],
+      "properties": {
+        "provider": { "$ref": "byok-key.json#/properties/provider" },
+        "modelId":  { "type": "string", "minLength": 1 },
+        "keyId":    { "type": "string", "pattern": "^k_[0-9A-HJKMNP-TV-Z]{26}$" },
+        "weight":   { "type": "number", "minimum": 0, "maximum": 1 },
+        "region":   { "type": "string" }
+      }
+    }
+  }
+}
