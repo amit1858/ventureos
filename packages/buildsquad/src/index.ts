@@ -30,8 +30,10 @@ export { draftPrompt, critiquePrompt, pivotPrompt } from './prompts';
 export { BuildSquad, createBuildSquad } from './orchestrator';
 export {
   renderPack,
+  renderRepoScaffold,
   renderEvaluationReport,
   type ScaffoldFile as RenderedScaffoldFile,
+  type RenderRepoScaffoldInput,
   type RenderEvaluationReportInput,
   type RenderEvaluationReportOutput,
 } from './render';
