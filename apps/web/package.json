@@ -9,12 +9,14 @@
     "start": "next start",
     "lint": "echo 'no eslint configured yet'",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "echo 'no tests yet'"
+    "test": "vitest run"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.45.4",
     "@ventureos/adapter-github": "workspace:*",
+    "@ventureos/adapter-graphify": "workspace:*",
+    "@ventureos/buildsquad": "workspace:*",
     "@ventureos/contracts": "workspace:*",
     "@ventureos/credentials": "workspace:*",
     "@ventureos/personalab": "workspace:*",
@@ -24,6 +26,8 @@
     "@ventureos/providers-gemini": "workspace:*",
     "@ventureos/providers-openai": "workspace:*",
     "@ventureos/security": "workspace:*",
+    "@ventureos/venturelab": "workspace:*",
+    "@ventureos/ventures": "workspace:*",
     "next": "^14.2.18",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -32,6 +36,7 @@
   "devDependencies": {
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
   }
 }

@@ -1,0 +1,458 @@
+/* VentureOS Demo Mode — polished dark UI.
+   Designed for the global 960px <main> shell (Linear/Vercel/Notion feel). */
+
+.page {
+  --demo: #8b7bf0;
+  --demo-soft: rgba(139, 123, 240, 0.14);
+  --green: #56c596;
+  --amber: #f3b350;
+  --red: #ef6a6a;
+  --blue: #7aa3ff;
+  --teal: #5ad1c2;
+  --card: #16161a;
+  --card-2: #1b1b20;
+  --border: #26262c;
+  --border-2: #34343c;
+  --text: #e8e8ea;
+  --muted: #9aa0a6;
+  --faint: #71767d;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+/* ---------- Demo banner ---------- */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid rgba(139, 123, 240, 0.4);
+  background: var(--demo-soft);
+  border-radius: 10px;
+  font-size: 0.86rem;
+}
+.bannerDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--demo);
+  box-shadow: 0 0 0 3px rgba(139, 123, 240, 0.25);
+  flex: none;
+}
+.bannerText { color: var(--text); }
+.bannerText strong { color: #c8bfff; }
+.bannerSpacer { flex: 1; }
+.bannerLink {
+  color: #c8bfff;
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.bannerLink:hover { text-decoration: underline; }
+
+/* ---------- Step nav ---------- */
+.stepNav {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.6rem 0;
+  background: rgba(17, 17, 20, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  margin: 0 -0.25rem;
+}
+.stepPill {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+.stepPill:hover {
+  color: var(--text);
+  background: var(--card-2);
+  border-color: var(--border-2);
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1.6rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #17171c 0%, #141418 100%);
+}
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--demo);
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+.heroTitle {
+  font-size: 1.9rem;
+  line-height: 1.15;
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.heroTagline {
+  color: var(--muted);
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  max-width: 46ch;
+}
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+  font-size: 0.84rem;
+}
+.metaItem { display: flex; flex-direction: column; gap: 0.1rem; }
+.metaLabel { color: var(--faint); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.metaValue { color: var(--text); font-weight: 600; }
+
+/* ---------- Readiness ring ---------- */
+.ringWrap { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+.ringCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.ringValue { font-size: 1.7rem; font-weight: 700; line-height: 1; }
+.ringUnit { font-size: 0.7rem; color: var(--faint); margin-top: 0.15rem; }
+.ringCaption { font-size: 0.74rem; color: var(--faint); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* ---------- Pipeline strip ---------- */
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+}
+.pipeStep {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+}
+.pipeTop { display: flex; align-items: center; justify-content: space-between; }
+.pipeIdx { font-size: 0.7rem; color: var(--faint); font-weight: 700; }
+.pipeCheck { color: var(--green); font-size: 0.9rem; }
+.pipeLabel { font-size: 0.78rem; font-weight: 600; color: var(--text); }
+.pipeTrack { height: 4px; border-radius: 999px; background: #2a2a30; overflow: hidden; }
+.pipeFill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--demo), var(--blue)); }
+.pipePct { font-size: 0.7rem; color: var(--muted); }
+
+/* ---------- Sections ---------- */
+.section { display: flex; flex-direction: column; gap: 1rem; scroll-margin-top: 64px; }
+.sectionHead { display: flex; flex-direction: column; gap: 0.25rem; }
+.sectionKicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 700;
+}
+.sectionTitle { font-size: 1.3rem; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+.sectionDesc { color: var(--muted); margin: 0; font-size: 0.92rem; max-width: 70ch; }
+
+/* ---------- Cards / grids ---------- */
+.card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 1.1rem;
+}
+.cardTitle { font-size: 0.95rem; font-weight: 700; margin: 0 0 0.6rem; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.9rem; }
+
+/* ---------- Stat cards ---------- */
+.stat {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  padding: 0.85rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.statValue { font-size: 1.45rem; font-weight: 700; line-height: 1; }
+.statLabel { font-size: 0.76rem; color: var(--faint); text-transform: uppercase; letter-spacing: 0.05em; }
+.statSub { font-size: 0.78rem; color: var(--muted); }
+
+/* ---------- Badges ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.proceed { color: var(--green); background: rgba(86, 197, 150, 0.12); border-color: rgba(86, 197, 150, 0.4); }
+.pivot { color: var(--amber); background: rgba(243, 179, 80, 0.12); border-color: rgba(243, 179, 80, 0.4); }
+.kill { color: var(--red); background: rgba(239, 106, 106, 0.12); border-color: rgba(239, 106, 106, 0.4); }
+.running { color: var(--blue); background: rgba(122, 163, 255, 0.12); border-color: rgba(122, 163, 255, 0.4); }
+.done { color: var(--green); background: rgba(86, 197, 150, 0.12); border-color: rgba(86, 197, 150, 0.4); }
+.failed { color: var(--red); background: rgba(239, 106, 106, 0.12); border-color: rgba(239, 106, 106, 0.4); }
+.neutral { color: var(--muted); background: var(--card-2); }
+.demoBadge { color: #c8bfff; background: var(--demo-soft); border-color: rgba(139, 123, 240, 0.4); }
+
+/* ---------- Bars ---------- */
+.bar { display: flex; flex-direction: column; gap: 0.3rem; }
+.barHead { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.barLabel { font-size: 0.82rem; color: var(--text); }
+.barVal { font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.barTrack { height: 7px; border-radius: 999px; background: #2a2a30; overflow: hidden; }
+.barFill { height: 100%; border-radius: 999px; background: var(--blue); }
+.barFillGreen { background: var(--green); }
+.barFillAmber { background: var(--amber); }
+.barFillDemo { background: linear-gradient(90deg, var(--demo), var(--blue)); }
+
+/* ---------- Chips / tags ---------- */
+.chipRow { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.chip {
+  font-size: 0.74rem;
+  color: var(--muted);
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+}
+
+/* ---------- Persona cards ---------- */
+.personaGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+.personaCard {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.personaTop { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
+.personaName { font-size: 1rem; font-weight: 700; margin: 0; }
+.personaRole { font-size: 0.82rem; color: var(--demo); font-weight: 600; }
+.personaCtx { font-size: 0.84rem; color: var(--muted); margin: 0; }
+.personaQuote {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-left: 3px solid var(--demo);
+  background: var(--card-2);
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  color: #d6d2f5;
+  font-size: 0.86rem;
+}
+.miniLabel { font-size: 0.72rem; color: var(--faint); text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 0.25rem; font-weight: 700; }
+.bullets { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.2rem; }
+.bullets li { font-size: 0.84rem; color: var(--text); }
+
+/* ---------- Committee deliberation ---------- */
+.timeline { display: flex; flex-direction: column; gap: 0.75rem; }
+.turn {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.turnHead { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.turnRole { font-weight: 700; font-size: 0.9rem; }
+.turnText { font-size: 0.88rem; color: var(--text); margin: 0; }
+.turnMeta { font-size: 0.78rem; color: var(--muted); margin: 0; }
+.changeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.changeArrow { color: var(--demo); font-weight: 700; }
+.consensus {
+  border: 1px solid rgba(86, 197, 150, 0.35);
+  background: rgba(86, 197, 150, 0.08);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+/* ---------- Tables ---------- */
+.tableWrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.table th {
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+  background: var(--card-2);
+  color: var(--faint);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+}
+.table td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+.table tr:last-child td { border-bottom: none; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8rem; }
+
+/* ---------- Doc blocks (build plan) ---------- */
+.docBlock { display: flex; flex-direction: column; gap: 0.4rem; }
+.docText { font-size: 0.9rem; color: var(--text); margin: 0; }
+.storyCard {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.storyHead { display: flex; align-items: center; gap: 0.5rem; }
+.storyId { font-size: 0.74rem; color: var(--faint); font-weight: 700; font-family: ui-monospace, monospace; }
+.storyTitle { font-size: 0.9rem; font-weight: 600; margin: 0; }
+.critique {
+  border-left: 3px solid var(--amber);
+  background: var(--card-2);
+  border-radius: 0 8px 8px 0;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.86rem;
+}
+
+/* ---------- Markdown preview ---------- */
+.copyRow { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem; }
+.markdown {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  background: #0f0f12;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  max-height: 420px;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #c8ccd2;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ---------- GitHub export ---------- */
+.repoCard {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.repoHead { display: flex; align-items: center; gap: 0.6rem; }
+.repoUrl { font-family: ui-monospace, monospace; font-size: 0.85rem; color: var(--blue); word-break: break-all; }
+.fileList { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.fileRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+}
+.fileRow:last-child { border-bottom: none; }
+.filePath { font-family: ui-monospace, monospace; color: var(--text); }
+.fileBytes { color: var(--faint); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+
+/* ---------- Notes / callouts ---------- */
+.note {
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  background: var(--card-2);
+  padding: 0.85rem 1rem;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+.note strong { color: var(--text); }
+
+/* ---------- CTA / buttons ---------- */
+.ctaCard {
+  border: 1px solid rgba(139, 123, 240, 0.35);
+  background: linear-gradient(135deg, rgba(139, 123, 240, 0.1), rgba(122, 163, 255, 0.06));
+  border-radius: 16px;
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+.ctaRow { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--border-2);
+  color: var(--text);
+  background: var(--card);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn:hover { border-color: #4a4a55; background: var(--card-2); }
+.btnPrimary { background: var(--demo); border-color: var(--demo); color: #fff; }
+.btnPrimary:hover { background: #7a68ee; border-color: #7a68ee; }
+.btnGhost { background: transparent; }
+
+/* ---------- Demo index cards ---------- */
+.demoCard {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  padding: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.15s ease;
+}
+.demoCard:hover { border-color: rgba(139, 123, 240, 0.5); transform: translateY(-2px); }
+.demoCardTitle { font-size: 1.15rem; font-weight: 700; margin: 0; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; }
+  .pipeline { grid-template-columns: repeat(3, 1fr); }
+  .personaGrid, .grid2 { grid-template-columns: 1fr; }
+  .grid3, .grid4 { grid-template-columns: 1fr 1fr; }
+}

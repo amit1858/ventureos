@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
-const links: { href: string; label: string }[] = [
+const links: { href: string; label: string; accent?: boolean }[] = [
+  { href: '/demo', label: 'Demo', accent: true },
   { href: '/ventures', label: 'My Ventures' },
   { href: '/ventures/new', label: 'Create Venture' },
   { href: '/labs/persona', label: 'PersonaLab' },
@@ -15,6 +16,7 @@ export function Nav() {
     <nav
       style={{
         display: 'flex',
+        alignItems: 'center',
         gap: '1rem',
         padding: '1rem 1.5rem',
         borderBottom: '1px solid #2a2a2a',
@@ -23,12 +25,26 @@ export function Nav() {
         fontFamily: 'system-ui, sans-serif',
       }}
     >
-      <strong style={{ marginRight: '1rem' }}>VentureOS</strong>
+      <Link href="/" style={{ color: '#e8e8ea', textDecoration: 'none', marginRight: '0.5rem' }}>
+        <strong>VentureOS</strong>
+      </Link>
       {links.map((l) => (
         <Link
           key={l.href}
           href={l.href}
-          style={{ color: '#9aa0a6', textDecoration: 'none' }}
+          style={
+            l.accent
+              ? {
+                  color: '#c8bfff',
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                  border: '1px solid rgba(139, 123, 240, 0.4)',
+                  background: 'rgba(139, 123, 240, 0.14)',
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: 999,
+                }
+              : { color: '#9aa0a6', textDecoration: 'none' }
+          }
         >
           {l.label}
         </Link>
