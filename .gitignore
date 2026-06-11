@@ -61,3 +61,6 @@ coverage/
 
 # Memory (workspace-local scope)
 /memories/
+
+# Vercel CLI link metadata (local-only)
+.vercel/
