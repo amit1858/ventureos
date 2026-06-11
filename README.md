@@ -174,6 +174,7 @@ Public-facing:
 - [BYOK & security](docs/security-byok.md)
 - [Demo Mode](docs/demo-mode.md)
 - [Demo script (3 / 5 / 7 min)](docs/demo-script.md)
+- [Deployment](docs/deployment.md)
 - [Hackathon submission](docs/hackathon-submission.md)
 - [Local setup](docs/setup-local.md)
 - [Known limitations](docs/known-limitations.md)
