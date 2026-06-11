@@ -87,23 +87,73 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
       <section style={layout}>
         <Header />
         <Card>
-          <h2 style={h2}>Continue to Alpha Workspace</h2>
+          <h2 style={h2}>Choose how to enter Real Mode</h2>
           <p style={muted}>
-            Demo Mode is open without sign-in. Real Mode uses a temporary alpha workspace
-            for testing BYOK providers, venture creation, validation, BuildSquad planning
-            and GitHub export. No account is created and no email is collected.
+            Demo Mode is open without sign-in. For Real Mode you have three options.
           </p>
+          <ul style={optionList}>
+            <li>
+              <strong style={optionLabel}>Sign in with Google</strong>
+              <span style={muted}>
+                Recommended for invited testers. You get a private workspace with your own BYOK
+                providers, ventures and GitHub export state.
+              </span>
+            </li>
+            <li>
+              <strong style={optionLabel}>Continue to Alpha Workspace</strong>
+              <span style={muted}>
+                Shared <code>alpha-user</code> identity. Useful for hackathon judging and quick
+                demos. Not appropriate when multiple unrelated users will share the deployment.
+              </span>
+            </li>
+            <li>
+              <strong style={optionLabel}>Open Demo Mode</strong>
+              <span style={muted}>
+                Read-only walkthrough with seeded data. No sign-in, no API keys.
+              </span>
+            </li>
+          </ul>
           <SafetyNote />
-          <form
-            method="post"
-            action={`/api/access/alpha?next=${encodeURIComponent(next)}`}
-            style={{ marginTop: '1.25rem' }}
-          >
-            <div style={ctaRow}>
-              <button type="submit" style={primaryBtn}>Continue to Alpha Workspace</button>
-              <Link href="/demo" style={secondaryBtn}>Open Demo Mode</Link>
-            </div>
-          </form>
+          <div style={{ marginTop: '1.25rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <form action={`/api/auth/google/start?next=${encodeURIComponent(next)}`} method="post" style={{ display: 'inline' }}>
+              <button type="submit" style={primaryBtn}>Continue with Google</button>
+            </form>
+            <form
+              method="post"
+              action={`/api/access/alpha?next=${encodeURIComponent(next)}`}
+              style={{ display: 'inline' }}
+            >
+              <button type="submit" style={secondaryBtn}>Continue to Alpha Workspace</button>
+            </form>
+            <Link href="/demo" style={secondaryBtn}>Open Demo Mode</Link>
+          </div>
+        </Card>
+      </section>
+    );
+  }
+
+  // Alpha access not enabled on the server — still offer Google sign-in if
+  // Supabase is configured, otherwise show setup guidance.
+  if (process.env['NEXT_PUBLIC_SUPABASE_URL']) {
+    return (
+      <section style={layout}>
+        <Header />
+        <Card>
+          <h2 style={h2}>Sign in to enter Real Mode</h2>
+          <p style={muted}>
+            Demo Mode is open without sign-in. Sign in with Google to create ventures, save BYOK
+            providers, run validation workflows and export to GitHub.
+          </p>
+          <div style={ctaRow}>
+            <form action={`/api/auth/google/start?next=${encodeURIComponent(next)}`} method="post" style={{ display: 'inline' }}>
+              <button type="submit" style={primaryBtn}>Continue with Google</button>
+            </form>
+            <Link href="/demo" style={secondaryBtn}>Open Demo Mode</Link>
+          </div>
+          <p style={{ ...muted, fontSize: '0.85rem', marginTop: '1rem' }}>
+            Access is restricted to an alpha allowlist. If your Google account is not on the
+            list you will see a polite access-denied message.
+          </p>
         </Card>
       </section>
     );
@@ -258,4 +308,16 @@ const code: React.CSSProperties = {
   fontSize: '0.8rem',
   overflowX: 'auto',
   border: '1px solid #2a2a2a',
+};
+const optionList: React.CSSProperties = {
+  margin: '1rem 0 0',
+  padding: 0,
+  listStyle: 'none',
+  display: 'grid',
+  gap: '0.85rem',
+};
+const optionLabel: React.CSSProperties = {
+  display: 'block',
+  color: '#e8e8ea',
+  marginBottom: '0.15rem',
 };

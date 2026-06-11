@@ -97,7 +97,7 @@ export default function VentureLabPage() {
       try {
         const r = await fetch('/api/byok/providers', { cache: 'no-store' });
         if (r.status === 401) {
-          setProviderError('Real Mode requires workspace access. Continue to the alpha workspace to use VentureLab, or open Demo Mode.');
+          setProviderError('Real Mode requires sign-in. Sign in with Google for a private workspace, or use Demo Mode without any keys.');
           return;
         }
         const body = await r.json() as { profiles?: ProviderProfile[] };
@@ -195,7 +195,7 @@ export default function VentureLabPage() {
         <div className="rounded border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
           <div>{providerError}</div>
           <div className="mt-2 text-rose-700">
-            <a href="/access?next=/labs/venture" className="underline">Continue to Alpha Workspace</a>
+            <a href="/signin?next=/labs/venture" className="underline">Sign in with Google</a>
             {' · '}
             <a href="/demo" className="underline">Open Demo Mode</a>
           </div>

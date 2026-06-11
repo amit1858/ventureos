@@ -67,12 +67,19 @@ See **[`docs/demo-mode.md`](docs/demo-mode.md)** and **[`docs/demo-script.md`](d
 
 Bring your own keys to run the swarm on your own idea.
 
-1. **Deployed:** visit `/access` and click **Continue to Alpha Workspace** (requires `VENTUREOS_ALPHA_ACCESS=true` on the server). **Local:** seed the `vos_dev_user` cookie (see [`docs/setup-local.md`](docs/setup-local.md)).
-2. `/settings/byok` — add an LLM credential (OpenAI · Anthropic · Gemini · Azure OpenAI) and a GitHub PAT.
-3. `/ventures/new` — create a Venture from a brief.
-4. From the Venture Workspace, run the labs in order: PersonaLab → Buying Committee → Research Graph → VentureLab → BuildSquad.
-5. Generate the Evaluation Report.
-6. **Preview** the GitHub export (no token required) and then push to a new repo on your account.
+There are three ways to enter Real Mode:
+
+- **Sign in with Google** (recommended for shared deployments) — visit `/signin`, click **Continue with Google**. Each Google user gets a **private** workspace; ventures, BYOK credentials, jobs and GitHub export state are scoped to that user. Optionally restrict who can sign in via `VENTUREOS_ALLOWED_EMAILS` (see [`docs/deployment.md`](docs/deployment.md#google-sign-in-supabase-auth-shared-deployments)). Non-allowlisted users land on a polite `/access-denied` page.
+- **Alpha Workspace** (hackathon fallback) — visit `/access` and click **Continue to Alpha Workspace** (requires `VENTUREOS_ALPHA_ACCESS=true` on the server). A **shared** `alpha-user` identity. Useful for judging or personal demos — not appropriate for multiple unrelated testers.
+- **Local dev** — seed the `vos_dev_user` cookie locally (see [`docs/setup-local.md`](docs/setup-local.md)). Honoured only when `NODE_ENV !== 'production'`; the deployed app never reveals dev-cookie instructions.
+
+Once you're in:
+
+1. `/settings/byok` — add an LLM credential (OpenAI · Anthropic · Gemini · Azure OpenAI) and a GitHub PAT.
+2. `/ventures/new` — create a Venture from a brief.
+3. From the Venture Workspace, run the labs in order: PersonaLab → Buying Committee → Research Graph → VentureLab → BuildSquad.
+4. Generate the Evaluation Report.
+5. **Preview** the GitHub export (no token required) and then push to a new repo on your account.
 
 The Workspace Overview always shows:
 
@@ -147,7 +154,9 @@ Current state on `main`:
 Two supported modes (full details in **[`docs/deployment.md`](docs/deployment.md)**):
 
 1. **Zero-Key Demo Deployment** — no env vars, public-safe, recommended for judges. Demo Mode works end-to-end; Real Mode shows a graceful "Real Mode requires workspace access" card.
-2. **Full Real Mode Deployment** — set the five Supabase + encryption + alpha-access env vars; provider keys and the GitHub PAT are entered through the BYOK UI, **never** as Vercel env vars. See **[Alpha Access Mode](docs/deployment.md#alpha-access-mode-deployed-real-mode)** for the deployed Real Mode access screen at `/access`.
+2. **Full Real Mode Deployment** — set the Supabase + encryption env vars; provider keys and the GitHub PAT are entered through the BYOK UI, **never** as Vercel env vars. Two access modes are supported on top of that base configuration:
+   - **Google sign-in** (recommended for sharing with a small group of testers) — see **[Google sign-in (Supabase Auth)](docs/deployment.md#google-sign-in-supabase-auth-shared-deployments)**. Each tester gets a private workspace; restrict who can sign in with `VENTUREOS_ALLOWED_EMAILS`.
+   - **Alpha Workspace** (hackathon fallback for judges or personal testing) — see **[Alpha Access Mode](docs/deployment.md#alpha-access-mode-deployed-real-mode)**. A shared `alpha-user` identity gated by `VENTUREOS_ALPHA_ACCESS=true`.
 
 > **Microsoft / Azure AD machines:** Vercel rejects CLI deploys when the
 > local Git commit author email can't be matched to a verified GitHub

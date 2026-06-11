@@ -70,12 +70,15 @@ If the export fails, the user gets a stable failure code (`repo_exists`, `invali
 
 ## Workspace identity (auth model)
 
-VentureOS does not ship a full sign-up / sign-in flow in the hackathon
-alpha. The server resolves a workspace identity in this order:
+VentureOS supports three workspace identity sources in production. The server
+resolves them in this order — first match wins:
 
-1. **Real Supabase session.** If `NEXT_PUBLIC_SUPABASE_URL` /
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY` are configured and the user has a session
-   cookie, that real user wins.
+1. **Real Supabase session (Google sign-in).** If `NEXT_PUBLIC_SUPABASE_URL`
+   / `NEXT_PUBLIC_SUPABASE_ANON_KEY` are configured and the visitor has a
+   Supabase Auth session, that real user wins. If `VENTUREOS_ALLOWED_EMAILS`
+   is set and the user's email is not on the list, the server returns
+   `kind: 'denied'` and routes the visitor to a polite `/access-denied`
+   page (allowlist content is never sent to the browser).
 2. **Alpha Workspace** — opt-in via env + explicit click. When
    `VENTUREOS_ALPHA_ACCESS=true` is set on the server AND the visitor has
    clicked **Continue to Alpha Workspace** on `/access` (which sets the
@@ -86,13 +89,38 @@ alpha. The server resolves a workspace identity in this order:
    `NODE_ENV !== 'production'`. The deployed app cannot be unlocked with it
    and never surfaces dev-cookie instructions in its UI.
 4. **No user** → BYOK / venture / lab routes return 401 and the client
-   surfaces the polished "Real Mode requires workspace access" card with a
-   link to `/access`.
+   surfaces the polished "Real Mode requires sign-in" card with links to
+   `/signin` and `/demo`.
 
-The Alpha Workspace is a deliberate shortcut for hackathon judging and
-personal testing. It is **not** appropriate for environments where multiple
-unrelated users will share the same BYOK store — see
-[`known-limitations.md`](known-limitations.md#engineering-gaps).
+### Per-user isolation under Google sign-in
+
+When the visitor is a real Supabase user, every Real Mode write is scoped to
+their Supabase user id:
+
+| Surface | Isolation key |
+| --- | --- |
+| BYOK credentials | `user_id = <supabase-user-id>` (RLS-enforced) |
+| Ventures | `user_id = <supabase-user-id>` |
+| VentureJobs | `user_id = <supabase-user-id>` |
+| Artifacts | scoped to the venture's `user_id` |
+| Timeline | scoped to the venture's `user_id` |
+| GitHub export | uses the user's PAT only, no cross-user lookups |
+
+Two Google testers on the same deployment cannot see, modify, validate, or
+delete each other's BYOK providers or ventures.
+
+### When to use which mode
+
+| Use case | Recommended mode |
+| --- | --- |
+| Public demo / judges / no setup | **Demo Mode** (no auth, no keys) |
+| Sharing the deployed app with ~10 invited testers | **Google sign-in** + `VENTUREOS_ALLOWED_EMAILS` |
+| One-off hackathon walk-through / personal testing | **Alpha Workspace** |
+| Local dev | `vos_dev_user` cookie (`docs/setup-local.md`) |
+
+The Alpha Workspace and Google sign-in can be enabled side-by-side: real
+Google users always outrank the alpha fallback, so a tester who signs in
+with Google will never accidentally write to the shared alpha workspace.
 
 ## Reporting a security issue
 

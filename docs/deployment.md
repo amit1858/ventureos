@@ -159,6 +159,7 @@ surface with a real database and real LLM calls.**
 | `SUPABASE_SERVICE_ROLE_KEY` | **Secret.** Server only. Bypasses RLS. Never expose to the browser. Mark as *Encrypted* in Vercel. |
 | `VENTUREOS_CREDENTIAL_ENCRYPTION_KEY` | **Secret.** 32-byte hex or base64 key for AES-256-GCM at-rest BYOK encryption. Generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Mark as *Encrypted*. |
 | `VENTUREOS_ALPHA_ACCESS` | Set to `true` to enable the shared Alpha Workspace screen at `/access` so deployed Real Mode is usable without a full sign-up flow. See [Alpha Access Mode](#alpha-access-mode-deployed-real-mode). |
+| `VENTUREOS_ALLOWED_EMAILS` | **Optional but recommended for shared deployments.** Comma-separated, case-insensitive list of Google emails allowed to sign in to Real Mode. Empty/unset = any Google-authenticated user is allowed. See [Google sign-in (Supabase Auth)](#google-sign-in-supabase-auth-shared-deployments). |
 
 ### Optional Vercel environment variables
 
@@ -236,6 +237,96 @@ screen at `/access`.
 Set `VENTUREOS_ALPHA_ACCESS=false` (or remove the variable) and redeploy.
 `/access` will then render the "Real Mode requires workspace access" setup
 guidance instead of the Continue CTA.
+
+---
+
+## Google sign-in (Supabase Auth, shared deployments)
+
+When you want to share the deployed app with a small group of testers
+(typically ~10 users) and have each person get their own private workspace,
+turn on Google sign-in. Each Google account becomes a distinct Supabase
+user; ventures, BYOK credentials, jobs, artifacts and GitHub export state
+are all scoped to that user.
+
+### Required Vercel env vars (in addition to the Supabase + encryption set)
+
+| Name | Notes |
+| --- | --- |
+| `VENTUREOS_ALLOWED_EMAILS` | Comma-separated list of allowed Google emails. Case-insensitive, whitespace-trimmed. Empty / unset = any authenticated Google user is allowed (not recommended for shared deployments). The allowlist itself is **never** sent to the browser. |
+
+### Supabase dashboard setup (one-time, ~5 minutes)
+
+1. **Enable Google provider** — Supabase Dashboard → Authentication → Providers
+   → toggle **Google** on.
+2. **Create a Google OAuth client** — In Google Cloud Console
+   (https://console.cloud.google.com/apis/credentials):
+   - Create credentials → OAuth client ID → Web application.
+   - **Authorized redirect URI** = `https://<your-project-ref>.supabase.co/auth/v1/callback`
+     (copy the exact URI Supabase shows you in step 1).
+   - Copy the **Client ID** and **Client Secret** back into the Supabase
+     provider configuration, then save.
+3. **Set Site URL + Redirect URLs** in Supabase → Authentication → URL
+   Configuration:
+   - **Site URL** = `https://<your-deployment>.vercel.app` (your production
+     domain).
+   - **Additional redirect URLs** — add both:
+     - `https://<your-deployment>.vercel.app/auth/callback`
+     - `http://localhost:3000/auth/callback` (for local dev)
+4. **Restrict to known emails** — set `VENTUREOS_ALLOWED_EMAILS` on Vercel
+   to your testers' Google emails, redeploy.
+
+### Sign-in flow (what users see)
+
+1. User clicks **Sign in with Google** on `/signin` (or is redirected there
+   from a Real Mode page).
+2. App POSTs `/api/auth/google/start` → 303 redirect to Supabase OAuth →
+   Google consent screen.
+3. Google redirects back to `https://<your-project-ref>.supabase.co/auth/v1/callback`,
+   then to `/auth/callback?code=...` on your app.
+4. `/auth/callback` exchanges the code for a Supabase session (HttpOnly
+   cookies) and either:
+   - redirects to the originally requested Real Mode route (or `/ventures`),
+     **OR**
+   - redirects to `/access-denied` if the email is not on
+     `VENTUREOS_ALLOWED_EMAILS`.
+
+### Signed-in user experience
+
+- The nav bar shows the user's email plus **Sign out**.
+- BYOK provider keys, ventures, jobs and artifacts are scoped to the
+  Supabase user id — never shared with other Google users on the same
+  deployment.
+- Provider API keys + GitHub PAT are still entered only through `/settings/byok`
+  and encrypted server-side. **They are never Vercel env vars.**
+
+### Non-allowlisted user experience
+
+- They complete Google OAuth and Supabase issues a session.
+- They land on `/access-denied` with a polite message: "Your account is not
+  on the alpha allowlist. Use Demo Mode or contact the project owner."
+- They can sign out from that page. They cannot access any Real Mode route.
+- The allowlist content is never sent to the browser.
+
+### Identity resolution order (unchanged)
+
+| Priority | Source | Result |
+| --- | --- | --- |
+| 1 | Real Supabase session + email allowed | `kind: 'user'` → real user id |
+| 1 | Real Supabase session + email NOT allowed | `kind: 'denied'` → access-denied page |
+| 2 | `VENTUREOS_ALPHA_ACCESS=true` + `ventureos_alpha_access=1` cookie | `kind: 'alpha'` → shared `alpha-user` |
+| 3 | Local-dev-only `vos_dev_user` cookie when `NODE_ENV !== 'production'` | `kind: 'dev-cookie'` |
+| — | None of the above | `kind: 'none'` → /signin |
+
+A real Supabase session always outranks alpha so a tester who has signed in
+with Google never accidentally writes to the shared alpha workspace.
+
+### Disabling Google sign-in
+
+Remove `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` (or
+disable the Google provider in Supabase). `/signin` will render with the
+error banner *"Sign-in is not available on this deployment"* and the only
+options shown to visitors will be Demo Mode and (if enabled) Alpha
+Workspace.
 
 ---
 
