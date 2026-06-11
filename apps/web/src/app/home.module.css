@@ -1,0 +1,135 @@
+/* VentureOS homepage — calm, product-led (Linear/Vercel feel). 960px shell. */
+
+.page {
+  --accent: #8b7bf0;
+  --accent-2: #7aa3ff;
+  --green: #56c596;
+  --card: #16161a;
+  --card-2: #1b1b20;
+  --border: #26262c;
+  --border-2: #34343c;
+  --text: #e8e8ea;
+  --muted: #9aa0a6;
+  --faint: #71767d;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  line-height: 1.55;
+}
+
+/* Hero */
+.hero { display: flex; flex-direction: column; gap: 1.2rem; padding: 1.5rem 0 0.5rem; }
+.eyebrow {
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin: 0;
+}
+.title {
+  font-size: 2.6rem;
+  line-height: 1.08;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  max-width: 18ch;
+}
+.subtitle { font-size: 1.12rem; color: var(--muted); margin: 0; max-width: 60ch; }
+.ctaRow { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 0.4rem; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--border-2);
+  color: var(--text);
+  background: var(--card);
+  transition: all 0.15s ease;
+}
+.btn:hover { border-color: #4a4a55; background: var(--card-2); }
+.btnPrimary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btnPrimary:hover { background: #7a68ee; border-color: #7a68ee; }
+
+/* Workflow strip */
+.workflow {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.flowStep {
+  flex: 1;
+  min-width: 120px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  padding: 0.85rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.flowIdx { font-size: 0.72rem; color: var(--accent); font-weight: 700; }
+.flowLabel { font-size: 0.9rem; font-weight: 600; }
+.flowDesc { font-size: 0.78rem; color: var(--muted); }
+
+/* Generic section */
+.section { display: flex; flex-direction: column; gap: 1.1rem; }
+.kicker { font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); font-weight: 700; margin: 0; }
+.h2 { font-size: 1.5rem; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+.lead { color: var(--muted); margin: 0; max-width: 70ch; }
+
+/* Differentiators */
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+.feature {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.featureTitle { font-size: 1rem; font-weight: 700; margin: 0; }
+.featureDesc { font-size: 0.86rem; color: var(--muted); margin: 0; }
+
+/* Demo scenario / security cards */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #17171c, #141418);
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  align-items: flex-start;
+}
+.panelAccent { border-color: rgba(139, 123, 240, 0.4); }
+.panelTitle { font-size: 1.15rem; font-weight: 700; margin: 0; }
+.panelText { font-size: 0.9rem; color: var(--muted); margin: 0; }
+.bullets { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.35rem; color: var(--text); font-size: 0.88rem; }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #c8bfff;
+  background: rgba(139, 123, 240, 0.14);
+  border: 1px solid rgba(139, 123, 240, 0.4);
+}
+
+@media (max-width: 760px) {
+  .title { font-size: 2rem; }
+  .grid { grid-template-columns: 1fr; }
+  .split { grid-template-columns: 1fr; }
+}
