@@ -141,6 +141,28 @@ Current state on `main`:
 
 ---
 
+## Deploying to Vercel
+
+Two supported modes (full details in **[`docs/deployment.md`](docs/deployment.md)**):
+
+1. **Zero-Key Demo Deployment** — no env vars, public-safe, recommended for judges. Demo Mode works end-to-end; Real Mode shows a graceful "Server is not configured" card.
+2. **Full Real Mode Deployment** — set four Supabase + encryption env vars; provider keys and the GitHub PAT are entered through the BYOK UI, **never** as Vercel env vars.
+
+> **Microsoft / Azure AD machines:** Vercel rejects CLI deploys when the
+> local Git commit author email can't be matched to a verified GitHub
+> account. Use this exact sequence — *not* `git push` — to deploy:
+>
+> ```bash
+> git remote remove origin
+> vercel deploy --prod
+> git remote add origin https://github.com/amit1858/ventureos.git
+> git push origin main
+> ```
+>
+> See [`docs/deployment.md`](docs/deployment.md#vercel-deployment-from-microsoft--azure-ad-machines) for the detailed procedure, error table, and pre/post-deployment checklists.
+
+---
+
 ## AI tools and integrations
 
 - **Multi-provider LLM routing** through adapter packages in `packages/providers/*` (OpenAI · Anthropic · Gemini · Azure OpenAI). All BYOK.
