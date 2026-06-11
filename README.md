@@ -67,11 +67,12 @@ See **[`docs/demo-mode.md`](docs/demo-mode.md)** and **[`docs/demo-script.md`](d
 
 Bring your own keys to run the swarm on your own idea.
 
-1. `/settings/byok` — add an LLM credential (OpenAI · Anthropic · Gemini · Azure OpenAI) and a GitHub PAT.
-2. `/ventures/new` — create a Venture from a brief.
-3. From the Venture Workspace, run the labs in order: PersonaLab → Buying Committee → Research Graph → VentureLab → BuildSquad.
-4. Generate the Evaluation Report.
-5. **Preview** the GitHub export (no token required) and then push to a new repo on your account.
+1. **Deployed:** visit `/access` and click **Continue to Alpha Workspace** (requires `VENTUREOS_ALPHA_ACCESS=true` on the server). **Local:** seed the `vos_dev_user` cookie (see [`docs/setup-local.md`](docs/setup-local.md)).
+2. `/settings/byok` — add an LLM credential (OpenAI · Anthropic · Gemini · Azure OpenAI) and a GitHub PAT.
+3. `/ventures/new` — create a Venture from a brief.
+4. From the Venture Workspace, run the labs in order: PersonaLab → Buying Committee → Research Graph → VentureLab → BuildSquad.
+5. Generate the Evaluation Report.
+6. **Preview** the GitHub export (no token required) and then push to a new repo on your account.
 
 The Workspace Overview always shows:
 
@@ -145,8 +146,8 @@ Current state on `main`:
 
 Two supported modes (full details in **[`docs/deployment.md`](docs/deployment.md)**):
 
-1. **Zero-Key Demo Deployment** — no env vars, public-safe, recommended for judges. Demo Mode works end-to-end; Real Mode shows a graceful "Server is not configured" card.
-2. **Full Real Mode Deployment** — set four Supabase + encryption env vars; provider keys and the GitHub PAT are entered through the BYOK UI, **never** as Vercel env vars.
+1. **Zero-Key Demo Deployment** — no env vars, public-safe, recommended for judges. Demo Mode works end-to-end; Real Mode shows a graceful "Real Mode requires workspace access" card.
+2. **Full Real Mode Deployment** — set the five Supabase + encryption + alpha-access env vars; provider keys and the GitHub PAT are entered through the BYOK UI, **never** as Vercel env vars. See **[Alpha Access Mode](docs/deployment.md#alpha-access-mode-deployed-real-mode)** for the deployed Real Mode access screen at `/access`.
 
 > **Microsoft / Azure AD machines:** Vercel rejects CLI deploys when the
 > local Git commit author email can't be matched to a verified GitHub
