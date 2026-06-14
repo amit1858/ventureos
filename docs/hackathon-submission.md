@@ -1,8 +1,13 @@
 # Hackathon Submission — VentureOS
 
-> **Track:** Microsoft Build AI — **Agent Swarms**
+> **Track:** Microsoft Build AI / HackerEarth — **Agent Swarms**
 > **Project:** VentureOS — an AI-native multi-agent venture operating system
 > **Repo:** https://github.com/amit1858/ventureos
+> **Live app:** https://ventureos-dun.vercel.app
+> **Primary judging path (zero-key):** https://ventureos-dun.vercel.app/demo/faceless-crm
+>
+> 📦 **Submission pack** (deck PDF, 3-min demo script, submission-form copy, screenshots): see **[`docs/hackathon/`](./hackathon/README.md)**.
+> This document is the long-form write-up; the submission pack is the short-form, judge-facing version.
 
 ## Problem
 
