@@ -2,7 +2,7 @@
 
 [![Live demo](https://img.shields.io/badge/Live%20demo-ventureos--dun.vercel.app-blueviolet?logo=vercel)](https://ventureos-dun.vercel.app/demo/faceless-crm)
 [![Sign in](https://img.shields.io/badge/Sign%20in-Google%20OAuth-4285F4?logo=google)](https://ventureos-dun.vercel.app/signin)
-[![Tag](https://img.shields.io/badge/release-v0.3--alpha-success)](https://github.com/amit1858/ventureos/releases)
+[![Tag](https://img.shields.io/badge/release-v1.0--submission-success)](https://github.com/amit1858/ventureos/releases/tag/v1.0-submission)
 [![License](https://img.shields.io/badge/license-TBD-lightgrey)](#license)
 
 > **AI-native multi-agent venture operating system.** Turn raw ideas into validated, build-ready ventures with a governed swarm of specialized agents — not a single chatbot.
