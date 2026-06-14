@@ -11,6 +11,19 @@
 
 ---
 
+## Recommended judge path
+
+Live app: <https://ventureos-dun.vercel.app/>
+
+Direct demo: <https://ventureos-dun.vercel.app/demo/faceless-crm>
+
+Use the zero-key demo first. It requires no sign-in, no provider keys
+and no GitHub PAT — every artifact is seeded and the same for every
+judge. Real Mode is optional for deeper testing through Google sign-in
+or the Alpha Workspace plus BYOK.
+
+---
+
 ## Pre-roll setup (do this once before recording)
 
 1. Open Chrome / Edge in an incognito window at 1280×720 or 1920×1080.

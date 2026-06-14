@@ -20,6 +20,22 @@ VentureOS takes a one-paragraph idea brief and produces a **simulated buying com
 
 ---
 
+## For judges
+
+> **Microsoft Build AI / HackerEarth — Agent Swarms track.**
+
+**Recommended path:**
+
+1. Open the live app: <https://ventureos-dun.vercel.app/>
+2. Click **"Open Judge Demo"** on the homepage, or go directly to <https://ventureos-dun.vercel.app/demo/faceless-crm>
+3. Review the complete zero-key demo: personas, buying committee deliberation, research graph, VentureLab recommendation, BuildSquad plan, evaluation report, and simulated GitHub export.
+
+This path requires **no sign-in, no provider key, no GitHub PAT, and no setup** — every artifact is seeded and the same for every judge.
+
+**Real Mode** is available for deeper testing through Google sign-in or the Alpha Workspace plus BYOK provider configuration. See [`docs/hackathon/README.md`](docs/hackathon/README.md) for the full submission pack (deck PDF, 3-min demo script, submission-form copy, screenshots).
+
+---
+
 ## Why this exists
 
 Most "AI for product" tools generate documents. VentureOS instead **simulates the decision** you'd want to make before building:

@@ -105,6 +105,40 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Judge guidance — primary judging path call-out */}
+      <section
+        aria-label="Judge guidance"
+        className={styles.judgeCard}
+        data-testid="judge-guidance"
+      >
+        <div className={styles.judgeHead}>
+          <span className={styles.judgeBadge}>For judges</span>
+          <h2 className={styles.judgeTitle}>Start with the zero-key demo</h2>
+        </div>
+        <p className={styles.judgeBody}>
+          Use the Faceless CRM demo to evaluate VentureOS without sign-in, provider keys or
+          setup. It walks through the full agent swarm pipeline — personas, buying committee,
+          research graph, venture validation, BuildSquad planning, evaluation report and
+          GitHub-ready artifacts.
+        </p>
+        <div className={styles.judgeCtaRow}>
+          <Link href="/demo/faceless-crm" className={`${styles.btn} ${styles.btnPrimary}`}>
+            Open Judge Demo →
+          </Link>
+          <a
+            href="https://github.com/amit1858/ventureos"
+            className={styles.btn}
+            target="_blank"
+            rel="noreferrer"
+          >
+            View GitHub repo
+          </a>
+          <Link href="/access" className={styles.judgeMutedLink}>
+            Sign in / Alpha Workspace for Real Mode
+          </Link>
+        </div>
+      </section>
+
       {/* Agent swarm pipeline (workflow) */}
       <section id="pipeline" className={styles.section}>
         <div>

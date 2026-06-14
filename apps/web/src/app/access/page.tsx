@@ -45,6 +45,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
     return (
       <section style={layout}>
         <Header />
+        <JudgeEscape />
         <Card>
           <h2 style={h2}>You are signed in</h2>
           <p style={muted}>
@@ -63,6 +64,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
     return (
       <section style={layout}>
         <Header />
+        <JudgeEscape />
         <Card>
           <h2 style={h2}>Alpha workspace active</h2>
           <p style={muted}>
@@ -86,6 +88,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
     return (
       <section style={layout}>
         <Header />
+        <JudgeEscape />
         <Card>
           <h2 style={h2}>Choose how to enter Real Mode</h2>
           <p style={muted}>
@@ -138,6 +141,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
     return (
       <section style={layout}>
         <Header />
+        <JudgeEscape />
         <Card>
           <h2 style={h2}>Sign in to enter Real Mode</h2>
           <p style={muted}>
@@ -163,6 +167,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
   return (
     <section style={layout}>
       <Header />
+      <JudgeEscape />
       <Card>
         <h2 style={h2}>Real Mode requires workspace access</h2>
         <p style={muted}>
@@ -240,6 +245,61 @@ function Card({ children }: { children: React.ReactNode }) {
     >
       {children}
     </div>
+  );
+}
+
+function JudgeEscape() {
+  return (
+    <aside
+      role="note"
+      aria-label="Judge guidance"
+      data-testid="judge-escape"
+      style={{
+        marginBottom: '1rem',
+        padding: '0.85rem 1rem',
+        border: '1px solid rgba(122, 163, 255, 0.35)',
+        background: 'linear-gradient(135deg, rgba(122, 163, 255, 0.10), rgba(139, 123, 240, 0.06))',
+        borderRadius: 10,
+        display: 'flex',
+        gap: '0.6rem',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+      }}
+    >
+      <span
+        style={{
+          fontSize: '0.66rem',
+          fontWeight: 700,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          padding: '0.15rem 0.55rem',
+          borderRadius: 999,
+          color: '#cfe1ff',
+          background: 'rgba(122, 163, 255, 0.16)',
+          border: '1px solid rgba(122, 163, 255, 0.45)',
+        }}
+      >
+        For judges
+      </span>
+      <span style={{ color: '#e8e8ea', fontSize: '0.9rem' }}>
+        Just reviewing the submission? Open the zero-key demo.
+      </span>
+      <span style={{ flex: 1 }} />
+      <Link
+        href="/demo/faceless-crm"
+        style={{
+          padding: '0.45rem 0.9rem',
+          background: '#7aa3ff',
+          color: '#0b0b0e',
+          borderRadius: 6,
+          fontWeight: 600,
+          textDecoration: 'none',
+          fontSize: '0.88rem',
+        }}
+      >
+        Open Judge Demo →
+      </Link>
+    </aside>
   );
 }
 
