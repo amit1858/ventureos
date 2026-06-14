@@ -213,13 +213,13 @@ See **[`docs/security-byok.md`](docs/security-byok.md)** and **[`docs/security.m
 Public-facing:
 
 - **[Product overview (start here)](docs/product.md)** — what VentureOS is, who it's for, why it's different, value it offers
+- **[Hackathon submission pack](docs/hackathon/README.md)** — deck PDF, 3-min demo script, submission form copy, screenshots
 - [Agent Swarms](docs/agent-swarms.md) — the multi-agent design
 - [Architecture overview](docs/architecture-overview.md)
 - [BYOK & security](docs/security-byok.md)
 - [Demo Mode](docs/demo-mode.md)
 - [Demo script (3 / 5 / 7 min)](docs/demo-script.md)
 - [Deployment](docs/deployment.md)
-- [Hackathon submission](docs/hackathon-submission.md)
 - [Local setup](docs/setup-local.md)
 - [Known limitations](docs/known-limitations.md)
 - [E2E test plan](docs/e2e-test-plan.md)
@@ -230,12 +230,21 @@ Internal design docs (kept for context):
 - [Original Sprint −1 architecture](docs/architecture.md) · [Provider abstraction](docs/provider-abstraction.md)
 - [Faceless CRM reference scenario](docs/faceless-crm-reference-scenario.md) · [Evaluation framework](docs/evaluation-framework.md)
 - [Adapter strategy](docs/adapter-strategy.md)
+- [Hackathon write-up (long form)](docs/hackathon-submission.md)
 
 ---
 
 ## Hackathon submission
 
-VentureOS is being submitted to the **Microsoft Build AI — Agent Swarms** track. See [`docs/hackathon-submission.md`](docs/hackathon-submission.md) for the full submission write-up.
+VentureOS is submitted to the **Microsoft Build AI / HackerEarth — Agent Swarms** track.
+
+- 📊 **[Submission deck (PDF)](docs/hackathon/VentureOS-Submission-Deck.pdf)** — 10 slides, < 1 MB
+- 🎬 **[3-minute demo script](docs/hackathon/demo-script.md)** — teleprompter + shot list
+- 📝 **[Submission form copy](docs/hackathon/submission-form.md)** — ready to paste
+- 🖼️ **[Live-app screenshots](docs/hackathon/screenshots/)** — dated, real
+- ✍️ **[Long-form write-up](docs/hackathon-submission.md)** — the original deep dive
+
+**Primary judging path:** <https://ventureos-dun.vercel.app/demo/faceless-crm> (no sign-in, no keys).
 
 ---
 
