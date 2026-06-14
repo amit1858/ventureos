@@ -129,6 +129,7 @@ export function Walkthrough({ demo, evaluation, exportFiles }: WalkthroughProps)
 
   return (
     <div className={styles.page}>
+      <JudgeBanner />
       <DemoBanner />
 
       <div className={styles.swarmStrip} role="note" aria-label="Agent Swarms framing">
@@ -360,6 +361,30 @@ function DemoBanner() {
       </span>
       <span className={styles.bannerSpacer} />
       <Link href="/settings/byok" className={styles.bannerLink}>Switch to Real Mode (BYOK) →</Link>
+    </div>
+  );
+}
+
+function JudgeBanner() {
+  return (
+    <div
+      className={styles.judgeBanner}
+      role="note"
+      aria-label="Judge guidance"
+      data-testid="judge-banner"
+    >
+      <div className={styles.judgeBannerHead}>
+        <span className={styles.judgeBannerBadge}>For judges</span>
+        <span className={styles.judgeBannerTitle}>Recommended judge path · zero-key demo</span>
+      </div>
+      <p className={styles.judgeBannerBody}>
+        This is the recommended judge path. It is a seeded zero-key demo and does not require
+        sign-in, provider keys, Supabase setup or GitHub access.
+      </p>
+      <p className={styles.judgeBannerMuted}>
+        Real Mode supports BYOK, Google sign-in, Alpha Workspace and real GitHub export for
+        deeper testing.
+      </p>
     </div>
   );
 }

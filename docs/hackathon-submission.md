@@ -9,6 +9,15 @@
 > 📦 **Submission pack** (deck PDF, 3-min demo script, submission-form copy, screenshots): see **[`docs/hackathon/`](./hackathon/README.md)**.
 > This document is the long-form write-up; the submission pack is the short-form, judge-facing version.
 
+## Recommended judge path
+
+Live app: <https://ventureos-dun.vercel.app/>
+
+Direct demo: <https://ventureos-dun.vercel.app/demo/faceless-crm>
+
+Use the zero-key demo first. Real Mode is optional for deeper testing
+through Google sign-in / Alpha Workspace plus BYOK provider keys.
+
 ## Problem
 
 Most product teams burn weeks (and engineering time) building things that should have been killed at the brief stage. The few tools that help are either:

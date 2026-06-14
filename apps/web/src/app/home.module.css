@@ -205,6 +205,69 @@
 }
 .swarmArrow { color: var(--accent); font-weight: 700; }
 
+/* Judge guidance card — anchors the hackathon judging path on the homepage. */
+.judgeCard {
+  position: relative;
+  border-radius: 14px;
+  padding: 1.4rem 1.5rem;
+  background:
+    linear-gradient(135deg, rgba(122, 163, 255, 0.10), rgba(139, 123, 240, 0.08)),
+    var(--card);
+  border: 1px solid rgba(122, 163, 255, 0.32);
+  box-shadow: 0 0 0 1px rgba(122, 163, 255, 0.04) inset;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.judgeHead {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+.judgeBadge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  color: #cfe1ff;
+  background: rgba(122, 163, 255, 0.16);
+  border: 1px solid rgba(122, 163, 255, 0.45);
+}
+.judgeTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.judgeBody {
+  font-size: 0.92rem;
+  color: var(--text);
+  margin: 0;
+  max-width: 78ch;
+  line-height: 1.55;
+}
+.judgeCtaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.35rem;
+}
+.judgeMutedLink {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  border-bottom: 1px dashed var(--border-2);
+  padding-bottom: 1px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.judgeMutedLink:hover { color: var(--text); border-bottom-color: var(--accent); }
+
 @media (max-width: 760px) {
   .title { font-size: 2rem; }
   .grid { grid-template-columns: 1fr; }
