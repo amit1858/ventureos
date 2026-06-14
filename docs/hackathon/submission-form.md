@@ -124,7 +124,7 @@ Amit Pandey — solo build
 ## Tagged release
 
 ```
-v0.3-alpha — https://github.com/amit1858/ventureos/releases/tag/v0.3-alpha
+v1.0-submission — https://github.com/amit1858/ventureos/releases/tag/v1.0-submission
 ```
 
 ---
@@ -204,7 +204,7 @@ Repo issues: https://github.com/amit1858/ventureos/issues
 - [x] Zero-key demo works in incognito (`/demo/faceless-crm`)
 - [x] Submission deck is under 20 MB (current: ~0.7 MB PDF, ~1.8 MB PPTX)
 - [x] README is public-safe (no secrets, no internal sprint notes)
-- [x] Tagged release `v0.3-alpha` exists on GitHub
+- [x] Tagged release `v1.0-submission` exists on GitHub
 - [x] `docs/product.md` is the front door for first-time visitors
 - [x] `docs/hackathon/` has deck + script + this submission copy
 - [ ] Demo video recorded and uploaded (≤ 3 min, ≥ 720p) — **see demo-script.md**

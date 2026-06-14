@@ -1,6 +1,6 @@
 # VentureOS — Hackathon Submission Pack
 
-> **Microsoft Build AI / HackerEarth · Agent Swarms track · v0.3-alpha**
+> **Microsoft Build AI / HackerEarth · Agent Swarms track · v1.0-submission**
 >
 > Live app · <https://ventureos-dun.vercel.app>
 > Demo path · <https://ventureos-dun.vercel.app/demo/faceless-crm>
