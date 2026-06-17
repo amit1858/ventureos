@@ -11,6 +11,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ProviderId } from '@ventureos/contracts';
+import {
+  BYOK_INVALID_RESPONSE_REASON,
+  parseByokMutationResponse,
+  parseJsonBody,
+} from '../../../lib/byok-http';
 
 const PROVIDERS: ProviderId[] = ['openai', 'anthropic', 'gemini', 'azure_openai', 'github'];
 
@@ -58,7 +63,12 @@ export default function ByokSettings() {
         setProfiles([]);
         return;
       }
-      const body = (await r.json()) as ListResponse;
+      const body = await parseJsonBody<ListResponse>(r);
+      if (!body) {
+        setTopError(BYOK_INVALID_RESPONSE_REASON);
+        setProfiles([]);
+        return;
+      }
       setProfiles(body.profiles ?? []);
       setTopError(null);
     } catch (e) {
@@ -158,7 +168,10 @@ function AddProviderForm({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ providerType, displayName, secret, config }),
       });
-      const result = (await resp.json()) as MutationResponse;
+      const result = (await parseByokMutationResponse(
+        resp,
+        'Create failed.',
+      )) as MutationResponse;
       // Drop the plaintext from state ASAP regardless of outcome.
       setSecret('');
       if (!result.ok) { setError(result.reason ?? 'Create failed.'); return; }
@@ -249,7 +262,7 @@ function ProviderCard({ profile, onChanged }: { profile: ProviderProfile; onChan
 
   async function call(path: string, init?: RequestInit): Promise<MutationResponse> {
     const r = await fetch(path, init);
-    return (await r.json()) as MutationResponse;
+    return (await parseByokMutationResponse(r, 'Request failed.')) as MutationResponse;
   }
 
   async function revalidate() {

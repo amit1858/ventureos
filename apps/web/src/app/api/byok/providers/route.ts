@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 import type { ProviderId } from '@ventureos/contracts';
 
 import { requireUser, UnauthorizedError } from '../../../../lib/auth';
+import { sanitizeApiError } from '../../../../lib/api-errors';
 import { getCredentialService } from '../../../../lib/credentials';
 
 export const runtime = 'nodejs';
@@ -54,23 +55,28 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await getCredentialService().createProvider({
-    userId: user.id,
-    providerType,
-    displayName,
-    secret,
-    ...(config ? { config } : {}),
-    ...(setDefault ? { setDefault } : {}),
-  });
-  if (!result.ok) {
-    return NextResponse.json({ ok: false, reason: result.reason ?? 'Create failed.' });
+  try {
+    const result = await getCredentialService().createProvider({
+      userId: user.id,
+      providerType,
+      displayName,
+      secret,
+      ...(config ? { config } : {}),
+      ...(setDefault ? { setDefault } : {}),
+    });
+    if (!result.ok) {
+      return NextResponse.json({ ok: false, reason: result.reason ?? 'Create failed.' });
+    }
+    return NextResponse.json({ ok: true, profile: result.profile });
+  } catch (e) {
+    return errorResponse(e);
   }
-  return NextResponse.json({ ok: true, profile: result.profile });
 }
 
 function errorResponse(e: unknown): Response {
   if (e instanceof UnauthorizedError) {
     return NextResponse.json({ ok: false, reason: 'Unauthorized.' }, { status: 401 });
   }
-  return NextResponse.json({ ok: false, reason: 'Server error.' }, { status: 500 });
+  const sanitized = sanitizeApiError(e);
+  return NextResponse.json(sanitized.body, { status: sanitized.status });
 }

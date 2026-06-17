@@ -7,6 +7,7 @@
 import { NextResponse } from 'next/server';
 
 import { requireUser, UnauthorizedError } from '../../../../../lib/auth';
+import { sanitizeApiError } from '../../../../../lib/api-errors';
 import { getCredentialService } from '../../../../../lib/credentials';
 
 export const runtime = 'nodejs';
@@ -24,6 +25,7 @@ export async function DELETE(_req: Request, ctx: { params: { id: string } }) {
     if (e instanceof UnauthorizedError) {
       return NextResponse.json({ ok: false, reason: 'Unauthorized.' }, { status: 401 });
     }
-    return NextResponse.json({ ok: false, reason: 'Server error.' }, { status: 500 });
+    const sanitized = sanitizeApiError(e);
+    return NextResponse.json(sanitized.body, { status: sanitized.status });
   }
 }

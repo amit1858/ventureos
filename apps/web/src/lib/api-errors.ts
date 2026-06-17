@@ -42,6 +42,14 @@ export function redactTokenShapes(msg: string): string {
 }
 
 const ENV_MISSING_PREFIX = 'Missing required environment variable:';
+const CRYPTO_PREFIX = 'CredentialCrypto:';
+const SUPABASE_SETUP_MARKERS = [
+  'provider_credentials',
+  'audit_events',
+  'does not exist',
+  'schema cache',
+  'PGRST',
+];
 
 export function sanitizeApiError(e: unknown, fallbackStatus = 500): SanitizedError {
   const raw = e instanceof Error ? e.message : String(e);
@@ -54,6 +62,30 @@ export function sanitizeApiError(e: unknown, fallbackStatus = 500): SanitizedErr
         code: 'server_not_configured',
         reason:
           'Server is not configured for Real Mode. The deployment is missing required environment variables (see docs/setup-local.md). Demo Mode at /demo/faceless-crm works without configuration.',
+      },
+    };
+  }
+
+  if (raw.startsWith(CRYPTO_PREFIX)) {
+    return {
+      status: 503,
+      body: {
+        ok: false,
+        code: 'byok_encryption_not_configured',
+        reason:
+          'Server BYOK encryption is not configured correctly. Set VENTUREOS_CREDENTIAL_ENCRYPTION_KEY to a 32-byte key encoded as 64-character hex or base64, then redeploy.',
+      },
+    };
+  }
+
+  if (SUPABASE_SETUP_MARKERS.some((m) => raw.includes(m))) {
+    return {
+      status: 503,
+      body: {
+        ok: false,
+        code: 'supabase_not_ready',
+        reason:
+          'Supabase is not ready for BYOK writes. Verify service-role access and run the required database schema/migrations for provider_credentials and audit_events.',
       },
     };
   }
