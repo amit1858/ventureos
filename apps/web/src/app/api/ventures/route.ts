@@ -11,6 +11,7 @@ import type { VentureStatus } from '@ventureos/contracts';
 import { requireUser, UnauthorizedError } from '../../../lib/auth';
 import { sanitizeApiError } from '../../../lib/api-errors';
 import { getVentureService } from '../../../lib/ventures';
+import { ensureUserProfile } from '../../../lib/ensure-user-profile';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
     if (!body.title || body.title.trim().length === 0) {
       return NextResponse.json({ ok: false, reason: 'title is required.' }, { status: 400 });
     }
+    await ensureUserProfile(user);
     const v = await getVentureService().createVenture({
       ownerId: user.id,
       title: body.title,

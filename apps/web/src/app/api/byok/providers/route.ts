@@ -10,6 +10,7 @@ import type { ProviderId } from '@ventureos/contracts';
 import { requireUser, UnauthorizedError } from '../../../../lib/auth';
 import { sanitizeApiError } from '../../../../lib/api-errors';
 import { getCredentialService } from '../../../../lib/credentials';
+import { ensureUserProfile } from '../../../../lib/ensure-user-profile';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -56,6 +57,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    await ensureUserProfile(user);
     const result = await getCredentialService().createProvider({
       userId: user.id,
       providerType,

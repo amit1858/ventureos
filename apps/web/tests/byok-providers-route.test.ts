@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { requireUser, getCredentialService, UnauthorizedError } = vi.hoisted(() => {
+const { requireUser, getCredentialService, UnauthorizedError, ensureUserProfile } = vi.hoisted(() => {
   class UnauthorizedError extends Error {
     constructor() {
       super('Unauthorized');
@@ -11,6 +11,7 @@ const { requireUser, getCredentialService, UnauthorizedError } = vi.hoisted(() =
     requireUser: vi.fn(),
     getCredentialService: vi.fn(),
     UnauthorizedError,
+    ensureUserProfile: vi.fn().mockResolvedValue(undefined),
   };
 });
 
@@ -23,11 +24,16 @@ vi.mock('../src/lib/credentials', () => ({
   getCredentialService,
 }));
 
+vi.mock('../src/lib/ensure-user-profile', () => ({
+  ensureUserProfile,
+}));
+
 import { POST } from '../src/app/api/byok/providers/route';
 
 describe('POST /api/byok/providers', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    ensureUserProfile.mockResolvedValue(undefined);
   });
 
   it('returns structured 401 JSON for unauthorized users', async () => {
@@ -97,5 +103,28 @@ describe('POST /api/byok/providers', () => {
     expect(res.status).toBe(503);
     expect(body.ok).toBe(false);
     expect(body.code).toBe('server_not_configured');
+  });
+
+  it('returns structured 503 JSON when user profile upsert fails', async () => {
+    requireUser.mockResolvedValue({ id: 'a1b2c3d4-1234-5678-abcd-ef0123456789', email: 'u@example.com' });
+    ensureUserProfile.mockRejectedValue(
+      new Error('UserProfileSync: permission denied for table users'),
+    );
+
+    const req = new Request('http://localhost/api/byok/providers', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'anthropic',
+        displayName: 'Personal key',
+        secret: 'dummy',
+      }),
+      headers: { 'content-type': 'application/json' },
+    });
+
+    const res = await POST(req);
+    const body = (await res.json()) as { ok: boolean; code?: string; reason: string };
+    expect(res.status).toBe(503);
+    expect(body.ok).toBe(false);
+    expect(body.code).toBe('user_profile_sync_failed');
   });
 });
