@@ -43,6 +43,7 @@ export function redactTokenShapes(msg: string): string {
 
 const ENV_MISSING_PREFIX = 'Missing required environment variable:';
 const CRYPTO_PREFIX = 'CredentialCrypto:';
+const USER_PROFILE_PREFIX = 'UserProfileSync:';
 const SUPABASE_SETUP_MARKERS = [
   'provider_credentials',
   'audit_events',
@@ -74,6 +75,18 @@ export function sanitizeApiError(e: unknown, fallbackStatus = 500): SanitizedErr
         code: 'byok_encryption_not_configured',
         reason:
           'Server BYOK encryption is not configured correctly. Set VENTUREOS_CREDENTIAL_ENCRYPTION_KEY to a 32-byte key encoded as 64-character hex or base64, then redeploy.',
+      },
+    };
+  }
+
+  if (raw.startsWith(USER_PROFILE_PREFIX)) {
+    return {
+      status: 503,
+      body: {
+        ok: false,
+        code: 'user_profile_sync_failed',
+        reason:
+          'Server could not create or update the user profile record required for Real Mode. Verify Supabase service-role access and that the public.users table exists.',
       },
     };
   }
