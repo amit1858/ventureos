@@ -36,7 +36,8 @@ Per-user (in DB, encrypted):
 
 - Symmetric AES-GCM using `VENTUREOS_CREDENTIAL_ENCRYPTION_KEY`.
 - Each record stores `(ciphertext, iv, kid)`; `kid` enables future key rotation without re-encrypting everything in a single migration.
-- The key is read from process env at startup. If missing, credential reads fail loudly — no silent fallback to plaintext.
+- In production, the key is required at startup and BYOK routes return a structured 503 if it is missing or invalid.
+- In local dev/CI only, an ephemeral process key is generated when absent (still no plaintext fallback), so stored credentials intentionally do not survive a restart unless the env key is set.
 
 ## Validation flow
 

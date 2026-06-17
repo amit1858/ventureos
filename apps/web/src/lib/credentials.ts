@@ -64,6 +64,9 @@ function buildCrypto(): CredentialCrypto {
   if (process.env['VENTUREOS_CREDENTIAL_ENCRYPTION_KEY']) {
     return CredentialCrypto.fromEnv();
   }
+  if (process.env['NODE_ENV'] === 'production') {
+    throw new Error('CredentialCrypto: VENTUREOS_CREDENTIAL_ENCRYPTION_KEY is not set.');
+  }
   // Ephemeral key for dev/CI. Logged as a warning so it isn't silent.
   // eslint-disable-next-line no-console
   console.warn(

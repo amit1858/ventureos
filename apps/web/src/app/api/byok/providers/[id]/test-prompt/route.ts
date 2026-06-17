@@ -8,6 +8,7 @@
 import { NextResponse } from 'next/server';
 
 import { requireUser, UnauthorizedError } from '../../../../../../lib/auth';
+import { sanitizeApiError } from '../../../../../../lib/api-errors';
 import { getCredentialService } from '../../../../../../lib/credentials';
 
 export const runtime = 'nodejs';
@@ -43,13 +44,21 @@ export async function POST(request: Request, ctx: { params: { id: string } }) {
     );
   }
 
-  const res = await getCredentialService().runTestPrompt(user.id, ctx.params.id, { modelId, prompt });
-  return NextResponse.json({
-    ok: res.ok,
-    reason: res.reason,
-    content: res.content,
-    usage: res.usage,
-    costUsd: res.costUsd,
-    finishReason: res.finishReason,
-  });
+  try {
+    const res = await getCredentialService().runTestPrompt(user.id, ctx.params.id, { modelId, prompt });
+    return NextResponse.json({
+      ok: res.ok,
+      reason: res.reason,
+      content: res.content,
+      usage: res.usage,
+      costUsd: res.costUsd,
+      finishReason: res.finishReason,
+    });
+  } catch (e) {
+    if (e instanceof UnauthorizedError) {
+      return NextResponse.json({ ok: false, reason: 'Unauthorized.' }, { status: 401 });
+    }
+    const sanitized = sanitizeApiError(e);
+    return NextResponse.json(sanitized.body, { status: sanitized.status });
+  }
 }

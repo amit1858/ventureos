@@ -36,6 +36,24 @@ describe('sanitizeApiError', () => {
     expect(r.status).toBe(400);
   });
 
+  it('maps encryption-key misconfiguration to a structured 503', () => {
+    const r = sanitizeApiError(
+      new Error('CredentialCrypto: VENTUREOS_CREDENTIAL_ENCRYPTION_KEY must be 32 bytes encoded as hex (64 chars) or base64.'),
+    );
+    expect(r.status).toBe(503);
+    expect(r.body.code).toBe('byok_encryption_not_configured');
+    expect(r.body.reason).toContain('VENTUREOS_CREDENTIAL_ENCRYPTION_KEY');
+  });
+
+  it('maps missing BYOK tables / schema to a structured 503', () => {
+    const r = sanitizeApiError(
+      new Error('SupabaseCredentialStore.create: relation "public.provider_credentials" does not exist'),
+    );
+    expect(r.status).toBe(503);
+    expect(r.body.code).toBe('supabase_not_ready');
+    expect(r.body.reason).toContain('provider_credentials');
+  });
+
   it('redacts token-shaped substrings before logging to the server', () => {
     sanitizeApiError(new Error('failed with ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123 attached'));
     const logged = String(consoleSpy.mock.calls[0]?.[1] ?? '');
