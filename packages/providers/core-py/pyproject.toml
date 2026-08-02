@@ -1,19 +1,19 @@
 [project]
-name = "ventureos-providers-core"
+name = "foundry-providers-core"
 version = "0.0.0"
-description = "VentureOS provider abstraction (Python). Adapters live in separate packages."
+description = "Foundry provider abstraction (Python). Adapters live in separate packages."
 requires-python = ">=3.11"
 dependencies = [
   "pydantic>=2.7",
-  "ventureos-contracts",
+  "foundry-contracts",
 ]
 
 [tool.uv.sources]
-ventureos-contracts = { workspace = true }
+foundry-contracts = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ventureos_providers"]
+packages = ["src/foundry_providers"]

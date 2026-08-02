@@ -1,4 +1,4 @@
-"""VentureOS provider abstraction (Python)."""
+"""Foundry provider abstraction (Python)."""
 
 from .errors import (
     BudgetExceeded,

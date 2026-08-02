@@ -5,7 +5,7 @@ These tests run without the real `tinytroupe` package by installing fakes into
 `sys.modules`. They cover:
 
   * Adapter output shape (generate_personas, run_interview, run_focus_group,
-    run_buying_committee) maps to the VentureOS contract surface.
+    run_buying_committee) maps to the Foundry contract surface.
   * Stance heuristics produce deterministic decisions.
   * CLI dispatch rejects calls when no OPENAI_API_KEY is present.
   * Sanitiser strips secret patterns (sk-…, Bearer …) from outbound messages.
@@ -92,10 +92,10 @@ def _install_fake_tinytroupe() -> None:
 def _setup_fake_tinytroupe(monkeypatch: pytest.MonkeyPatch) -> None:
     _install_fake_tinytroupe()
     # Re-import the adapter so its `_tinytroupe_available()` sees the fake.
-    if "ventureos_tinytroupe.adapter" in sys.modules:
-        importlib.reload(sys.modules["ventureos_tinytroupe.adapter"])
-    if "ventureos_tinytroupe.cli" in sys.modules:
-        importlib.reload(sys.modules["ventureos_tinytroupe.cli"])
+    if "foundry_tinytroupe.adapter" in sys.modules:
+        importlib.reload(sys.modules["foundry_tinytroupe.adapter"])
+    if "foundry_tinytroupe.cli" in sys.modules:
+        importlib.reload(sys.modules["foundry_tinytroupe.cli"])
 
 
 BRIEF: dict[str, Any] = {
@@ -110,7 +110,7 @@ BRIEF: dict[str, Any] = {
 # ── Adapter output shape ────────────────────────────────────────────────────
 
 def test_generate_personas_maps_to_contract_shape() -> None:
-    from ventureos_tinytroupe.adapter import TinyTroupeRuntime
+    from foundry_tinytroupe.adapter import TinyTroupeRuntime
     runtime = TinyTroupeRuntime()
     out = runtime.generate_personas(BRIEF, {"n": 3})
     assert "personas" in out
@@ -129,7 +129,7 @@ def test_generate_personas_maps_to_contract_shape() -> None:
 
 
 def test_run_interview_returns_typed_transcript() -> None:
-    from ventureos_tinytroupe.adapter import TinyTroupeRuntime
+    from foundry_tinytroupe.adapter import TinyTroupeRuntime
     runtime = TinyTroupeRuntime()
     out = runtime.run_interview(BRIEF, {
         "persona": {"id": "p1", "name": "Ravi", "role": "Owner"},
@@ -143,7 +143,7 @@ def test_run_interview_returns_typed_transcript() -> None:
 
 
 def test_run_focus_group_includes_all_participants() -> None:
-    from ventureos_tinytroupe.adapter import TinyTroupeRuntime
+    from foundry_tinytroupe.adapter import TinyTroupeRuntime
     runtime = TinyTroupeRuntime()
     out = runtime.run_focus_group(BRIEF, {
         "personas": [
@@ -159,7 +159,7 @@ def test_run_focus_group_includes_all_participants() -> None:
 
 
 def test_run_buying_committee_derives_decision_from_stances() -> None:
-    from ventureos_tinytroupe.adapter import TinyTroupeRuntime
+    from foundry_tinytroupe.adapter import TinyTroupeRuntime
     runtime = TinyTroupeRuntime()
     out = runtime.run_buying_committee(BRIEF, {
         "personas": [
@@ -179,7 +179,7 @@ def test_run_buying_committee_derives_decision_from_stances() -> None:
 # ── Stance heuristics ───────────────────────────────────────────────────────
 
 def test_infer_stance_classifies_text() -> None:
-    from ventureos_tinytroupe.adapter import _infer_stance
+    from foundry_tinytroupe.adapter import _infer_stance
     assert _infer_stance("") == "neutral"
     assert _infer_stance("I love it, sign me up, perfect product!") == "champion"
     assert _infer_stance("Looks great.") == "supporter"
@@ -188,7 +188,7 @@ def test_infer_stance_classifies_text() -> None:
 
 
 def test_decide_picks_outcome_from_tally() -> None:
-    from ventureos_tinytroupe.adapter import _decide
+    from foundry_tinytroupe.adapter import _decide
     assert _decide({"supporter": 3, "champion": 1, "skeptic": 0, "blocker": 0, "neutral": 0}) == "buy"
     assert _decide({"supporter": 1, "champion": 0, "skeptic": 1, "blocker": 0, "neutral": 0}) == "pilot"
     assert _decide({"supporter": 0, "champion": 0, "skeptic": 0, "blocker": 1, "neutral": 1}) == "reject"
@@ -198,7 +198,7 @@ def test_decide_picks_outcome_from_tally() -> None:
 # ── CLI security & dispatch ─────────────────────────────────────────────────
 
 def test_sanitize_strips_secret_patterns() -> None:
-    from ventureos_tinytroupe.cli import sanitize
+    from foundry_tinytroupe.cli import sanitize
     assert "sk-" not in sanitize("error: bad key sk-abcdef1234567890")
     assert "Bearer" not in sanitize("Authorization: Bearer abc.def.ghi")
     assert len(sanitize("x" * 10_000)) <= 500
@@ -207,7 +207,7 @@ def test_sanitize_strips_secret_patterns() -> None:
 def test_dispatch_rejects_without_openai_creds(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("AZURE_OPENAI_API_KEY", raising=False)
-    from ventureos_tinytroupe.cli import dispatch
+    from foundry_tinytroupe.cli import dispatch
     out = dispatch({"command": "generate_personas", "brief": BRIEF, "args": {"n": 1}})
     assert out["ok"] is False
     assert "OPENAI_API_KEY" in out["reason"]
@@ -215,7 +215,7 @@ def test_dispatch_rejects_without_openai_creds(monkeypatch: pytest.MonkeyPatch) 
 
 def test_dispatch_runs_when_openai_key_present(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-fake-test-secret-1234567890")
-    from ventureos_tinytroupe.cli import dispatch
+    from foundry_tinytroupe.cli import dispatch
     out = dispatch({"command": "generate_personas", "brief": BRIEF, "args": {"n": 2}})
     assert out["ok"] is True
     assert "personas" in out["data"]
@@ -224,7 +224,7 @@ def test_dispatch_runs_when_openai_key_present(monkeypatch: pytest.MonkeyPatch) 
 def test_dispatch_does_not_leak_secret_into_response(monkeypatch: pytest.MonkeyPatch) -> None:
     secret = "sk-super-secret-leak-test-9999999"
     monkeypatch.setenv("OPENAI_API_KEY", secret)
-    from ventureos_tinytroupe.cli import dispatch
+    from foundry_tinytroupe.cli import dispatch
     # Run every command — none of them should reflect the env-borne secret.
     payloads: list[dict[str, Any]] = [
         {"command": "generate_personas", "brief": BRIEF, "args": {"n": 1}},
@@ -256,14 +256,14 @@ def test_dispatch_does_not_leak_secret_into_response(monkeypatch: pytest.MonkeyP
 
 def test_dispatch_rejects_unknown_command(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-fake-1234567890")
-    from ventureos_tinytroupe.cli import dispatch
+    from foundry_tinytroupe.cli import dispatch
     out = dispatch({"command": "delete_everything", "brief": {}, "args": {}})
     assert out["ok"] is False
     assert "Unknown command" in out["reason"]
 
 
 def test_dispatch_rejects_missing_command() -> None:
-    from ventureos_tinytroupe.cli import dispatch
+    from foundry_tinytroupe.cli import dispatch
     out = dispatch({"brief": {}, "args": {}})
     assert out["ok"] is False
     assert "Missing 'command'" in out["reason"]
@@ -275,7 +275,7 @@ def test_cli_main_reads_stdin_and_writes_stdout(monkeypatch: pytest.MonkeyPatch)
     monkeypatch.setattr("sys.stdin", io.StringIO(payload))
     buf = io.StringIO()
     monkeypatch.setattr("sys.stdout", buf)
-    from ventureos_tinytroupe.cli import main
+    from foundry_tinytroupe.cli import main
     rc = main()
     assert rc == 0
     out = json.loads(buf.getvalue().strip())

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Literal, Protocol, TypedDict, runtime_checkable
 
-from ventureos_contracts import ByokKey, DecryptedKey  # noqa: F401  (re-export friendly)
+from foundry_contracts import ByokKey, DecryptedKey  # noqa: F401  (re-export friendly)
 
 ProviderId = Literal[
     "openai",
