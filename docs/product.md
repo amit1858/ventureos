@@ -2,7 +2,7 @@
 
 > **Foundry is an AI-native Venture Operating System that helps teams decide what deserves to be built before engineering begins.** It turns a raw product idea into a validated, execution-ready venture — with synthetic customer research, evidence graphs, a Proceed / Pivot / Kill recommendation, a full BuildSquad plan, an evaluation report, and a real GitHub repository — all produced by a governed swarm of specialized agents, not a single chatbot.
 
-**Live deployment:** https://foundry.vercel.app · **Zero-key demo:** https://foundry.vercel.app/demo/faceless-crm · **Repo:** https://github.com/amit1858/foundry
+**Live deployment:** https://ventureos-dun.vercel.app · **Zero-key demo:** https://ventureos-dun.vercel.app/demo/faceless-crm · **Repo:** https://github.com/amit1858/foundry-venture-os
 
 ---
 
@@ -217,8 +217,8 @@ Read the full list — we keep it up to date.
 
 ## Try it
 
-1. **Just look at it** → https://foundry.vercel.app/demo/faceless-crm (no setup)
-2. **Sign in and run it on your own idea** → https://foundry.vercel.app/signin → Continue with Google (you must be on the allowlist; ask Amit)
+1. **Just look at it** → https://ventureos-dun.vercel.app/demo/faceless-crm (no setup)
+2. **Sign in and run it on your own idea** → https://ventureos-dun.vercel.app/signin → Continue with Google (you must be on the allowlist; ask Amit)
 3. **Run it locally** → `corepack pnpm install && corepack pnpm --filter @foundry/web dev` → open http://localhost:3000
 
 See [`setup-local.md`](setup-local.md) for local Real Mode, [`deployment.md`](deployment.md) for the full Vercel deployment runbook (including Supabase Google OAuth setup), and the [`README`](../README.md) for the engineering quick-start.

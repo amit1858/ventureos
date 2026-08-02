@@ -195,7 +195,7 @@ VENTUREOS_CREDENTIAL_ENCRYPTION_KEY=...`}
         <div style={ctaRow}>
           <Link href="/demo" style={primaryBtn}>Open Demo Mode</Link>
           <a
-            href="https://github.com/amit1858/foundry/blob/main/docs/deployment.md"
+            href="https://github.com/amit1858/foundry-venture-os/blob/main/docs/deployment.md"
             target="_blank"
             rel="noreferrer"
             style={secondaryBtn}

@@ -57,7 +57,7 @@ Enable Corepack once per machine: `corepack enable`.
 ```bash
 git remote remove origin
 vercel deploy --prod
-git remote add origin https://github.com/amit1858/foundry.git
+git remote add origin https://github.com/amit1858/foundry-venture-os.git
 git push origin main
 ```
 
@@ -80,7 +80,7 @@ git remote remove origin
 vercel deploy --prod
 
 # 4. Restore GitHub remote
-git remote add origin https://github.com/amit1858/foundry.git
+git remote add origin https://github.com/amit1858/foundry-venture-os.git
 
 # 5. Confirm remote is restored
 git remote -v
@@ -100,7 +100,7 @@ git push origin main
 | Deployment rejected because Git author cannot be verified | Git remote still attached during Vercel deploy | `git remote remove origin`, then `vercel deploy --prod` |
 | `error: No such remote: 'origin'` | Remote already removed from a previous attempt | Skip the remove step and run `vercel deploy --prod` |
 | `vercel deploy` exits with code 137 | `--debug` can cause OOM on Windows | Re-run without `--debug` |
-| Git push fails because origin is missing | Remote was not restored | `git remote add origin https://github.com/amit1858/foundry.git` |
+| Git push fails because origin is missing | Remote was not restored | `git remote add origin https://github.com/amit1858/foundry-venture-os.git` |
 | Browser shows old chunks or odd runtime behavior | Cached old Vercel assets | Hard refresh with `Ctrl+Shift+R` (or `Cmd+Shift+R`) |
 | Real Mode shows *"Server is not configured for Real Mode"* | Supabase env vars missing | Either use Demo Mode or configure Real Mode env vars (see Mode 2) |
 

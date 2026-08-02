@@ -100,7 +100,7 @@ export default function Home() {
           <Link href="/demo/faceless-crm" className={`${styles.btn} ${styles.btnPrimary}`}>Try the demo →</Link>
           <Link href="/ventures/new" className={styles.btn}>Create a venture</Link>
           <Link href="/settings/byok" className={styles.btn}>Configure BYOK</Link>
-          <a href="https://github.com/amit1858/foundry" className={styles.btn} target="_blank" rel="noreferrer">View GitHub repo</a>
+          <a href="https://github.com/amit1858/foundry-venture-os" className={styles.btn} target="_blank" rel="noreferrer">View GitHub repo</a>
           <Link href="/#architecture" className={styles.btn}>View architecture</Link>
         </div>
       </section>
@@ -126,7 +126,7 @@ export default function Home() {
             Open Judge Demo →
           </Link>
           <a
-            href="https://github.com/amit1858/foundry"
+            href="https://github.com/amit1858/foundry-venture-os"
             className={styles.btn}
             target="_blank"
             rel="noreferrer"

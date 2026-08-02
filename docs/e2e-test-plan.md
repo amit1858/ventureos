@@ -144,7 +144,7 @@ Legend: 🟢 fully automated · 🟡 partially automated · ⚪ manual.
 | 16.1 | "Try the demo →" | Navigates to `/demo/faceless-crm` | ⚪ |
 | 16.2 | "Create a venture" | Navigates to `/ventures/new` | ⚪ |
 | 16.3 | "Configure BYOK" | Navigates to `/settings/byok` | ⚪ |
-| 16.4 | "View GitHub repo" | Opens https://github.com/amit1858/foundry in a new tab | ⚪ |
+| 16.4 | "View GitHub repo" | Opens https://github.com/amit1858/foundry-venture-os in a new tab | ⚪ |
 | 16.5 | "View architecture" | Scrolls to the architecture section | ⚪ |
 
 ## 17. Demo route stability

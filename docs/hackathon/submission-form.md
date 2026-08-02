@@ -74,7 +74,7 @@ This is the agent-swarm pattern applied to the hardest problem in product: decid
 ## Live app URL
 
 ```
-https://foundry.vercel.app
+https://ventureos-dun.vercel.app
 ```
 
 ---
@@ -82,7 +82,7 @@ https://foundry.vercel.app
 ## Recommended demo path (zero-key, no sign-in)
 
 ```
-https://foundry.vercel.app/demo/faceless-crm
+https://ventureos-dun.vercel.app/demo/faceless-crm
 ```
 
 ---
@@ -90,7 +90,7 @@ https://foundry.vercel.app/demo/faceless-crm
 ## GitHub repository
 
 ```
-https://github.com/amit1858/foundry
+https://github.com/amit1858/foundry-venture-os
 ```
 
 ---
@@ -108,7 +108,7 @@ https://github.com/amit1858/foundry
 ## Submission deck (PDF)
 
 ```
-docs/hackathon/Foundry-Submission-Deck.pdf
+docs/archive/ventureos-submission/VentureOS-Submission-Deck.pdf
 ```
 
 ---
@@ -124,7 +124,7 @@ Amit Pandey — solo build
 ## Tagged release
 
 ```
-v1.0-submission — https://github.com/amit1858/foundry/releases/tag/v1.0-submission
+v1.0-submission — https://github.com/amit1858/foundry-venture-os/releases/tag/v1.0-submission
 ```
 
 ---
@@ -192,15 +192,15 @@ Real Mode requires Google sign-in. The deployed app has an email allowlist; to t
 
 ```
 GitHub: https://github.com/amit1858
-Repo issues: https://github.com/amit1858/foundry/issues
+Repo issues: https://github.com/amit1858/foundry-venture-os/issues
 ```
 
 ---
 
 ## Final pre-submission checklist
 
-- [x] GitHub repo is public (`amit1858/foundry`)
-- [x] Live app works in incognito (`https://foundry.vercel.app`)
+- [x] GitHub repo is public (`amit1858/foundry-venture-os`)
+- [x] Live app works in incognito (`https://ventureos-dun.vercel.app`)
 - [x] Zero-key demo works in incognito (`/demo/faceless-crm`)
 - [x] Submission deck is under 20 MB (current: ~0.7 MB PDF, ~1.8 MB PPTX)
 - [x] README is public-safe (no secrets, no internal sprint notes)

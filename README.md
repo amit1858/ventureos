@@ -1,11 +1,13 @@
 # Foundry
 
-[![Live demo](https://img.shields.io/badge/Live%20demo-foundry.vercel.app-blueviolet?logo=vercel)](https://foundry.vercel.app/demo/faceless-crm)
-[![Sign in](https://img.shields.io/badge/Sign%20in-Google%20OAuth-4285F4?logo=google)](https://foundry.vercel.app/signin)
-[![Tag](https://img.shields.io/badge/release-v1.0--submission-success)](https://github.com/amit1858/foundry/releases/tag/v1.0-submission)
+[![Live demo](https://img.shields.io/badge/Live%20demo-ventureos--dun.vercel.app-blueviolet?logo=vercel)](https://ventureos-dun.vercel.app/demo/faceless-crm)
+[![Sign in](https://img.shields.io/badge/Sign%20in-Google%20OAuth-4285F4?logo=google)](https://ventureos-dun.vercel.app/signin)
+[![Tag](https://img.shields.io/badge/release-v1.0--submission-success)](https://github.com/amit1858/foundry-venture-os/releases/tag/v1.0-submission)
 [![License](https://img.shields.io/badge/license-TBD-lightgrey)](#license)
 
 > **An AI-native Venture Operating System that helps teams decide what deserves to be built before engineering begins.** Foundry helps product teams transform raw ideas into validated, execution-ready ventures using collaborative AI agents — not a single chatbot.
+
+> _Foundry was originally developed and submitted as **VentureOS** for the Microsoft Build AI / HackerEarth challenge. It was renamed as the product evolved beyond the original submission._
 
 ## What is this?
 
@@ -13,8 +15,8 @@ Foundry takes a one-paragraph idea brief and produces a **simulated buying commi
 
 **Read [`docs/product.md`](docs/product.md) for the full product story** — what it does, who it's for, why it's different, and the concrete value it delivers.
 
-- 🎬 **Try the demo (zero keys):** [`/demo/faceless-crm`](https://foundry.vercel.app/demo/faceless-crm) — a fully seeded "Faceless CRM for SMB" venture taken from idea to GitHub-ready artifacts
-- 🛠️ **Run it on your own idea (BYOK):** [`/signin`](https://foundry.vercel.app/signin) — sign in with Google, add your own OpenAI / Anthropic / Gemini / Azure OpenAI key + a GitHub PAT, create a venture, and let the swarm produce a real evaluation and a real GitHub repo
+- 🎬 **Try the demo (zero keys):** [`/demo/faceless-crm`](https://ventureos-dun.vercel.app/demo/faceless-crm) — a fully seeded "Faceless CRM for SMB" venture taken from idea to GitHub-ready artifacts
+- 🛠️ **Run it on your own idea (BYOK):** [`/signin`](https://ventureos-dun.vercel.app/signin) — sign in with Google, add your own OpenAI / Anthropic / Gemini / Azure OpenAI key + a GitHub PAT, create a venture, and let the swarm produce a real evaluation and a real GitHub repo
 - 🧠 **Read the product narrative:** [`docs/product.md`](docs/product.md) — value, audience, differentiation, architecture, access modes, status
 - 📚 **Read the architecture:** [`docs/architecture-overview.md`](docs/architecture-overview.md) — five-plane monorepo, contracts-first agents, VentureJob primitive, provider isolation
 
@@ -26,8 +28,8 @@ Foundry takes a one-paragraph idea brief and produces a **simulated buying commi
 
 **Recommended path:**
 
-1. Open the live app: <https://foundry.vercel.app/>
-2. Click **"Open Judge Demo"** on the homepage, or go directly to <https://foundry.vercel.app/demo/faceless-crm>
+1. Open the live app: <https://ventureos-dun.vercel.app/>
+2. Click **"Open Judge Demo"** on the homepage, or go directly to <https://ventureos-dun.vercel.app/demo/faceless-crm>
 3. Review the complete zero-key demo: personas, buying committee deliberation, research graph, VentureLab recommendation, BuildSquad plan, evaluation report, and simulated GitHub export.
 
 This path requires **no sign-in, no provider key, no GitHub PAT, and no setup** — every artifact is seeded and the same for every judge.
@@ -192,7 +194,7 @@ Two supported modes (full details in **[`docs/deployment.md`](docs/deployment.md
 > ```bash
 > git remote remove origin
 > vercel deploy --prod
-> git remote add origin https://github.com/amit1858/foundry.git
+> git remote add origin https://github.com/amit1858/foundry-venture-os.git
 > git push origin main
 > ```
 >
@@ -254,13 +256,13 @@ Internal design docs (kept for context):
 
 Foundry is submitted to the **Microsoft Build AI / HackerEarth — Agent Swarms** track.
 
-- 📊 **[Submission deck (PDF)](docs/hackathon/Foundry-Submission-Deck.pdf)** — 10 slides, < 1 MB
+- 📊 **[Submission deck (PDF)](docs/archive/ventureos-submission/VentureOS-Submission-Deck.pdf)** — 10 slides, < 1 MB _(archived historical VentureOS deck; a Foundry-branded deck is pending)_
 - 🎬 **[3-minute demo script](docs/hackathon/demo-script.md)** — teleprompter + shot list
 - 📝 **[Submission form copy](docs/hackathon/submission-form.md)** — ready to paste
-- 🖼️ **[Live-app screenshots](docs/hackathon/screenshots/)** — dated, real
+- 🖼️ **[Live-app screenshots](docs/archive/ventureos-submission/screenshots/)** — dated, real _(archived historical VentureOS UI; Foundry-branded screenshots pending recapture)_
 - ✍️ **[Long-form write-up](docs/hackathon-submission.md)** — the original deep dive
 
-**Primary judging path:** <https://foundry.vercel.app/demo/faceless-crm> (no sign-in, no keys).
+**Primary judging path:** <https://ventureos-dun.vercel.app/demo/faceless-crm> (no sign-in, no keys).
 
 ---
 

@@ -1,7 +1,7 @@
 # Demo video script — 3 minutes
 
 > **Total runtime:** 3:00 (180 seconds, hard cap)
-> **Format:** screen capture of live deployment at <https://foundry.vercel.app>
+> **Format:** screen capture of live deployment at <https://ventureos-dun.vercel.app>
 > **Voiceover:** calm, paced, ~150 wpm. Use the teleprompter version below.
 > **Resolution:** 1280×720 minimum; 1920×1080 recommended.
 > **Browser:** Chrome / Edge, dark mode preferred (matches the app's theme).
@@ -13,9 +13,9 @@
 
 ## Recommended judge path
 
-Live app: <https://foundry.vercel.app/>
+Live app: <https://ventureos-dun.vercel.app/>
 
-Direct demo: <https://foundry.vercel.app/demo/faceless-crm>
+Direct demo: <https://ventureos-dun.vercel.app/demo/faceless-crm>
 
 Use the zero-key demo first. It requires no sign-in, no provider keys
 and no GitHub PAT — every artifact is seeded and the same for every
@@ -27,7 +27,7 @@ or the Alpha Workspace plus BYOK.
 ## Pre-roll setup (do this once before recording)
 
 1. Open Chrome / Edge in an incognito window at 1280×720 or 1920×1080.
-2. Visit <https://foundry.vercel.app> once to warm the CDN.
+2. Visit <https://ventureos-dun.vercel.app> once to warm the CDN.
 3. Close all other tabs. Hide the bookmarks bar (Ctrl+Shift+B).
 4. Quit Slack / Teams / mail notifications.
 5. Open OBS, QuickTime, or Loom. Set capture region to the browser
@@ -45,7 +45,7 @@ or the Alpha Workspace plus BYOK.
 
 ### 0:00 – 0:20 · Problem  (20s)
 
-> **[Cue: open `https://foundry.vercel.app/` with the homepage hero visible.]**
+> **[Cue: open `https://ventureos-dun.vercel.app/` with the homepage hero visible.]**
 
 > "Most teams start *building* before they know whether an idea is
 > *worth* building.

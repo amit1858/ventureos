@@ -104,20 +104,20 @@ describe('README and submission docs surface the judge path', () => {
     const src = readRepo('README.md');
     expect(src).toMatch(/## For judges/);
     expect(src).toMatch(/Open Judge Demo/);
-    expect(src).toMatch(/foundry\.vercel\.app\/demo\/faceless-crm/);
+    expect(src).toMatch(/ventureos-dun\.vercel\.app\/demo\/faceless-crm/);
     expect(src).toMatch(/no sign-in, no provider key, no GitHub PAT/);
   });
 
   it('docs/hackathon-submission.md has a Recommended judge path section', () => {
     const src = readRepo(path.join('docs', 'hackathon-submission.md'));
     expect(src).toMatch(/## Recommended judge path/);
-    expect(src).toMatch(/foundry\.vercel\.app\/demo\/faceless-crm/);
+    expect(src).toMatch(/ventureos-dun\.vercel\.app\/demo\/faceless-crm/);
   });
 
   it('docs/hackathon/demo-script.md has a Recommended judge path section', () => {
     const src = readRepo(path.join('docs', 'hackathon', 'demo-script.md'));
     expect(src).toMatch(/## Recommended judge path/);
-    expect(src).toMatch(/foundry\.vercel\.app\/demo\/faceless-crm/);
+    expect(src).toMatch(/ventureos-dun\.vercel\.app\/demo\/faceless-crm/);
   });
 });
 

@@ -12,8 +12,8 @@ How to run Foundry on your machine.
 ## Clone and install
 
 ```powershell
-git clone https://github.com/amit1858/foundry.git
-cd foundry
+git clone https://github.com/amit1858/foundry-venture-os.git
+cd foundry-venture-os
 corepack pnpm install
 ```
 
