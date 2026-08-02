@@ -1,6 +1,6 @@
 # Local Setup
 
-How to run VentureOS on your machine.
+How to run Foundry on your machine.
 
 ## Prerequisites
 
@@ -12,8 +12,8 @@ How to run VentureOS on your machine.
 ## Clone and install
 
 ```powershell
-git clone https://github.com/amit1858/ventureos.git
-cd ventureos
+git clone https://github.com/amit1858/foundry.git
+cd foundry
 corepack pnpm install
 ```
 
@@ -22,7 +22,7 @@ corepack pnpm install
 You can run the demo with **no environment configuration at all**:
 
 ```powershell
-corepack pnpm --filter "@ventureos/web" dev
+corepack pnpm --filter "@foundry/web" dev
 # open http://localhost:3000/demo/faceless-crm
 ```
 

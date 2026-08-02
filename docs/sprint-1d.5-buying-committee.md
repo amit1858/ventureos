@@ -24,12 +24,12 @@ not a keyword tally over loose utterances.
 
 ## Affected packages
 
-- `@ventureos/contracts` — additive new types
+- `@foundry/contracts` — additive new types
   (`BuyingCommitteeDeliberation`, `ParticipantOpinion`, `CommitteeChallenge`,
   `CommitteeResponse`, `OpinionChange`, `BuyingCommitteeEvaluation`).
   `BuyingCommitteeTranscript` gained an OPTIONAL `deliberation` field for
   back-compat with Sprint 1D.
-- `@ventureos/personalab`
+- `@foundry/personalab`
   - `orchestrator.ts` — `runBuyingCommittee` now performs 4 sequential
     `ChatFn` calls; legacy `members[]` is derived from the final consensus
     positions via a structural mapping, not keyword scoring.

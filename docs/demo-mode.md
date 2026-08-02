@@ -1,6 +1,6 @@
 # Demo Mode
 
-Demo Mode is a parallel surface that lets anyone experience the full VentureOS pipeline **without any API keys**, Supabase, GitHub PAT or network calls to providers.
+Demo Mode is a parallel surface that lets anyone experience the full Foundry pipeline **without any API keys**, Supabase, GitHub PAT or network calls to providers.
 
 ## What it is
 
@@ -43,7 +43,7 @@ The export file list shown in the demo's "GitHub export (simulated)" section is 
 | Concern | Shared? | Notes |
 |---|---|---|
 | Renderers (PRD, vision, evaluation, scaffold) | ✅ Shared | `renderRepoScaffold`, `EvaluationReport` renderer, all markdown templates. |
-| Contracts (`@ventureos/contracts`) | ✅ Shared | The seed fixtures conform to the same schemas Real Mode produces. |
+| Contracts (`@foundry/contracts`) | ✅ Shared | The seed fixtures conform to the same schemas Real Mode produces. |
 | Workspace components | Partially | The demo `Walkthrough.tsx` reuses badges, rings and cards but is its own page. |
 | Job orchestrator | ❌ Not used | Demo Mode is pure data; no `VentureJob` runs. |
 | Credential store | ❌ Not used | Demo Mode does not touch BYOK. |
@@ -53,7 +53,7 @@ The export file list shown in the demo's "GitHub export (simulated)" section is 
 
 ```powershell
 corepack pnpm install
-corepack pnpm --filter "@ventureos/web" dev
+corepack pnpm --filter "@foundry/web" dev
 # open http://localhost:3000/demo/faceless-crm
 ```
 

@@ -6,7 +6,7 @@
 
 Graphify transforms folders of mixed-format content (code, docs, PDFs, images, video transcripts, URLs) into a **queryable knowledge graph**. Originally positioned as an IDE-assistant skill (Claude Code, Cursor, Codex), it ships as a Python library + CLI + optional MCP stdio server.
 
-For VentureOS, Graphify is the **research engine** behind VentureLab — the thing that takes a raw idea plus a corpus of URLs/PDFs and produces a structured, citation-bearing graph of market entities, competitors, technologies, regulations, and the relationships among them. That graph is then the substrate for opportunity scoring and recommendation rationale.
+For Foundry, Graphify is the **research engine** behind VentureLab — the thing that takes a raw idea plus a corpus of URLs/PDFs and produces a structured, citation-bearing graph of market entities, competitors, technologies, regulations, and the relationships among them. That graph is then the substrate for opportunity scoring and recommendation rationale.
 
 ## 2. Core concepts
 
@@ -74,7 +74,7 @@ from graphify.export import to_json, to_html, push_to_neo4j
 
 ## 6. Limitations & risks
 
-| Concern | Detail | Impact on VentureOS |
+| Concern | Detail | Impact on Foundry |
 | --- | --- | --- |
 | **In-memory NetworkX** | Default backend; 100k node hard cap; HTML viz skipped above 5k. | Sufficient per-venture; we use `--neo4j-push` (or `graph.json` in object store) for persistence across sessions. |
 | **No native multi-tenancy** | Single-user per graph; no auth on MCP server. | We never expose the MCP server externally. We invoke Graphify per-venture in a sandboxed worker, then persist `graph.json` to the tenant's object-store prefix. |
@@ -95,7 +95,7 @@ from graphify.export import to_json, to_html, push_to_neo4j
 - Y Combinator S26 company (Penpax is the commercial product).
 - ⚠️ Single primary author; commercial parent could pivot/sunset the open-source tier. MIT means we can fork.
 
-## 8. Recommended VentureOS integration strategy
+## 8. Recommended Foundry integration strategy
 
 **Role:** VentureLab's research-graph builder and the citation substrate for every opportunity score and Go/Pivot/Kill rationale.
 
@@ -116,7 +116,7 @@ from graphify.export import to_json, to_html, push_to_neo4j
 **Concrete adapter surface (sketch):**
 
 ```python
-# packages/adapters/graphify/src/ventureos_graphify/adapter.py
+# packages/adapters/graphify/src/foundry_graphify/adapter.py
 class GraphifyAdapter:
     def __init__(self, provider: ProviderClient, budget: BudgetGuard,
                  tenant_id: str, workdir: Path): ...
@@ -151,7 +151,7 @@ class GraphifyAdapter:
 - Upstream goes silent for 60+ days with critical bugs unaddressed.
 - The commercial parent (Penpax) relicenses or restricts the open-source tier.
 
-## 9. Risks specific to VentureOS embedding (ranked)
+## 9. Risks specific to Foundry embedding (ranked)
 
 1. **Single-author dependency.** Most operationally significant risk. Mitigate via pinned version, vendor slot, and a quarterly "can we still build a graph offline?" drill.
 2. **LLM-cost surprise on deep ingest.** Gate behind explicit user confirmation; show a token-budget estimate before run; enforce hard caps in the provider layer.

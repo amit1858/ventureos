@@ -1,19 +1,19 @@
-# Hackathon Submission — VentureOS
+# Hackathon Submission — Foundry
 
 > **Track:** Microsoft Build AI / HackerEarth — **Agent Swarms**
-> **Project:** VentureOS — an AI-native multi-agent venture operating system
-> **Repo:** https://github.com/amit1858/ventureos
-> **Live app:** https://ventureos-dun.vercel.app
-> **Primary judging path (zero-key):** https://ventureos-dun.vercel.app/demo/faceless-crm
+> **Project:** Foundry — an AI-native multi-agent venture operating system
+> **Repo:** https://github.com/amit1858/foundry
+> **Live app:** https://foundry.vercel.app
+> **Primary judging path (zero-key):** https://foundry.vercel.app/demo/faceless-crm
 >
 > 📦 **Submission pack** (deck PDF, 3-min demo script, submission-form copy, screenshots): see **[`docs/hackathon/`](./hackathon/README.md)**.
 > This document is the long-form write-up; the submission pack is the short-form, judge-facing version.
 
 ## Recommended judge path
 
-Live app: <https://ventureos-dun.vercel.app/>
+Live app: <https://foundry.vercel.app/>
 
-Direct demo: <https://ventureos-dun.vercel.app/demo/faceless-crm>
+Direct demo: <https://foundry.vercel.app/demo/faceless-crm>
 
 Use the zero-key demo first. Real Mode is optional for deeper testing
 through Google sign-in / Alpha Workspace plus BYOK provider keys.
@@ -29,7 +29,7 @@ Founders, product teams and venture studios need a way to **simulate the decisio
 
 ## Solution
 
-**VentureOS** is a multi-agent venture operating system that turns a single brief into a validated, build-ready venture in one pipeline:
+**Foundry** is a multi-agent venture operating system that turns a single brief into a validated, build-ready venture in one pipeline:
 
 ```
 Idea → PersonaLab → Buying Committee → Research Graph
@@ -93,10 +93,10 @@ See [`demo-script.md`](demo-script.md) for 3 / 5 / 7-minute walkthroughs and fal
 ## Setup
 
 ```powershell
-git clone https://github.com/amit1858/ventureos.git
-cd ventureos
+git clone https://github.com/amit1858/foundry.git
+cd foundry
 corepack pnpm install
-corepack pnpm --filter "@ventureos/web" dev
+corepack pnpm --filter "@foundry/web" dev
 # open http://localhost:3000/demo/faceless-crm   ← no setup needed
 ```
 
@@ -104,7 +104,7 @@ For Real Mode setup (Supabase + encryption key + BYOK), see [`setup-local.md`](s
 
 ## Repository
 
-- **Source:** https://github.com/amit1858/ventureos
+- **Source:** https://github.com/amit1858/foundry
 - **License:** TBD (research / hackathon project)
 - **Built by:** Amit Pandey (`@amit1858`) with GitHub Copilot
 

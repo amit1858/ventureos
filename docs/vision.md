@@ -1,10 +1,10 @@
-# VentureOS — Vision
+# Foundry — Vision
 
 > Sprint −1 deliverable. Discovery, not implementation.
 
 ## 1. One-line vision
 
-**VentureOS turns a raw business idea into a validated, designed, and scaffolded venture — through three AI-native labs that simulate customers, stress-test the opportunity, and produce a buildable artifact.**
+**Foundry turns a raw business idea into a validated, designed, and scaffolded venture — through three AI-native labs that simulate customers, stress-test the opportunity, and produce a buildable artifact.**
 
 ## 2. Problem statement
 
@@ -15,7 +15,7 @@ Founders, intrapreneurs, and product teams routinely commit months of engineerin
 - The gap between "validated insight" and "buildable PRD + architecture + scaffold" is huge and usually re-done from scratch.
 - LLM tools today accelerate **execution** (Copilot, Cursor) but not **the decision to build the right thing**.
 
-VentureOS attacks the discovery-to-build gap with a structured, auditable, multi-agent workflow.
+Foundry attacks the discovery-to-build gap with a structured, auditable, multi-agent workflow.
 
 ## 3. Product surface (three labs)
 
@@ -25,7 +25,7 @@ VentureOS attacks the discovery-to-build gap with a structured, auditable, multi
 | **VentureLab** | Build a research graph, score the opportunity, surface risks/assumptions, and issue a Proceed / Pivot / Kill recommendation. | Graphify (adapted) + custom scoring agents |
 | **BuildSquad** | Convert a validated venture into PRD → architecture → user stories → prototype → GitHub repository. | Squad-OSS (adapted) |
 
-> **Naming risk flagged early.** The third VentureOS module shares a name with Brady Gaster's `bradygaster/squad` repository. To avoid permanent namespace collision in code, packages, prompts, and docs, the internal module is renamed **BuildSquad** throughout this design. The external dependency is referred to as **Squad-OSS**.
+> **Naming risk flagged early.** The third Foundry module shares a name with Brady Gaster's `bradygaster/squad` repository. To avoid permanent namespace collision in code, packages, prompts, and docs, the internal module is renamed **BuildSquad** throughout this design. The external dependency is referred to as **Squad-OSS**.
 
 ## 4. End-to-end product flow
 
@@ -43,7 +43,7 @@ Idea
   → GitHub Repository
 ```
 
-Each transition is an **artifact handoff** — typed, versioned, auditable — not a free-form prompt chain. This is what differentiates VentureOS from a "chain of GPT calls."
+Each transition is an **artifact handoff** — typed, versioned, auditable — not a free-form prompt chain. This is what differentiates Foundry from a "chain of GPT calls."
 
 ## 5. Design principles
 
@@ -57,7 +57,7 @@ Each transition is an **artifact handoff** — typed, versioned, auditable — n
 
 ## 6. Non-goals (explicit)
 
-- VentureOS is **not** a no-code app builder. The prototype is a starting point, not a finished product.
+- Foundry is **not** a no-code app builder. The prototype is a starting point, not a finished product.
 - It does **not** replace real customer interviews — it sharpens, prioritises, and de-risks them.
 - It is **not** an internal Microsoft-only tool. BYOK and tenant isolation are required from day one.
 - It is **not** a hackathon demo. The hackathon is milestone 0; the architecture must survive milestone 12.
@@ -74,7 +74,7 @@ Each transition is an **artifact handoff** — typed, versioned, auditable — n
 
 ## 8. Differentiators
 
-- **Three labs, one spine.** Most agent frameworks ship one capability; VentureOS ships a full pipeline with typed artifacts between phases.
+- **Three labs, one spine.** Most agent frameworks ship one capability; Foundry ships a full pipeline with typed artifacts between phases.
 - **Synthetic buying-committee simulation.** Not just personas — multi-stakeholder objection modelling (champion, blocker, economic buyer, end user).
 - **Auditable Go/Pivot/Kill.** Every recommendation cites the research graph node IDs and persona transcript IDs that justify it.
 - **Repo as the artifact.** BuildSquad produces a real GitHub repo with PRD, ADRs, scaffold, and issues — ready for a human team.

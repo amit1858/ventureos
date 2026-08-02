@@ -1,7 +1,7 @@
 # Demo video script — 3 minutes
 
 > **Total runtime:** 3:00 (180 seconds, hard cap)
-> **Format:** screen capture of live deployment at <https://ventureos-dun.vercel.app>
+> **Format:** screen capture of live deployment at <https://foundry.vercel.app>
 > **Voiceover:** calm, paced, ~150 wpm. Use the teleprompter version below.
 > **Resolution:** 1280×720 minimum; 1920×1080 recommended.
 > **Browser:** Chrome / Edge, dark mode preferred (matches the app's theme).
@@ -13,9 +13,9 @@
 
 ## Recommended judge path
 
-Live app: <https://ventureos-dun.vercel.app/>
+Live app: <https://foundry.vercel.app/>
 
-Direct demo: <https://ventureos-dun.vercel.app/demo/faceless-crm>
+Direct demo: <https://foundry.vercel.app/demo/faceless-crm>
 
 Use the zero-key demo first. It requires no sign-in, no provider keys
 and no GitHub PAT — every artifact is seeded and the same for every
@@ -27,7 +27,7 @@ or the Alpha Workspace plus BYOK.
 ## Pre-roll setup (do this once before recording)
 
 1. Open Chrome / Edge in an incognito window at 1280×720 or 1920×1080.
-2. Visit <https://ventureos-dun.vercel.app> once to warm the CDN.
+2. Visit <https://foundry.vercel.app> once to warm the CDN.
 3. Close all other tabs. Hide the bookmarks bar (Ctrl+Shift+B).
 4. Quit Slack / Teams / mail notifications.
 5. Open OBS, QuickTime, or Loom. Set capture region to the browser
@@ -45,7 +45,7 @@ or the Alpha Workspace plus BYOK.
 
 ### 0:00 – 0:20 · Problem  (20s)
 
-> **[Cue: open `https://ventureos-dun.vercel.app/` with the homepage hero visible.]**
+> **[Cue: open `https://foundry.vercel.app/` with the homepage hero visible.]**
 
 > "Most teams start *building* before they know whether an idea is
 > *worth* building.
@@ -53,7 +53,7 @@ or the Alpha Workspace plus BYOK.
 > They burn weeks of engineering on something synthetic personas could
 > have invalidated in an afternoon.
 >
-> VentureOS solves this by giving every idea its own multi-agent
+> Foundry solves this by giving every idea its own multi-agent
 > validation and planning system — before a single line of code ships."
 
 ---
@@ -63,7 +63,7 @@ or the Alpha Workspace plus BYOK.
 > **[Cue: stay on the homepage. Slowly scroll past the hero, past the
 > pipeline strip — the 8 numbered cards from Idea Intake to GitHub Export.]**
 
-> "VentureOS is an AI-native, *multi-agent* venture operating system.
+> "Foundry is an AI-native, *multi-agent* venture operating system.
 >
 > It uses persona agents, a buying-committee agent, research-graph
 > agents, a venture-validation agent, BuildSquad planning agents and
@@ -145,14 +145,14 @@ or the Alpha Workspace plus BYOK.
 > **[Cue: scroll to STEP 8 — 'GitHub export (simulated)'. Show the
 > 14-file repo scaffold list and the simulated PR URL.]**
 
-> "Finally, VentureOS exports the whole venture into a GitHub-ready
+> "Finally, Foundry exports the whole venture into a GitHub-ready
 > repository — README, VISION, PRD, ARCHITECTURE, ROADMAP, user
 > stories, evaluation report, fourteen files in total.
 >
 > The whole pipeline is BYOK. Provider keys stay on the server,
 > encrypted, never logged.
 >
-> VentureOS gives every idea an agent swarm — so teams can decide
+> Foundry gives every idea an agent swarm — so teams can decide
 > what to build, *before* they build it."
 
 > **[Cue: end on the GitHub export panel or fade out to the homepage.]**
@@ -163,7 +163,7 @@ or the Alpha Workspace plus BYOK.
 
 | Time | URL / Action | What you say (1-line cue) |
 |---|---|---|
-| 0:00 | `/`  homepage hero visible | Teams build before they validate. VentureOS fixes that. |
+| 0:00 | `/`  homepage hero visible | Teams build before they validate. Foundry fixes that. |
 | 0:20 | `/`  scroll past pipeline strip | Multi-agent OS. Each agent has a job. Each produces an artifact. |
 | 0:45 | Click *Try the demo* → *Faceless CRM* | Zero-key demo. Readiness 97, decision Proceed. Let's see why. |
 | 1:15 | Scroll to *Personas* + *Buying Committee* | 5 synthetic buyers. Agentic deliberation. Provenance-tagged. |
@@ -204,6 +204,6 @@ or the Alpha Workspace plus BYOK.
 3. Export as **MP4 (H.264, 1080p, 30fps)** at 8–10 Mbps. The whole file
    should be under 100 MB.
 4. Upload to YouTube as **unlisted**. Title the video
-   `VentureOS — Microsoft Build AI / HackerEarth — Agent Swarms`.
+   `Foundry — Microsoft Build AI / HackerEarth — Agent Swarms`.
 5. Paste both the YouTube URL and the MP4 download link into the
    HackerEarth submission form video field.

@@ -1,11 +1,11 @@
 # Known Limitations
 
-We are honest about what VentureOS is and is not. This list is the single source of truth for the gap between the brand promise and the shipped runtime.
+We are honest about what Foundry is and is not. This list is the single source of truth for the gap between the brand promise and the shipped runtime.
 
 ## Runtime gaps
 
 - **TinyTroupe Python adapter is scaffolded, not wired.** The canonical PersonaLab runtime is the TypeScript implementation in `packages/personalab`. The Python adapter (`packages/adapters/tinytroupe-py`) is a forward-compatible seam. We describe PersonaLab as "TinyTroupe-style persona simulation" and do **not** claim full Python TinyTroupe parity.
-- **Graphify Python / TS adapters are scaffolded, not wired.** Research-graph construction is done by `@ventureos/research-graph` directly. The Graphify adapters (`packages/adapters/graphify-*`) are placeholders. We describe the workflow as "Graphify-inspired" and do **not** claim full Graphify parity.
+- **Graphify Python / TS adapters are scaffolded, not wired.** Research-graph construction is done by `@foundry/research-graph` directly. The Graphify adapters (`packages/adapters/graphify-*`) are placeholders. We describe the workflow as "Graphify-inspired" and do **not** claim full Graphify parity.
 - **Squad-OSS integration is not present.** BuildSquad's planning swarm is fully home-grown. There is no Squad-OSS dependency.
 - **No external queue.** `VentureJob` is durable per-process. Very long jobs survive a request boundary but not a process restart mid-flight. A future iteration would back this with Temporal or similar.
 - **No streaming UI for in-flight lab runs.** Jobs surface as polled status with step + percent. There is no token-by-token streaming in the Workspace.

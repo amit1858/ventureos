@@ -1,6 +1,6 @@
 # Faceless CRM — reference scenario
 
-A schema-valid fixture used to exercise the full VentureOS pipeline end-to-end
+A schema-valid fixture used to exercise the full Foundry pipeline end-to-end
 once implementations land. See [docs/faceless-crm-reference-scenario.md](../../docs/faceless-crm-reference-scenario.md) for the narrative.
 
 Files

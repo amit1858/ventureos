@@ -5,7 +5,7 @@
 
 ## 1. Goal
 
-Integrate Graphify as the research and knowledge graph layer for VentureOS so
+Integrate Graphify as the research and knowledge graph layer for Foundry so
 that ideas, evidence and counter-signals form a structured, queryable graph
 the rest of the platform can ground itself on. VentureLab consumes this graph
 **optionally** to adjust assumption confidence, competitive risk, market
@@ -57,7 +57,7 @@ Cypher string only; no network connection is opened.
 Every node and edge carries `provenance: { sourceId, quote? }[]` so any UI
 claim can be traced back to a verbatim source excerpt.
 
-## 4. TS adapter (`@ventureos/adapter-graphify`)
+## 4. TS adapter (`@foundry/adapter-graphify`)
 
 Location: `packages/adapters/graphify-ts/`.
 

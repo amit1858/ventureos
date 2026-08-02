@@ -2,7 +2,7 @@
 
 > Source: https://github.com/bradygaster/squad · License: MIT · Latest analysed: v0.9.4 (alpha) · Language: TypeScript / Node ≥ 20 · npm: `@bradygaster/squad-cli`, `@bradygaster/squad-sdk`
 
-> **Naming note.** Brady Gaster's project is named `squad`. The third VentureOS module is also conceptually a "squad." To prevent permanent collision across packages, prompts, dashboards, and docs, the VentureOS module is renamed **BuildSquad** throughout the platform. The dependency is referred to as **Squad-OSS** here and elsewhere.
+> **Naming note.** Brady Gaster's project is named `squad`. The third Foundry module is also conceptually a "squad." To prevent permanent collision across packages, prompts, dashboards, and docs, the Foundry module is renamed **BuildSquad** throughout the platform. The dependency is referred to as **Squad-OSS** here and elsewhere.
 
 ## 1. Purpose
 
@@ -15,7 +15,7 @@ Squad-OSS is a **human-directed, specialist-agent orchestration framework** buil
 - Platform adapters for GitHub and Azure DevOps (PR creation, issue triage, work items).
 - A "Ralph" watch mode that polls repos for labelled issues and auto-dispatches.
 
-For VentureOS, Squad-OSS is the **execution engine** behind BuildSquad — turning a validated venture into PRD → architecture → user stories → prototype → real GitHub repo.
+For Foundry, Squad-OSS is the **execution engine** behind BuildSquad — turning a validated venture into PRD → architecture → user stories → prototype → real GitHub repo.
 
 ## 2. Core concepts
 
@@ -80,11 +80,11 @@ const result = await client.dispatch({ task: 'Build login page', agents: ['trini
 
 ## 6. Limitations & risks
 
-| Concern | Detail | Impact on VentureOS |
+| Concern | Detail | Impact on Foundry |
 | --- | --- | --- |
 | **Alpha status (v0.9.x)** | README explicitly flags experimental APIs and CLI changes. | Hand-rolled BuildSquad fallback is required; Squad-OSS adoption is feature-flagged. |
 | **Tight coupling to GitHub Copilot CLI** | Model access is routed through Copilot, not arbitrary providers. | Conflicts with our BYOK mandate. Either we use Copilot-as-provider (one of our supported providers), wrap Squad-OSS so that *only* its file/PR/orchestration capabilities are used and we substitute our own session runtime, or accept a per-tenant Copilot dependency for the BuildSquad lab only. **Recommendation: option 2 + feature-flag.** |
-| **Node/TypeScript** | VentureOS PersonaLab and VentureLab are Python. | Polyglot worker pool: Node workers for BuildSquad; shared JSON-schema contracts. |
+| **Node/TypeScript** | Foundry PersonaLab and VentureLab are Python. | Polyglot worker pool: Node workers for BuildSquad; shared JSON-schema contracts. |
 | **No vault integration** | Secrets via environment only. | We never put decrypted user secrets in subprocess env. Use temp file with `chmod 600` or stdin pipe; sandbox the subprocess. |
 | **Subprocess writes files in cwd** | Agents edit files in working tree. | Per-job ephemeral chroot/temp directory; output extracted, then directory torn down. |
 | **Watch mode is long-running** | Ralph polls repos. | We do **not** run Ralph in our platform. We invoke Squad-OSS as a one-shot per-venture build. |
@@ -98,7 +98,7 @@ const result = await client.dispatch({ task: 'Build login page', agents: ['trini
 - Brady Gaster (Microsoft) + ~40 contributors; active commits.
 - Last release v0.9.4 (April 2026). Documented changelog. Independent versioning per package via changesets.
 
-## 8. Recommended VentureOS integration strategy
+## 8. Recommended Foundry integration strategy
 
 **Role:** BuildSquad lab — generate PRD, architecture doc, ADRs, user stories, prototype scaffold; create a GitHub repository populated with all of the above; open initial issues; set up project board.
 
@@ -112,14 +112,14 @@ const result = await client.dispatch({ task: 'Build login page', agents: ['trini
 **Integration shape (M1+):**
 
 1. **CLI subprocess, not in-process embedding.** A Node worker shells out to `squad` CLI commands in a per-job sandboxed directory. We do not link `@bradygaster/squad-sdk` into a long-running shared process (alpha + ESM + global state risk).
-2. **Per-job ephemeral `.squad/`.** The worker initialises a fresh `.squad/` from a VentureOS template before each build; the directory is destroyed after the artifacts are uploaded.
+2. **Per-job ephemeral `.squad/`.** The worker initialises a fresh `.squad/` from a Foundry template before each build; the directory is destroyed after the artifacts are uploaded.
 3. **Provider injection via adapter shim.** Because Squad-OSS routes model calls through Copilot, we have three options:
    - (a) Treat **GitHub Copilot itself as one of our BYOK providers** for the BuildSquad lab (the user supplies a Copilot-eligible GitHub token).
    - (b) Add a small Squad-OSS SDK extension that lets us substitute a custom session runtime that calls our provider layer. (Upstream contribution.)
    - (c) Bypass Squad-OSS's runtime entirely and use it only for its **state model, routing, hooks, charters, and GitHub adapter**, plugging in our own session execution.
    We carry **(a)** and **(c)** as parallel paths through M1; pick the winner at M2 based on what landed upstream.
 4. **GitHub integration goes through Squad-OSS's platform adapter** (it already handles PRs, issues, project boards). User's BYO GitHub token is passed via a per-call temp file, not env.
-5. **Hooks enforce VentureOS governance.** We register a pre-tool hook that blocks `.env`, blocks shell commands outside an allowlist, and blocks network egress to non-allowlisted hosts.
+5. **Hooks enforce Foundry governance.** We register a pre-tool hook that blocks `.env`, blocks shell commands outside an allowlist, and blocks network egress to non-allowlisted hosts.
 6. **Telemetry bridge.** Squad-OSS emits OTel; we plumb it into our central collector with `tenant_id`, `venture_id`, `artifact_id` labels.
 7. **Templated charters per role.** BuildSquad ships a fixed roster: `architect`, `pm`, `frontend`, `backend`, `qa`. Each has a templated charter parameterised by the venture's PRD / recommendation artifacts.
 8. **Output extraction.** When the build run completes, the adapter scrapes the per-job directory for: `PRD.md`, `ARCHITECTURE.md`, `adr/*.md`, `stories/*.md`, `scaffold/`. These are uploaded as artifacts and the directory is deleted.
@@ -160,7 +160,7 @@ A symmetric `HandRolledBuildSquadAdapter` exposes the same surface. The lab depe
 - Upstream stalls for 60+ days with bugs we can't work around.
 - Required hooks API to satisfy our governance is rejected.
 
-## 9. Risks specific to VentureOS embedding (ranked)
+## 9. Risks specific to Foundry embedding (ranked)
 
 1. **Provider-routing mismatch.** Squad-OSS's Copilot-centric model resolution conflicts with our BYOK mandate. **This is the integration decision.** Mitigation: keep paths (a) and (c) above alive through M1; choose at M2.
 2. **Alpha API churn.** Wrap behind adapter; contract tests; pinned versions; CLI-not-SDK for safety.
@@ -177,4 +177,4 @@ A symmetric `HandRolledBuildSquadAdapter` exposes the same surface. The lab depe
 - **Per-job sandbox** with our hooks enforcing governance.
 - **Provider integration** is the open decision; carry parallel options through M1.
 - **Pin** exact version; contract tests; vendor slot ready.
-- **Rename** the VentureOS module to **BuildSquad** to avoid permanent namespace collision.
+- **Rename** the Foundry module to **BuildSquad** to avoid permanent namespace collision.

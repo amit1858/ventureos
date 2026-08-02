@@ -1,6 +1,6 @@
-# VentureOS — Adapter Strategy
+# Foundry — Adapter Strategy
 
-> Sprint −1 deliverable. The contract between VentureOS and any external engine.
+> Sprint −1 deliverable. The contract between Foundry and any external engine.
 
 ## 1. Why adapters
 
@@ -16,7 +16,7 @@ We must not let their evolution dictate ours. An **adapter** is a stable interna
 
 1. **One adapter package per engine.** `packages/adapters/tinytroupe/`, `packages/adapters/graphify/`, `packages/adapters/squad/`, `packages/adapters/github/`.
 2. **The adapter is the only code allowed to import the engine.** Enforced by an architecture-test (import-linter) in CI.
-3. **Inputs and outputs are typed VentureOS contracts**, not engine-native types.
+3. **Inputs and outputs are typed Foundry contracts**, not engine-native types.
 4. **The adapter owns translation** between our schema and the engine's schema.
 5. **The adapter never accesses provider SDKs.** It receives a `ProviderClient` from the lab and a `BudgetGuard`.
 6. **The adapter is sandbox-aware.** It receives a workdir, never touches `$HOME` or shared state.
@@ -33,7 +33,7 @@ We must not let their evolution dictate ours. An **adapter** is a stable interna
 | Sandbox / workdir management | Adapter |
 | Subprocess spawn + lifecycle | Adapter |
 | stdout/stderr capture + structured logging | Adapter |
-| Error normalisation to typed VentureOS errors | Adapter |
+| Error normalisation to typed Foundry errors | Adapter |
 | Retry + backoff for transient engine errors | Adapter |
 | Telemetry span emission | Adapter |
 | Output validation against our JSON schemas | Adapter |
@@ -83,7 +83,7 @@ A Python equivalent exists for the TinyTroupe and Graphify adapters (Python labs
 - **Process model**: in-process Python (subprocess per venture worker, not per call).
 - **Provider injection**: monkeypatch (M0) → upstream PR for injection hook (M1+).
 - **Fallback**: minimal hand-rolled persona simulator built on the provider layer, for unit tests and when TinyTroupe is unavailable. Not feature-equivalent.
-- **Bridge (Sprint 1D)**: the TypeScript host (`apps/web/src/lib/tinytroupe-bridge.ts`) spawns the `python -m ventureos_tinytroupe.cli` subprocess only when:
+- **Bridge (Sprint 1D)**: the TypeScript host (`apps/web/src/lib/tinytroupe-bridge.ts`) spawns the `python -m foundry_tinytroupe.cli` subprocess only when:
   1. `VENTUREOS_TINYTROUPE_PYTHON` is set in the host environment, AND
   2. the request carries `engine: 'tinytroupe'`, AND
   3. the action is one of `generatePersonas | runInterview | runFocusGroup | runBuyingCommittee` (`extractInsights` and `validatePersonaSet` always stay in-process).

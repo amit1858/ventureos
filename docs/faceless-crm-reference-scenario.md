@@ -387,7 +387,7 @@ Epic: Pipeline hygiene agent
 3. The scaffold is pushed.
 4. Each user story becomes a GitHub issue with labels and the relevant ADR linked.
 5. A GitHub Project board is created with columns Backlog / In Progress / Review / Done.
-6. The repo's README references back to the VentureOS PRD and recommendation by ID.
+6. The repo's README references back to the Foundry PRD and recommendation by ID.
 
 **Output:** `RepoLinkArtifact`
 

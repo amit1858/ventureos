@@ -1,20 +1,20 @@
-# VentureOS
+# Foundry
 
-[![Live demo](https://img.shields.io/badge/Live%20demo-ventureos--dun.vercel.app-blueviolet?logo=vercel)](https://ventureos-dun.vercel.app/demo/faceless-crm)
-[![Sign in](https://img.shields.io/badge/Sign%20in-Google%20OAuth-4285F4?logo=google)](https://ventureos-dun.vercel.app/signin)
-[![Tag](https://img.shields.io/badge/release-v1.0--submission-success)](https://github.com/amit1858/ventureos/releases/tag/v1.0-submission)
+[![Live demo](https://img.shields.io/badge/Live%20demo-foundry.vercel.app-blueviolet?logo=vercel)](https://foundry.vercel.app/demo/faceless-crm)
+[![Sign in](https://img.shields.io/badge/Sign%20in-Google%20OAuth-4285F4?logo=google)](https://foundry.vercel.app/signin)
+[![Tag](https://img.shields.io/badge/release-v1.0--submission-success)](https://github.com/amit1858/foundry/releases/tag/v1.0-submission)
 [![License](https://img.shields.io/badge/license-TBD-lightgrey)](#license)
 
-> **AI-native multi-agent venture operating system.** Turn raw ideas into validated, build-ready ventures with a governed swarm of specialized agents — not a single chatbot.
+> **An AI-native Venture Operating System that helps teams decide what deserves to be built before engineering begins.** Foundry helps product teams transform raw ideas into validated, execution-ready ventures using collaborative AI agents — not a single chatbot.
 
 ## What is this?
 
-VentureOS takes a one-paragraph idea brief and produces a **simulated buying committee**, a **typed research graph**, a **Proceed / Pivot / Kill recommendation** with confidence, a **BuildSquad plan** (PRD · architecture · roadmap · user stories), an **evaluation report** with provenance, and a **real GitHub repository** under your account — all produced by specialized agents collaborating through typed artifacts on a single `Venture` object.
+Foundry takes a one-paragraph idea brief and produces a **simulated buying committee**, a **typed research graph**, a **Proceed / Pivot / Kill recommendation** with confidence, a **BuildSquad plan** (PRD · architecture · roadmap · user stories), an **evaluation report** with provenance, and a **real GitHub repository** under your account — all produced by specialized agents collaborating through typed artifacts on a single `Venture` object.
 
 **Read [`docs/product.md`](docs/product.md) for the full product story** — what it does, who it's for, why it's different, and the concrete value it delivers.
 
-- 🎬 **Try the demo (zero keys):** [`/demo/faceless-crm`](https://ventureos-dun.vercel.app/demo/faceless-crm) — a fully seeded "Faceless CRM for SMB" venture taken from idea to GitHub-ready artifacts
-- 🛠️ **Run it on your own idea (BYOK):** [`/signin`](https://ventureos-dun.vercel.app/signin) — sign in with Google, add your own OpenAI / Anthropic / Gemini / Azure OpenAI key + a GitHub PAT, create a venture, and let the swarm produce a real evaluation and a real GitHub repo
+- 🎬 **Try the demo (zero keys):** [`/demo/faceless-crm`](https://foundry.vercel.app/demo/faceless-crm) — a fully seeded "Faceless CRM for SMB" venture taken from idea to GitHub-ready artifacts
+- 🛠️ **Run it on your own idea (BYOK):** [`/signin`](https://foundry.vercel.app/signin) — sign in with Google, add your own OpenAI / Anthropic / Gemini / Azure OpenAI key + a GitHub PAT, create a venture, and let the swarm produce a real evaluation and a real GitHub repo
 - 🧠 **Read the product narrative:** [`docs/product.md`](docs/product.md) — value, audience, differentiation, architecture, access modes, status
 - 📚 **Read the architecture:** [`docs/architecture-overview.md`](docs/architecture-overview.md) — five-plane monorepo, contracts-first agents, VentureJob primitive, provider isolation
 
@@ -26,8 +26,8 @@ VentureOS takes a one-paragraph idea brief and produces a **simulated buying com
 
 **Recommended path:**
 
-1. Open the live app: <https://ventureos-dun.vercel.app/>
-2. Click **"Open Judge Demo"** on the homepage, or go directly to <https://ventureos-dun.vercel.app/demo/faceless-crm>
+1. Open the live app: <https://foundry.vercel.app/>
+2. Click **"Open Judge Demo"** on the homepage, or go directly to <https://foundry.vercel.app/demo/faceless-crm>
 3. Review the complete zero-key demo: personas, buying committee deliberation, research graph, VentureLab recommendation, BuildSquad plan, evaluation report, and simulated GitHub export.
 
 This path requires **no sign-in, no provider key, no GitHub PAT, and no setup** — every artifact is seeded and the same for every judge.
@@ -38,7 +38,7 @@ This path requires **no sign-in, no provider key, no GitHub PAT, and no setup** 
 
 ## Why this exists
 
-Most "AI for product" tools generate documents. VentureOS instead **simulates the decision** you'd want to make before building:
+Most "AI for product" tools generate documents. Foundry instead **simulates the decision** you'd want to make before building:
 
 - Synthetic SMB buyers, ops, finance leads and economic buyers form a buying committee and actually **deliberate** about your offer.
 - Research is converted into a typed graph of problems, customers, competitors, risks and contradictions — not a wall of bullet points.
@@ -77,7 +77,7 @@ See **[`docs/agent-swarms.md`](docs/agent-swarms.md)** for what each agent group
 
 ## Demo Mode (no keys)
 
-VentureOS ships a fully seeded **Demo Mode** so judges, reviewers and teammates can experience the full pipeline without any API keys, Supabase, GitHub PAT, or network calls to providers.
+Foundry ships a fully seeded **Demo Mode** so judges, reviewers and teammates can experience the full pipeline without any API keys, Supabase, GitHub PAT, or network calls to providers.
 
 - **URL:** `/demo/faceless-crm`
 - **Scenario:** "Faceless CRM for SMB" — opinionated SMB sales-ops product
@@ -122,9 +122,9 @@ See **[`docs/security-byok.md`](docs/security-byok.md)** for the BYOK model and 
 
 ## Architecture (one paragraph)
 
-VentureOS is a **TypeScript-first monorepo** (pnpm + turbo) with a strict five-plane layout — Experience, Orchestration, Lab, Provider, Persistence. Every lab is a pure package (`@ventureos/personalab`, `@ventureos/venturelab`, `@ventureos/buildsquad`, `@ventureos/research-graph`) that consumes and produces JSON contracts from `@ventureos/contracts`. Long-running work runs as a `VentureJob` so the UI always sees status / progress / provider · model · cost / elapsed / failure guidance. Provider SDKs (OpenAI, Anthropic, Gemini, Azure OpenAI, Octokit) live only in their named adapter packages, enforced by a custom `lint:arch` check.
+Foundry is a **TypeScript-first monorepo** (pnpm + turbo) with a strict five-plane layout — Experience, Orchestration, Lab, Provider, Persistence. Every lab is a pure package (`@foundry/personalab`, `@foundry/venturelab`, `@foundry/buildsquad`, `@foundry/research-graph`) that consumes and produces JSON contracts from `@foundry/contracts`. Long-running work runs as a `VentureJob` so the UI always sees status / progress / provider · model · cost / elapsed / failure guidance. Provider SDKs (OpenAI, Anthropic, Gemini, Azure OpenAI, Octokit) live only in their named adapter packages, enforced by a custom `lint:arch` check.
 
-VentureOS is **designed around real multi-agent and graph-based patterns**, including **TinyTroupe-style persona simulation** and **Graphify-inspired research graph workflows**. The TypeScript implementation is the canonical runtime; Python adapters are scaffolded for future deep integration but the TS path is what the live product uses today.
+Foundry is **designed around real multi-agent and graph-based patterns**, including **TinyTroupe-style persona simulation** and **Graphify-inspired research graph workflows**. The TypeScript implementation is the canonical runtime; Python adapters are scaffolded for future deep integration but the TS path is what the live product uses today.
 
 For the full architecture, see [`docs/architecture-overview.md`](docs/architecture-overview.md). For the internal Sprint −1 design doc, see [`docs/architecture.md`](docs/architecture.md).
 
@@ -139,7 +139,7 @@ Prerequisites:
 
 ```powershell
 corepack pnpm install
-corepack pnpm --filter "@ventureos/web" dev
+corepack pnpm --filter "@foundry/web" dev
 ```
 
 Web app runs at `http://localhost:3000` (or `3100` if 3000 is busy).
@@ -192,7 +192,7 @@ Two supported modes (full details in **[`docs/deployment.md`](docs/deployment.md
 > ```bash
 > git remote remove origin
 > vercel deploy --prod
-> git remote add origin https://github.com/amit1858/ventureos.git
+> git remote add origin https://github.com/amit1858/foundry.git
 > git push origin main
 > ```
 >
@@ -204,7 +204,7 @@ Two supported modes (full details in **[`docs/deployment.md`](docs/deployment.md
 
 - **Multi-provider LLM routing** through adapter packages in `packages/providers/*` (OpenAI · Anthropic · Gemini · Azure OpenAI). All BYOK.
 - **TinyTroupe-style persona simulation.** PersonaLab generates and runs a buying committee that deliberates and changes positions; a Python TinyTroupe adapter is scaffolded in `packages/adapters/tinytroupe-py/` for future runtime integration.
-- **Graphify-inspired research graph workflows.** `@ventureos/research-graph` produces typed graphs of problems, segments, competitors and risks with contradictions and god-nodes surfaced; Graphify adapters are scaffolded in `packages/adapters/graphify-*/` for future runtime integration.
+- **Graphify-inspired research graph workflows.** `@foundry/research-graph` produces typed graphs of problems, segments, competitors and risks with contradictions and god-nodes surfaced; Graphify adapters are scaffolded in `packages/adapters/graphify-*/` for future runtime integration.
 - **BuildSquad planning swarm** in `packages/buildsquad` — PM, UX, architecture, engineering, QA, GTM agents producing a 14-file GitHub-ready scaffold via the deterministic `renderRepoScaffold`.
 - **GitHub export** via `packages/adapters/github-ts/` (Octokit, isolated by the `lint:arch` check).
 
@@ -228,7 +228,7 @@ See **[`docs/security-byok.md`](docs/security-byok.md)** and **[`docs/security.m
 
 Public-facing:
 
-- **[Product overview (start here)](docs/product.md)** — what VentureOS is, who it's for, why it's different, value it offers
+- **[Product overview (start here)](docs/product.md)** — what Foundry is, who it's for, why it's different, value it offers
 - **[Hackathon submission pack](docs/hackathon/README.md)** — deck PDF, 3-min demo script, submission form copy, screenshots
 - [Agent Swarms](docs/agent-swarms.md) — the multi-agent design
 - [Architecture overview](docs/architecture-overview.md)
@@ -252,15 +252,15 @@ Internal design docs (kept for context):
 
 ## Hackathon submission
 
-VentureOS is submitted to the **Microsoft Build AI / HackerEarth — Agent Swarms** track.
+Foundry is submitted to the **Microsoft Build AI / HackerEarth — Agent Swarms** track.
 
-- 📊 **[Submission deck (PDF)](docs/hackathon/VentureOS-Submission-Deck.pdf)** — 10 slides, < 1 MB
+- 📊 **[Submission deck (PDF)](docs/hackathon/Foundry-Submission-Deck.pdf)** — 10 slides, < 1 MB
 - 🎬 **[3-minute demo script](docs/hackathon/demo-script.md)** — teleprompter + shot list
 - 📝 **[Submission form copy](docs/hackathon/submission-form.md)** — ready to paste
 - 🖼️ **[Live-app screenshots](docs/hackathon/screenshots/)** — dated, real
 - ✍️ **[Long-form write-up](docs/hackathon-submission.md)** — the original deep dive
 
-**Primary judging path:** <https://ventureos-dun.vercel.app/demo/faceless-crm> (no sign-in, no keys).
+**Primary judging path:** <https://foundry.vercel.app/demo/faceless-crm> (no sign-in, no keys).
 
 ---
 

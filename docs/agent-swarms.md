@@ -1,6 +1,6 @@
-# Agent Swarms in VentureOS
+# Agent Swarms in Foundry
 
-VentureOS is built as a **multi-agent venture operating system**. It is not a single chatbot — it is a coordinated set of specialized agents that share a Venture context and produce versioned artifacts.
+Foundry is built as a **multi-agent venture operating system**. It is not a single chatbot — it is a coordinated set of specialized agents that share a Venture context and produce versioned artifacts.
 
 This document explains the agent groups, what each one does, and how they hand off.
 
@@ -28,7 +28,7 @@ Every agent group writes a typed artifact attached to the parent `Venture`. The 
 - Produces a `CommitteeTranscript` artifact with initial positions, challenge/response turns, opinion changes, final consensus and "why pilot not buy" rationale.
 - Signal: objection density, opinion-change rate and decision confidence.
 
-### 3. Research Graph Agents — `@ventureos/research-graph`
+### 3. Research Graph Agents — `@foundry/research-graph`
 - Convert research inputs (links, notes, summaries, the venture brief) into a typed graph of problems, customers, competitors, risks, assumptions, contradictions and opportunities.
 - Surfaces **god-nodes** (highest centrality) and **contradictions** (mutually inconsistent evidence) explicitly so they get reviewed.
 - Produces a `ResearchGraph` artifact.
@@ -39,7 +39,7 @@ Every agent group writes a typed artifact attached to the parent `Venture`. The 
 - Reconcile signals from the committee transcript and research graph.
 - Produces a `VentureRecommendation` artifact: `Proceed` / `Pivot` / `Kill` plus a confidence score and `nextSteps`.
 
-### 5. BuildSquad Agents — `@ventureos/buildsquad`
+### 5. BuildSquad Agents — `@foundry/buildsquad`
 - Planning swarm with role-typed agents: PM, UX, architecture, engineering, QA, GTM.
 - Each role agent critiques the others; the orchestrator produces a coherent build plan.
 - Produces a `BuildSquadPack`: vision, PRD, architecture brief, 4-week roadmap, user stories, RICE-prioritized requirements and agent critiques.
@@ -62,7 +62,7 @@ All agents read and write through the **Venture** domain object. A Venture owns:
 - a list of `VentureJob` execution records (status, progress, provider · model · cost, errors)
 - a `timeline` of events
 
-The Venture context is the only thing agents share. Each artifact is JSON-Schema-typed in `@ventureos/contracts`, so any agent or renderer can read it without seeing upstream prompts.
+The Venture context is the only thing agents share. Each artifact is JSON-Schema-typed in `@foundry/contracts`, so any agent or renderer can read it without seeing upstream prompts.
 
 ## VentureJob — async-first execution
 

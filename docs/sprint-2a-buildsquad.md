@@ -51,7 +51,7 @@ New types in [packages/contracts/src/types.ts](packages/contracts/src/types.ts):
   `BuildSquadInputReferences`.
 - `BuildSquadArtifactEvaluation` (five axes + warnings + overallScore).
 
-## 5. Package (`@ventureos/buildsquad`)
+## 5. Package (`@foundry/buildsquad`)
 
 Location: `packages/buildsquad/`.
 
