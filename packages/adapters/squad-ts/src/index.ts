@@ -2,7 +2,7 @@
  * Sprint 0 BuildSquad adapter — interface + two stub implementations.
  *
  *   HandRolledBuildSquadAdapter — DEFAULT. Will become a real hand-rolled multi-agent
- *                                 orchestrator in M1. Lives entirely inside VentureOS;
+ *                                 orchestrator in M1. Lives entirely inside Foundry;
  *                                 no external runtime dependencies.
  *   SquadOssAdapter             — Wraps Brady Gaster's @bradygaster/squad-cli (Squad-OSS).
  *                                 Permanently gated behind the env flag VENTUREOS_USE_SQUAD_OSS=true.
@@ -12,12 +12,12 @@
  * Method signatures mirror docs/dependency-analysis-squad.md §8.
  */
 
-import type { ChatRequest, IdeaBrief, Persona, Recommendation, ResearchGraph } from '@ventureos/contracts';
+import type { ChatRequest, IdeaBrief, Persona, Recommendation, ResearchGraph } from '@foundry/contracts';
 import {
   FeatureDisabledError,
   NotImplementedError,
   type ProviderClient,
-} from '@ventureos/providers-core';
+} from '@foundry/providers-core';
 
 export interface BuildPlan {
   steps: Array<{ id: string; title: string; agent: string; deps: string[] }>;

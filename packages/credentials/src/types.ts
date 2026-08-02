@@ -1,4 +1,4 @@
-import type { ProviderId } from '@ventureos/contracts';
+import type { ProviderId } from '@foundry/contracts';
 
 /** Row shape for the `users` table. */
 export interface UserRow {

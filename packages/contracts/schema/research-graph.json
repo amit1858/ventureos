@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://ventureos.dev/schema/research-graph.json",
+  "$id": "https://foundry.dev/schema/research-graph.json",
   "title": "ResearchGraph",
   "type": "object",
   "additionalProperties": false,

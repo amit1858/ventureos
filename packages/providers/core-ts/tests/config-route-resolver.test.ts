@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ProviderConfig } from '@ventureos/contracts';
+import type { ProviderConfig } from '@foundry/contracts';
 import { ConfigBasedRouteResolver, ProviderUnavailableError } from '../src/index';
 
 const cfg: ProviderConfig = {

@@ -10,7 +10,7 @@
  * usable so the UI is never left blank. The decrypted secret never reaches
  * this layer — `ChatFn` is the only surface.
  */
-import type { ChatRequest, ChatResponse } from '@ventureos/contracts';
+import type { ChatRequest, ChatResponse } from '@foundry/contracts';
 
 import { BUILDSQUAD_AGENTS } from './agents';
 import {

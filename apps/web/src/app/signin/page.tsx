@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { ALPHA_USER, alphaAccessEnabled, getAuthDecision } from '../../lib/auth';
 
 export const metadata: Metadata = {
-  title: 'Sign in to VentureOS',
+  title: 'Sign in to Foundry',
   description:
     'Sign in with Google to create ventures, save BYOK providers, run validation workflows and export to GitHub.',
 };
@@ -98,7 +98,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       <Header />
       <JudgeEscape />
       <Card>
-        <h2 style={h2}>Sign in to VentureOS</h2>
+        <h2 style={h2}>Sign in to Foundry</h2>
         <p style={muted}>
           Demo Mode is open without sign-in. Sign in with Google to create ventures, save BYOK
           providers, run validation workflows and export to GitHub.
@@ -142,7 +142,7 @@ function Header() {
       <p style={{ ...muted, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>
         Workspace access
       </p>
-      <h1 style={{ margin: '0.25rem 0 0' }}>Sign in to VentureOS</h1>
+      <h1 style={{ margin: '0.25rem 0 0' }}>Sign in to Foundry</h1>
     </header>
   );
 }

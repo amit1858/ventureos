@@ -1,4 +1,4 @@
-import type { ResearchGraph } from '@ventureos/contracts';
+import type { ResearchGraph } from '@foundry/contracts';
 
 import { cx, prob, styles } from './helpers';
 import { RawJson, Stat } from './primitives';

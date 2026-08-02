@@ -1,5 +1,5 @@
 {
-  "name": "@ventureos/adapter-github",
+  "name": "@foundry/adapter-github",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "test": "echo 'no tests yet'"
   },
   "dependencies": {
-    "@ventureos/contracts": "workspace:*"
+    "@foundry/contracts": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.6.0"

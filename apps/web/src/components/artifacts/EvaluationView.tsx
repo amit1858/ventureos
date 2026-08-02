@@ -1,4 +1,4 @@
-import type { EvaluationReport } from '@ventureos/contracts';
+import type { EvaluationReport } from '@foundry/contracts';
 
 import { cx, pct, prob, styles } from './helpers';
 import { Stat } from './primitives';

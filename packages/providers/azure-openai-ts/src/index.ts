@@ -4,11 +4,11 @@ import type {
   DecryptedKey,
   ProviderCapabilities,
   ToolCall,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 import {
   ProviderError,
   type ProviderAdapter,
-} from '@ventureos/providers-core';
+} from '@foundry/providers-core';
 
 import { costUsd, KNOWN_MODELS } from './cost';
 import { translateError, type RawAzureError } from './errors-map';

@@ -6,7 +6,7 @@
  */
 import { NextResponse } from 'next/server';
 
-import type { VentureLabInput } from '@ventureos/venturelab';
+import type { VentureLabInput } from '@foundry/venturelab';
 
 import { requireUser, UnauthorizedError } from '../../../lib/auth';
 import { enqueueAndWait, getJobOrchestrator } from '../../../lib/jobs';

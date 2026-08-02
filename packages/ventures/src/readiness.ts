@@ -7,7 +7,7 @@ import type {
   VentureRecommendation,
   ResearchGraph,
   PersonaLabPersona,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 /**
  * Deterministic, dependency-free progress + readiness derivation.

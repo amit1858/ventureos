@@ -1,5 +1,5 @@
 {
-  "name": "@ventureos/buildsquad",
+  "name": "@foundry/buildsquad",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -18,7 +18,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ventureos/contracts": "workspace:*"
+    "@foundry/contracts": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

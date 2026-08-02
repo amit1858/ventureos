@@ -1,4 +1,4 @@
-import type { PersonaLabPersona } from '@ventureos/contracts';
+import type { PersonaLabPersona } from '@foundry/contracts';
 
 import { cx, prob, styles } from './helpers';
 import { ScoreRing } from './primitives';

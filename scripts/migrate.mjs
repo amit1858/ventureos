@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * VentureOS migration runner (Sprint 2A.6).
+ * Foundry migration runner (Sprint 2A.6).
  *
  * Walks every `packages/<pkg>/migrations/*.sql` in lexical order across
  * packages and applies any not yet recorded in `public._migrations`.

@@ -9,7 +9,7 @@
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { VentureSummary, VentureStatus } from '@ventureos/contracts';
+import type { VentureSummary, VentureStatus } from '@foundry/contracts';
 
 const STATUSES: VentureStatus[] = [
   'draft', 'researching', 'validating', 'pivoting', 'approved', 'building', 'archived', 'rejected',

@@ -5,11 +5,11 @@
  * The catalog is sourced from each provider package's `KNOWN_MODELS` constant.
  */
 import { NextResponse } from 'next/server';
-import type { ProviderId } from '@ventureos/contracts';
-import { OPENAI_KNOWN_MODELS } from '@ventureos/providers-openai';
-import { ANTHROPIC_KNOWN_MODELS } from '@ventureos/providers-anthropic';
-import { GEMINI_KNOWN_MODELS } from '@ventureos/providers-gemini';
-import { AZURE_OPENAI_KNOWN_MODELS } from '@ventureos/providers-azure-openai';
+import type { ProviderId } from '@foundry/contracts';
+import { OPENAI_KNOWN_MODELS } from '@foundry/providers-openai';
+import { ANTHROPIC_KNOWN_MODELS } from '@foundry/providers-anthropic';
+import { GEMINI_KNOWN_MODELS } from '@foundry/providers-gemini';
+import { AZURE_OPENAI_KNOWN_MODELS } from '@foundry/providers-azure-openai';
 
 export const runtime = 'nodejs';
 

@@ -18,7 +18,7 @@ import type {
   BuyingCommitteeTranscript,
   PersonaLabInsights,
   PersonaSetEvaluation,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 interface ProviderProfile {
   id: string;

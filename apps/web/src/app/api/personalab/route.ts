@@ -15,7 +15,7 @@
  */
 import { NextResponse } from 'next/server';
 
-import type { VentureJobKind } from '@ventureos/contracts';
+import type { VentureJobKind } from '@foundry/contracts';
 
 import { requireUser, UnauthorizedError } from '../../../lib/auth';
 import { runPersonaLabAction, type RunPersonaLabInput, type PersonaLabAction, type PersonaLabEngine } from '../../../lib/personalab';

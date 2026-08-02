@@ -11,7 +11,7 @@ import type {
   PersonaLabBrief,
   BuyingCommitteeDeliberation,
 } from '../src/types';
-import type { ChatRequest, ChatResponse } from '@ventureos/contracts';
+import type { ChatRequest, ChatResponse } from '@foundry/contracts';
 
 const BRIEF: PersonaLabBrief = {
   businessIdea: 'Faceless CRM for SMB',

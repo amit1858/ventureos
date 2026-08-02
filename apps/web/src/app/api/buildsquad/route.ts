@@ -12,7 +12,7 @@
  */
 import { NextResponse } from 'next/server';
 
-import type { BuildSquadInput } from '@ventureos/buildsquad';
+import type { BuildSquadInput } from '@foundry/buildsquad';
 
 import { requireUser, UnauthorizedError } from '../../../lib/auth';
 import { enqueueAndWait, getJobOrchestrator } from '../../../lib/jobs';

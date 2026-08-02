@@ -7,11 +7,11 @@ import type {
   DecryptedKey,
   ProviderCapabilities,
   ToolCall,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 import {
   ProviderError,
   type ProviderAdapter,
-} from '@ventureos/providers-core';
+} from '@foundry/providers-core';
 
 import { costUsd, DEFAULT_VALIDATION_MODEL, KNOWN_MODELS } from './cost';
 import { translateError } from './errors-map';

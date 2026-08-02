@@ -1,15 +1,15 @@
 /**
  * Demo evaluation + export rendering.
  *
- * Re-uses the SAME pure renderers Real Mode uses (`@ventureos/buildsquad`) so
+ * Re-uses the SAME pure renderers Real Mode uses (`@foundry/buildsquad`) so
  * the demo's evaluation report and the "files that would be pushed to GitHub"
  * are byte-for-byte what a real export produces — no bespoke demo markdown.
  *
  * Pure functions only (no I/O, no secrets, no SDKs), safe to call from a server
  * component or a test.
  */
-import { renderPack, renderEvaluationReport } from '@ventureos/buildsquad';
-import type { EvaluationReport } from '@ventureos/contracts';
+import { renderPack, renderEvaluationReport } from '@foundry/buildsquad';
+import type { EvaluationReport } from '@foundry/contracts';
 
 import type { DemoVenture } from './types';
 

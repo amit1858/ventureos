@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://ventureos.dev/schema/chat-request.json",
+  "$id": "https://foundry.dev/schema/chat-request.json",
   "title": "ChatRequest",
   "type": "object",
   "additionalProperties": false,

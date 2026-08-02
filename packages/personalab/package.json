@@ -1,5 +1,5 @@
 {
-  "name": "@ventureos/personalab",
+  "name": "@foundry/personalab",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -18,8 +18,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ventureos/contracts": "workspace:*",
-    "@ventureos/providers-core": "workspace:*"
+    "@foundry/contracts": "workspace:*",
+    "@foundry/providers-core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

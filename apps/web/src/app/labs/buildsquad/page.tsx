@@ -14,8 +14,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type {
   BuildSquadArtifactPack,
   BuildSquadInput,
-} from '@ventureos/buildsquad';
-import type { ResearchGraph, VentureRecommendation } from '@ventureos/contracts';
+} from '@foundry/buildsquad';
+import type { ResearchGraph, VentureRecommendation } from '@foundry/contracts';
 
 interface ProviderProfile {
   id: string;

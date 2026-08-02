@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { calculateVentureProgress, calculateVentureReadiness } from '@ventureos/ventures';
+import { calculateVentureProgress, calculateVentureReadiness } from '@foundry/ventures';
 
 import { facelessCrmDemo, getDemoVenture, listDemoVentures } from '../src/lib/demo';
 import { buildDemoEvaluation, buildDemoExportFiles } from '../src/lib/demo/render';

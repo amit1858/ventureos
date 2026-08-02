@@ -20,7 +20,7 @@ import type {
   ChatRequest,
   ChatResponse,
   VentureRecommendation,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import {
   BUILDSQUAD_AGENTS,

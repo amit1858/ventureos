@@ -6,11 +6,11 @@ import type {
   DecryptedKey,
   ProviderCapabilities,
   ToolCall,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 import {
   ProviderError,
   type ProviderAdapter,
-} from '@ventureos/providers-core';
+} from '@foundry/providers-core';
 
 import { costUsd } from './cost';
 import { translateError } from './errors-map';

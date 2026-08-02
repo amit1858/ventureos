@@ -20,7 +20,7 @@ import type {
   ResearchGraph,
   Venture,
   VentureRecommendation,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import { renderRepoScaffold } from '../src/render';
 

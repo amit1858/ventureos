@@ -14,7 +14,7 @@ import {
   SupabaseVentureStore,
   VentureService,
   type VentureStore,
-} from '@ventureos/ventures';
+} from '@foundry/ventures';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 declare global {

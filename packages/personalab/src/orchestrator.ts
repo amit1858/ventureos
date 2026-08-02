@@ -3,14 +3,14 @@
  *
  * Mirrors the semantics of Microsoft TinyTroupe (named agents with role,
  * occupation, personality; multi-agent dialogue) but runs entirely inside the
- * VentureOS provider abstraction. The engine accepts a single `ChatFn` and
+ * Foundry provider abstraction. The engine accepts a single `ChatFn` and
  * never touches a provider SDK directly — the host wires that function with the
  * decrypted BYOK secret, scoped to the lifetime of one orchestration call.
  *
  * The optional TinyTroupe Python subprocess engine lives in `tinytroupe.ts` and
  * is selected by the host when `VENTUREOS_TINYTROUPE_PYTHON` is set.
  */
-import type { ChatRequest, ChatResponse, CallContext } from '@ventureos/contracts';
+import type { ChatRequest, ChatResponse, CallContext } from '@foundry/contracts';
 
 import { evaluatePersonaSet } from './evaluation';
 import {

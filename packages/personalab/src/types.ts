@@ -1,7 +1,7 @@
 /**
  * PersonaLab — TypeScript orchestration types.
  *
- * These mirror the contract types in `@ventureos/contracts` but live here so the
+ * These mirror the contract types in `@foundry/contracts` but live here so the
  * package can build independently of UI/route layers.
  */
 import type {
@@ -23,7 +23,7 @@ import type {
   PersonaSetEvaluation,
   ChatRequest,
   ChatResponse,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 export type {
   PersonaLabBrief,

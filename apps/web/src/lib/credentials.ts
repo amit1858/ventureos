@@ -25,14 +25,14 @@ import {
   SupabaseCredentialStore,
   type ProviderTestPromptRunner,
   type ProviderValidator,
-} from '@ventureos/credentials';
-import type { ProviderId } from '@ventureos/contracts';
-import { ProviderError } from '@ventureos/providers-core';
-import { OpenAiAdapter, OPENAI_KNOWN_MODELS } from '@ventureos/providers-openai';
-import { AnthropicAdapter, ANTHROPIC_KNOWN_MODELS } from '@ventureos/providers-anthropic';
-import { GeminiAdapter, GEMINI_KNOWN_MODELS } from '@ventureos/providers-gemini';
-import { AzureOpenAiAdapter, AZURE_OPENAI_KNOWN_MODELS } from '@ventureos/providers-azure-openai';
-import { validatePat as validateGitHubPat } from '@ventureos/adapter-github';
+} from '@foundry/credentials';
+import type { ProviderId } from '@foundry/contracts';
+import { ProviderError } from '@foundry/providers-core';
+import { OpenAiAdapter, OPENAI_KNOWN_MODELS } from '@foundry/providers-openai';
+import { AnthropicAdapter, ANTHROPIC_KNOWN_MODELS } from '@foundry/providers-anthropic';
+import { GeminiAdapter, GEMINI_KNOWN_MODELS } from '@foundry/providers-gemini';
+import { AzureOpenAiAdapter, AZURE_OPENAI_KNOWN_MODELS } from '@foundry/providers-azure-openai';
+import { validatePat as validateGitHubPat } from '@foundry/adapter-github';
 
 import { serviceRoleClient } from './supabase/server';
 

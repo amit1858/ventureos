@@ -1,5 +1,5 @@
 import type { AuditEventRow, AuditEventType } from './types';
-import type { ProviderId } from '@ventureos/contracts';
+import type { ProviderId } from '@foundry/contracts';
 
 export interface AuditWriteInput {
   userId: string;

@@ -5,7 +5,7 @@ import type {
   ProviderCapabilities,
   ProviderId,
   ProviderRoute,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 /**
  * What a concrete provider implementation looks like.

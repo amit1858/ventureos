@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://ventureos.dev/schema/byok-key.json",
+  "$id": "https://foundry.dev/schema/byok-key.json",
   "title": "ByokKey",
   "description": "A user-supplied provider key. The plaintext secret never appears in this object once persisted.",
   "type": "object",

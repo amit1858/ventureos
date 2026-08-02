@@ -4,9 +4,9 @@ import Link from 'next/link';
 import styles from './home.module.css';
 
 export const metadata: Metadata = {
-  title: 'VentureOS — AI-native multi-agent venture operating system',
+  title: 'Foundry — AI-native Venture Operating System',
   description:
-    'VentureOS orchestrates synthetic customers, buying committees, research graph agents, venture validation agents, BuildSquad planners and evaluation agents to help teams decide what to build before they write code.',
+    'Foundry helps product teams transform raw ideas into validated, execution-ready ventures using collaborative AI agents.',
 };
 
 const WORKFLOW = [
@@ -89,10 +89,10 @@ export default function Home() {
     <div className={styles.page}>
       {/* Hero */}
       <section className={styles.hero}>
-        <p className={styles.eyebrow}>AI-native multi-agent venture OS</p>
-        <h1 className={styles.title}>Turn raw ideas into validated, build-ready ventures with agent swarms.</h1>
+        <p className={styles.eyebrow}>AI-native Venture Operating System</p>
+        <h1 className={styles.title}>Turn raw ideas into validated, execution-ready ventures with agent swarms.</h1>
         <p className={styles.subtitle}>
-          VentureOS orchestrates synthetic customers, research graph agents, venture validation
+          Foundry orchestrates synthetic customers, research graph agents, venture validation
           agents, BuildSquad planners and evaluation agents to help teams decide what to build —
           before they write code.
         </p>
@@ -100,7 +100,7 @@ export default function Home() {
           <Link href="/demo/faceless-crm" className={`${styles.btn} ${styles.btnPrimary}`}>Try the demo →</Link>
           <Link href="/ventures/new" className={styles.btn}>Create a venture</Link>
           <Link href="/settings/byok" className={styles.btn}>Configure BYOK</Link>
-          <a href="https://github.com/amit1858/ventureos" className={styles.btn} target="_blank" rel="noreferrer">View GitHub repo</a>
+          <a href="https://github.com/amit1858/foundry" className={styles.btn} target="_blank" rel="noreferrer">View GitHub repo</a>
           <Link href="/#architecture" className={styles.btn}>View architecture</Link>
         </div>
       </section>
@@ -116,7 +116,7 @@ export default function Home() {
           <h2 className={styles.judgeTitle}>Start with the zero-key demo</h2>
         </div>
         <p className={styles.judgeBody}>
-          Use the Faceless CRM demo to evaluate VentureOS without sign-in, provider keys or
+          Use the Faceless CRM demo to evaluate Foundry without sign-in, provider keys or
           setup. It walks through the full agent swarm pipeline — personas, buying committee,
           research graph, venture validation, BuildSquad planning, evaluation report and
           GitHub-ready artifacts.
@@ -126,7 +126,7 @@ export default function Home() {
             Open Judge Demo →
           </Link>
           <a
-            href="https://github.com/amit1858/ventureos"
+            href="https://github.com/amit1858/foundry"
             className={styles.btn}
             target="_blank"
             rel="noreferrer"
@@ -180,7 +180,7 @@ export default function Home() {
           <p className={styles.kicker}>Multi-agent system</p>
           <h2 className={styles.h2}>Built as a multi-agent venture system</h2>
           <p className={styles.lead}>
-            VentureOS is not one chatbot. It coordinates specialized agents that simulate
+            Foundry is not one chatbot. It coordinates specialized agents that simulate
             customers, map evidence, challenge assumptions, validate opportunities and generate
             build-ready artifacts.
           </p>
@@ -199,7 +199,7 @@ export default function Home() {
       {/* Differentiators */}
       <section className={styles.section}>
         <div>
-          <p className={styles.kicker}>Why VentureOS</p>
+          <p className={styles.kicker}>Why Foundry</p>
           <h2 className={styles.h2}>Decide what to build, with evidence</h2>
           <p className={styles.lead}>
             For founders, product teams and venture studios who want to pressure-test an idea
@@ -222,7 +222,7 @@ export default function Home() {
           <p className={styles.kicker}>Engineering</p>
           <h2 className={styles.h2}>Production-minded architecture</h2>
           <p className={styles.lead}>
-            VentureOS is alpha-quality but built on the patterns we&apos;d ship in production —
+            Foundry is alpha-quality but built on the patterns we&apos;d ship in production —
             typed contracts, BYOK isolation, jobs as first-class objects, and
             import-boundary checks.
           </p>
@@ -239,7 +239,7 @@ export default function Home() {
             <span className={styles.badge}>Demo Mode · No keys</span>
             <h3 className={styles.panelTitle}>See the swarm in action: Faceless CRM for SMB</h3>
             <p className={styles.panelText}>
-              Walk through a complete VentureOS pipeline where synthetic SMB buyers, a buying
+              Walk through a complete Foundry pipeline where synthetic SMB buyers, a buying
               committee, a research graph, the venture validation engine, BuildSquad planners
               and an evaluation report work together to produce a GitHub-ready venture plan —
               with no API keys.
@@ -267,9 +267,9 @@ export default function Home() {
       <section className={styles.section}>
         <div>
           <p className={styles.kicker}>Agent Swarms</p>
-          <h2 className={styles.h2}>Why VentureOS fits Agent Swarms</h2>
+          <h2 className={styles.h2}>Why Foundry fits Agent Swarms</h2>
           <p className={styles.lead}>
-            VentureOS uses multiple specialized agents instead of a single assistant.
+            Foundry uses multiple specialized agents instead of a single assistant.
             Persona agents simulate buyers. Committee agents debate and challenge assumptions.
             Research graph agents structure evidence. Venture validation agents score
             opportunity quality. BuildSquad agents produce execution artifacts. Evaluation

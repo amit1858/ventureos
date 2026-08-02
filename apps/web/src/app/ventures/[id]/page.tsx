@@ -28,7 +28,7 @@ import type {
   VentureStatus,
   VentureSummary,
   VentureTimelineEvent,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import { JobProgress } from '../../../components/JobProgress';
 import { RecentJobs } from '../../../components/RecentJobs';

@@ -3,7 +3,7 @@
  * Otherwise the suite is skipped — CI without the secret stays green.
  */
 import { describe, expect, it } from 'vitest';
-import type { ChatRequest, DecryptedKey } from '@ventureos/contracts';
+import type { ChatRequest, DecryptedKey } from '@foundry/contracts';
 import { OpenAiAdapter } from '../src/index';
 
 const KEY = process.env['OPENAI_API_KEY'];

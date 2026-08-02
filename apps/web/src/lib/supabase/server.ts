@@ -4,7 +4,7 @@
  * Two clients live here:
  *   - `serverComponentClient()` — bound to the user's session via cookies. Used to
  *     read auth state in Server Components, route handlers, and middleware.
- *   - `serviceRoleClient()` — bypasses RLS. Used by `@ventureos/credentials` to
+ *   - `serviceRoleClient()` — bypasses RLS. Used by `@foundry/credentials` to
  *     write through the trusted service layer. NEVER exposed to the browser.
  *
  * Both functions throw a sanitised error if the required environment variables are

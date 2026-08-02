@@ -22,7 +22,7 @@
 import 'server-only';
 import { spawn } from 'node:child_process';
 
-import type { ProviderId } from '@ventureos/contracts';
+import type { ProviderId } from '@foundry/contracts';
 
 export interface TinyTroupeBridgeInput {
   command: 'generate_personas' | 'run_interview' | 'run_focus_group' | 'run_buying_committee';
@@ -58,7 +58,7 @@ export async function runTinyTroupeBridge(
   }
 
   return new Promise<TinyTroupeBridgeResult>((resolve) => {
-    const child = spawn(python, ['-m', 'ventureos_tinytroupe.cli'], {
+    const child = spawn(python, ['-m', 'foundry_tinytroupe.cli'], {
       env: env as NodeJS.ProcessEnv,
       stdio: ['pipe', 'pipe', 'pipe'],
     });

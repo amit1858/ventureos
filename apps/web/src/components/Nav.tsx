@@ -28,7 +28,7 @@ export function Nav() {
       }}
     >
       <Link href="/" style={{ color: '#e8e8ea', textDecoration: 'none', marginRight: '0.5rem' }}>
-        <strong>VentureOS</strong>
+        <strong>Foundry</strong>
       </Link>
       {links.map((l) => (
         <Link

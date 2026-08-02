@@ -9,7 +9,7 @@ import {
   type ProviderTestPromptRunner,
   type ProviderValidator,
 } from '../src/service';
-import type { ProviderId } from '@ventureos/contracts';
+import type { ProviderId } from '@foundry/contracts';
 
 const USER_A = 'u_alice';
 const USER_B = 'u_bob';

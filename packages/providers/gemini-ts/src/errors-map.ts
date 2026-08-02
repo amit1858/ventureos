@@ -5,7 +5,7 @@ import {
   ProviderModelNotFoundError,
   ProviderUnavailableError,
   RateLimited,
-} from '@ventureos/providers-core';
+} from '@foundry/providers-core';
 
 /**
  * Translate Gemini SDK errors. The SDK throws `GoogleGenerativeAIError` and

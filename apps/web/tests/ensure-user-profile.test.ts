@@ -46,7 +46,7 @@ describe('ensureUserProfile', () => {
   });
 
   it('skips upsert for non-UUID id (alpha-user)', async () => {
-    await ensureUserProfile({ id: 'alpha-user', email: 'alpha@ventureos.local' });
+    await ensureUserProfile({ id: 'alpha-user', email: 'alpha@foundry.local' });
     expect(from).not.toHaveBeenCalled();
     expect(upsert).not.toHaveBeenCalled();
   });

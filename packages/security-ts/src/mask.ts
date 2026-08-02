@@ -1,4 +1,4 @@
-import type { ProviderId } from '@ventureos/contracts';
+import type { ProviderId } from '@foundry/contracts';
 
 /**
  * Display-only mask. Produces `abcd***wxyz` style output that satisfies

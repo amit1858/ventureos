@@ -10,7 +10,7 @@ import type {
   VentureRecommendation,
   VentureTimelineEvent,
   VentureTimelineEventKind,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import type { DemoVenture } from '../../lib/demo/types';
 import type { DemoEvaluation, DemoExportFile } from '../../lib/demo/render';

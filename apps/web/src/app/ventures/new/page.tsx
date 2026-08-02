@@ -8,7 +8,7 @@
  */
 import { useState } from 'react';
 
-import type { Venture } from '@ventureos/contracts';
+import type { Venture } from '@foundry/contracts';
 
 export default function NewVenturePage() {
   const [title, setTitle] = useState('');

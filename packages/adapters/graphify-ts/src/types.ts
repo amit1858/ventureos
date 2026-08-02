@@ -19,7 +19,7 @@ import type {
   ResearchGraphView,
   VentureAssumption,
   VentureRisk,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 export type {
   CallContext,

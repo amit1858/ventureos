@@ -16,7 +16,7 @@ import type {
   ProviderConfigJson,
   ValidationStatus,
 } from './types';
-import type { ProviderId } from '@ventureos/contracts';
+import type { ProviderId } from '@foundry/contracts';
 
 interface DbCredentialRow {
   id: string;

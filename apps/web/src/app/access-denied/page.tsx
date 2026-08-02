@@ -12,8 +12,8 @@ import Link from 'next/link';
 import { getAuthDecision } from '../../lib/auth';
 
 export const metadata: Metadata = {
-  title: 'Access not available — VentureOS',
-  description: 'Your account is signed in but is not on the VentureOS alpha allowlist.',
+  title: 'Access not available — Foundry',
+  description: 'Your account is signed in but is not on the Foundry alpha allowlist.',
 };
 
 export const dynamic = 'force-dynamic';
@@ -42,10 +42,10 @@ export default async function AccessDeniedPage() {
           {deniedEmail ? (
             <>
               Your Google account <strong>{deniedEmail}</strong> is signed in, but it is not on
-              the VentureOS alpha allowlist.
+              the Foundry alpha allowlist.
             </>
           ) : (
-            <>Your account is signed in, but it is not on the VentureOS alpha allowlist.</>
+            <>Your account is signed in, but it is not on the Foundry alpha allowlist.</>
           )}
           {' '}Use Demo Mode to explore the full product, or contact the project owner to be
           added.

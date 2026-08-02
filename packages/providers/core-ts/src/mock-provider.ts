@@ -3,7 +3,7 @@ import type {
   ChatResponse,
   DecryptedKey,
   ProviderCapabilities,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 import type { ProviderAdapter } from './types';
 
 /**

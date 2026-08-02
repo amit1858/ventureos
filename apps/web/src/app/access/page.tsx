@@ -23,7 +23,7 @@ import {
 } from '../../lib/auth';
 
 export const metadata: Metadata = {
-  title: 'Enter VentureOS Alpha Workspace',
+  title: 'Enter Foundry Alpha Workspace',
   description:
     'Demo Mode is open without sign-in. Real Mode uses a temporary alpha workspace for testing BYOK providers, venture creation, validation, BuildSquad planning and GitHub export.',
 };
@@ -195,7 +195,7 @@ VENTUREOS_CREDENTIAL_ENCRYPTION_KEY=...`}
         <div style={ctaRow}>
           <Link href="/demo" style={primaryBtn}>Open Demo Mode</Link>
           <a
-            href="https://github.com/amit1858/ventureos/blob/main/docs/deployment.md"
+            href="https://github.com/amit1858/foundry/blob/main/docs/deployment.md"
             target="_blank"
             rel="noreferrer"
             style={secondaryBtn}
@@ -228,7 +228,7 @@ function Header() {
       <p style={{ ...muted, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>
         Workspace access
       </p>
-      <h1 style={{ margin: '0.25rem 0 0' }}>Enter VentureOS Alpha Workspace</h1>
+      <h1 style={{ margin: '0.25rem 0 0' }}>Enter Foundry Alpha Workspace</h1>
     </header>
   );
 }

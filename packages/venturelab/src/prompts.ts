@@ -10,12 +10,12 @@
  * a score, a recommendation, or a decision — those are computed deterministically
  * downstream by the rule engine.
  */
-import type { ChatMessage } from '@ventureos/contracts';
+import type { ChatMessage } from '@foundry/contracts';
 
 import type { VentureLabInput } from './types';
 
 const SYSTEM_BASE = [
-  'You are VentureLab, the venture-validation reasoning engine for VentureOS.',
+  'You are VentureLab, the venture-validation reasoning engine for Foundry.',
   'You ALWAYS reply with a SINGLE JSON object that matches the requested schema.',
   'Never include commentary, markdown fences, or prose outside the JSON object.',
   'You extract evidence verbatim or as close-to-verbatim short quotes.',

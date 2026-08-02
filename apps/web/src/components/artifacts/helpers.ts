@@ -15,7 +15,7 @@ import type {
   VentureJobStatus,
   VentureStatus,
   VentureTimelineEventKind,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import styles from './artifacts.module.css';
 

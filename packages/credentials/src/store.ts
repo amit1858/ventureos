@@ -1,4 +1,4 @@
-import type { ProviderId } from '@ventureos/contracts';
+import type { ProviderId } from '@foundry/contracts';
 import type { ProviderCredentialRow, ProviderConfigJson, ValidationStatus } from './types';
 
 /**

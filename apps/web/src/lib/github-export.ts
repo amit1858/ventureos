@@ -18,12 +18,12 @@ import {
   renderRepoScaffold,
   renderEvaluationReport,
   type RenderedScaffoldFile,
-} from '@ventureos/buildsquad';
+} from '@foundry/buildsquad';
 import {
   classifyGithubError,
   GitHubExporter,
   type ClassifiedGithubError,
-} from '@ventureos/adapter-github';
+} from '@foundry/adapter-github';
 import type {
   BuildSquadArtifactPack,
   BuyingCommitteeTranscript,
@@ -33,7 +33,7 @@ import type {
   VentureArtifact,
   VentureArtifactKind,
   VentureRecommendation,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import { getCredentialService } from './credentials';
 import { getVentureService } from './ventures';
@@ -159,7 +159,7 @@ export async function runGitHubExport(args: RunGitHubExportArgs): Promise<GitHub
         const pushed = await exporter.pushScaffold(
           repo,
           scaffoldFiles,
-          `chore: initial VentureOS scaffold (evaluation v${evalAttached.version})`,
+          `chore: initial Foundry scaffold (evaluation v${evalAttached.version})`,
         );
         return { ok: true as const, repo, pushed };
       } catch (err) {

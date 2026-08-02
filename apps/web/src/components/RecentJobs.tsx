@@ -7,7 +7,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { VentureJob } from '@ventureos/contracts';
+import type { VentureJob } from '@foundry/contracts';
 
 export function RecentJobs({ ventureId, limit = 6 }: { ventureId: string; limit?: number }) {
   const [jobs, setJobs] = useState<VentureJob[]>([]);

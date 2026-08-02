@@ -49,7 +49,7 @@ export const ALPHA_ACCESS_COOKIE = 'ventureos_alpha_access';
 // as real users.
 export const ALPHA_USER: AuthenticatedUser = {
   id: 'alpha-user',
-  email: 'alpha@ventureos.local',
+  email: 'alpha@foundry.local',
 };
 
 function supabaseConfigured(): boolean {

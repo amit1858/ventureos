@@ -25,7 +25,7 @@ import type {
   IdeaBrief,
   PersonaLabBrief,
   PersonaLabPersona,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import {
   decide,

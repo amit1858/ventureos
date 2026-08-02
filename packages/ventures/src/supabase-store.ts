@@ -23,7 +23,7 @@ import type {
   VentureTimelineEvent,
   VentureTimelineEventKind,
   VentureJobMetrics,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import type { JobStore, ListJobsQuery } from './jobs.js';
 import type { ListVenturesQuery, VentureStore } from './types.js';

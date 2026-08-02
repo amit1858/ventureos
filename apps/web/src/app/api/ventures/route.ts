@@ -6,7 +6,7 @@
  */
 import { NextResponse } from 'next/server';
 
-import type { VentureStatus } from '@ventureos/contracts';
+import type { VentureStatus } from '@foundry/contracts';
 
 import { requireUser, UnauthorizedError } from '../../../lib/auth';
 import { sanitizeApiError } from '../../../lib/api-errors';

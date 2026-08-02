@@ -1,4 +1,4 @@
-import type { VentureArtifact, VentureTimelineEvent } from '@ventureos/contracts';
+import type { VentureArtifact, VentureTimelineEvent } from '@foundry/contracts';
 
 import { ARTIFACT_LABEL, cx, fmtCostCents, fmtDuration, fmtTime, styles } from './helpers';
 import { RawJson } from './primitives';

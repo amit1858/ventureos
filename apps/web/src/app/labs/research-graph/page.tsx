@@ -17,8 +17,8 @@ import type {
   ResearchGraphEdge,
   ResearchGraphNode,
   ResearchGraphQueryResult,
-} from '@ventureos/adapter-graphify';
-import { queryGraph } from '@ventureos/adapter-graphify';
+} from '@foundry/adapter-graphify';
+import { queryGraph } from '@foundry/adapter-graphify';
 
 interface ProviderProfile {
   id: string;

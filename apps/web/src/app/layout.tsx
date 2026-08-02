@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 import { Nav } from '@/components/Nav';
 
 export const metadata = {
-  title: 'VentureOS',
-  description: 'AI-native venture incubation platform.',
+  title: 'Foundry',
+  description: 'An AI-native Venture Operating System.',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

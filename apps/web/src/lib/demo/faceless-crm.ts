@@ -21,7 +21,7 @@ import type {
   VentureRecommendation,
   VentureSummary,
   VentureTimelineEvent,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import type { DemoVenture } from './types';
 

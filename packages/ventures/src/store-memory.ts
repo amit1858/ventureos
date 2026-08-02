@@ -3,7 +3,7 @@ import type {
   VentureArtifact,
   VentureArtifactKind,
   VentureTimelineEvent,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import type { ListVenturesQuery, VentureStore } from './types.js';
 

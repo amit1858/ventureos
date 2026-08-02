@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ChatRequest, ChatResponse } from '@ventureos/contracts';
+import type { ChatRequest, ChatResponse } from '@foundry/contracts';
 
 import { GraphifyAdapter, createGraphifyAdapter } from '../src/adapter';
 import { evaluateGraph } from '../src/evaluation';

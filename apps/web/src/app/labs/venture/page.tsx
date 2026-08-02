@@ -21,7 +21,7 @@ import type {
   PersonaLabBrief,
   PersonaLabPersona,
   VentureRecommendation,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 interface ProviderProfile {
   id: string;

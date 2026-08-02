@@ -4,7 +4,7 @@ import {
   HandRolledBuildSquadAdapter,
   SquadOssAdapter,
 } from '../src/index.js';
-import { FeatureDisabledError, MockProvider, ProviderRegistry } from '@ventureos/providers-core';
+import { FeatureDisabledError, MockProvider, ProviderRegistry } from '@foundry/providers-core';
 
 const fakeClient = { chat: async () => ({} as never) };
 

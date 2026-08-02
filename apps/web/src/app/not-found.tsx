@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Not found · VentureOS',
+  title: 'Not found · Foundry',
 };
 
 export default function NotFound() {

@@ -1,7 +1,7 @@
 /**
  * Process-wide JobOrchestrator singleton (Sprint 2A.6 / PR3).
  *
- * Wires `@ventureos/ventures` JobOrchestrator to the lab runners
+ * Wires `@foundry/ventures` JobOrchestrator to the lab runners
  * (PersonaLab, Graphify, VentureLab, BuildSquad). Each handler:
  *   1. Resolves the BYOK provider profile (so the job row records
  *      providerName + providerModel + credentialId for the evaluation hot
@@ -28,13 +28,13 @@ import {
   type JobHandlerContext,
   type JobHandlerResult,
   type JobStore,
-} from '@ventureos/ventures';
+} from '@foundry/ventures';
 import type {
   ProviderId,
   VentureArtifactKind,
   VentureJob,
   VentureJobKind,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import { getCredentialService } from './credentials';

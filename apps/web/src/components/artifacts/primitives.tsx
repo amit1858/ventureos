@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { VentureJobStatus, VentureStatus } from '@ventureos/contracts';
+import type { VentureJobStatus, VentureStatus } from '@foundry/contracts';
 
 import {
   cx,

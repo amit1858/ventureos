@@ -14,18 +14,18 @@
  */
 import 'server-only';
 
-import type { ProviderId, ChatRequest, ChatResponse, CallContext } from '@ventureos/contracts';
+import type { ProviderId, ChatRequest, ChatResponse, CallContext } from '@foundry/contracts';
 import {
   PersonaLab,
   type PersonaLabBrief,
   type PersonaLabPersona,
   type PersonaLabOptions,
-} from '@ventureos/personalab';
-import { ProviderError } from '@ventureos/providers-core';
-import { OpenAiAdapter } from '@ventureos/providers-openai';
-import { AnthropicAdapter } from '@ventureos/providers-anthropic';
-import { GeminiAdapter } from '@ventureos/providers-gemini';
-import { AzureOpenAiAdapter } from '@ventureos/providers-azure-openai';
+} from '@foundry/personalab';
+import { ProviderError } from '@foundry/providers-core';
+import { OpenAiAdapter } from '@foundry/providers-openai';
+import { AnthropicAdapter } from '@foundry/providers-anthropic';
+import { GeminiAdapter } from '@foundry/providers-gemini';
+import { AzureOpenAiAdapter } from '@foundry/providers-azure-openai';
 
 import { getCredentialService } from './credentials';
 import { isTinyTroupeBridgeEnabled, runTinyTroupeBridge } from './tinytroupe-bridge';

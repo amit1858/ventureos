@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://ventureos.dev/schema/persona-set.json",
+  "$id": "https://foundry.dev/schema/persona-set.json",
   "title": "PersonaSet",
   "type": "object",
   "additionalProperties": false,

@@ -5,7 +5,7 @@ import {
   ProviderModelNotFoundError,
   ProviderUnavailableError,
   RateLimited,
-} from '@ventureos/providers-core';
+} from '@foundry/providers-core';
 
 /**
  * Translate Azure OpenAI REST response errors. Body shape mirrors OpenAI:
