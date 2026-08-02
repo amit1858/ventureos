@@ -38,16 +38,16 @@ import { serviceRoleClient } from './supabase/server';
 
 declare global {
   // eslint-disable-next-line no-var
-  var __ventureos_credential_service: CredentialService | undefined;
+  var __foundry_credential_service: CredentialService | undefined;
   // eslint-disable-next-line no-var
-  var __ventureos_credential_audit: InMemoryAuditLogger | SupabaseAuditLogger | undefined;
+  var __foundry_credential_audit: InMemoryAuditLogger | SupabaseAuditLogger | undefined;
 }
 
 export function getCredentialService(): CredentialService {
-  if (globalThis.__ventureos_credential_service) return globalThis.__ventureos_credential_service;
+  if (globalThis.__foundry_credential_service) return globalThis.__foundry_credential_service;
   const crypto = buildCrypto();
   const { store, audit } = buildBackends();
-  globalThis.__ventureos_credential_audit = audit;
+  globalThis.__foundry_credential_audit = audit;
   const service = new CredentialService({
     store,
     audit,
@@ -56,7 +56,7 @@ export function getCredentialService(): CredentialService {
     testPromptRunner,
     modelCatalog,
   });
-  globalThis.__ventureos_credential_service = service;
+  globalThis.__foundry_credential_service = service;
   return service;
 }
 

@@ -47,15 +47,15 @@ import { runGitHubExport, encodeJobErrorMessage, type GitHubExportInput } from '
 
 declare global {
   // eslint-disable-next-line no-var
-  var __ventureos_job_store: JobStore | undefined;
+  var __foundry_job_store: JobStore | undefined;
   // eslint-disable-next-line no-var
-  var __ventureos_job_orchestrator: JobOrchestrator | undefined;
+  var __foundry_job_orchestrator: JobOrchestrator | undefined;
 }
 
 // ── store selection ────────────────────────────────────────────────────────
 
 function getJobStore(): JobStore {
-  if (globalThis.__ventureos_job_store) return globalThis.__ventureos_job_store;
+  if (globalThis.__foundry_job_store) return globalThis.__foundry_job_store;
   const url = process.env['SUPABASE_URL'];
   const key = process.env['SUPABASE_SERVICE_ROLE_KEY'];
   let store: JobStore;
@@ -65,17 +65,17 @@ function getJobStore(): JobStore {
   } else {
     store = new InMemoryJobStore();
   }
-  globalThis.__ventureos_job_store = store;
+  globalThis.__foundry_job_store = store;
   return store;
 }
 
 // ── orchestrator singleton ────────────────────────────────────────────────
 
 export function getJobOrchestrator(): JobOrchestrator {
-  if (globalThis.__ventureos_job_orchestrator) return globalThis.__ventureos_job_orchestrator;
+  if (globalThis.__foundry_job_orchestrator) return globalThis.__foundry_job_orchestrator;
   const orch = new JobOrchestrator(getJobStore(), getVentureService());
   registerHandlers(orch);
-  globalThis.__ventureos_job_orchestrator = orch;
+  globalThis.__foundry_job_orchestrator = orch;
   return orch;
 }
 

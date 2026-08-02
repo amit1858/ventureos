@@ -19,21 +19,21 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 declare global {
   // eslint-disable-next-line no-var
-  var __ventureos_venture_service: VentureService | undefined;
+  var __foundry_venture_service: VentureService | undefined;
   // eslint-disable-next-line no-var
-  var __ventureos_supabase_admin: SupabaseClient | undefined;
+  var __foundry_supabase_admin: SupabaseClient | undefined;
 }
 
 function getSupabaseAdmin(): SupabaseClient | null {
   const url = process.env['SUPABASE_URL'];
   const key = process.env['SUPABASE_SERVICE_ROLE_KEY'];
   if (!url || !key) return null;
-  if (!globalThis.__ventureos_supabase_admin) {
-    globalThis.__ventureos_supabase_admin = createClient(url, key, {
+  if (!globalThis.__foundry_supabase_admin) {
+    globalThis.__foundry_supabase_admin = createClient(url, key, {
       auth: { persistSession: false },
     });
   }
-  return globalThis.__ventureos_supabase_admin;
+  return globalThis.__foundry_supabase_admin;
 }
 
 function buildStore(): VentureStore {
@@ -43,9 +43,9 @@ function buildStore(): VentureStore {
 }
 
 export function getVentureService(): VentureService {
-  if (!globalThis.__ventureos_venture_service) {
-    globalThis.__ventureos_venture_service = new VentureService(buildStore());
+  if (!globalThis.__foundry_venture_service) {
+    globalThis.__foundry_venture_service = new VentureService(buildStore());
   }
-  return globalThis.__ventureos_venture_service;
+  return globalThis.__foundry_venture_service;
 }
 
