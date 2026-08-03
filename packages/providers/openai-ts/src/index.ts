@@ -14,17 +14,25 @@ import {
 
 import { costUsd } from './cost';
 import { translateError } from './errors-map';
+import {
+  REASONING_MIN_OUTPUT_TOKENS,
+  isReasoningModel,
+  supportsTemperature,
+} from './models';
 
 export { costUsd, estimateCostUsd, pricingFor } from './cost';
 export { translateError } from './errors-map';
-
-/** Static catalog used by the BYOK UI's model picker. */
-export const OPENAI_KNOWN_MODELS: ReadonlyArray<string> = Object.freeze([
-  'gpt-4o',
-  'gpt-4o-mini',
-  'gpt-4-turbo',
-  'gpt-3.5-turbo',
-]);
+export {
+  OPENAI_KNOWN_MODELS,
+  OPENAI_RECOMMENDED_MODELS,
+  OPENAI_MODELS,
+  openAiModelSpec,
+  isReasoningModel,
+  maxTokenParamFor,
+  supportsTemperature,
+  type OpenAiModelSpec,
+  type OpenAiParamStyle,
+} from './models';
 
 /**
  * Minimal structural slice of the `openai` SDK that this adapter actually uses.
@@ -91,9 +99,22 @@ export class OpenAiAdapter implements ProviderAdapter {
         ...(m.toolCallId !== undefined ? { tool_call_id: m.toolCallId } : {}),
       })),
     };
-    if (req.temperature !== undefined) params['temperature'] = req.temperature;
+    // Per-model request contract. Reasoning models (GPT-5 / o-series) reject the
+    // legacy `max_tokens` field and a custom `temperature`; classic chat models
+    // keep the original shape. See `./models` for the policy source of truth.
+    const reasoning = isReasoningModel(modelId);
+    if (req.temperature !== undefined && supportsTemperature(modelId)) {
+      params['temperature'] = req.temperature;
+    }
     if (req.topP !== undefined) params['top_p'] = req.topP;
-    if (req.maxTokens !== undefined) params['max_tokens'] = req.maxTokens;
+    if (reasoning) {
+      // Reasoning models spend part of the budget on hidden reasoning tokens, so
+      // grant a floor to avoid empty completions on small requests.
+      const requested = req.maxTokens ?? REASONING_MIN_OUTPUT_TOKENS;
+      params['max_completion_tokens'] = Math.max(requested, REASONING_MIN_OUTPUT_TOKENS);
+    } else if (req.maxTokens !== undefined) {
+      params['max_tokens'] = req.maxTokens;
+    }
     if (req.seed !== undefined) params['seed'] = req.seed;
     if (req.tools && req.tools.length > 0) {
       params['tools'] = req.tools.map((t) => ({

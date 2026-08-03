@@ -52,6 +52,19 @@ interface RawCompletion {
 
 const DEFAULT_API_VERSION = '2024-08-01-preview';
 
+/** Minimum output budget granted to reasoning deployments. */
+const REASONING_MIN_OUTPUT_TOKENS = 4_096;
+
+/**
+ * Best-effort detection of a reasoning deployment (GPT-5 / o-series) from its
+ * Azure deployment name. Azure deployment names are operator-chosen, so this is
+ * a heuristic: only names clearly referencing o1/o3/o4/gpt-5 switch to the
+ * reasoning request contract. Everything else keeps the classic chat shape.
+ */
+export function isReasoningDeployment(name: string): boolean {
+  return /(^|[^a-z0-9])(o[1-9]\d*|gpt-?5)([^a-z0-9]|$)/i.test(name);
+}
+
 export class AzureOpenAiAdapter implements ProviderAdapter {
   readonly id = 'azure_openai' as const;
   readonly capabilities: ProviderCapabilities = {
@@ -87,9 +100,17 @@ export class AzureOpenAiAdapter implements ProviderAdapter {
         ...(m.toolCallId !== undefined ? { tool_call_id: m.toolCallId } : {}),
       })),
     };
-    if (req.temperature !== undefined) body['temperature'] = req.temperature;
+    // Per-deployment request contract (see `isReasoningDeployment`). Reasoning
+    // deployments reject the legacy `max_tokens` field and a custom temperature.
+    const reasoning = isReasoningDeployment(modelId);
+    if (req.temperature !== undefined && !reasoning) body['temperature'] = req.temperature;
     if (req.topP !== undefined) body['top_p'] = req.topP;
-    if (req.maxTokens !== undefined) body['max_tokens'] = req.maxTokens;
+    if (reasoning) {
+      const requested = req.maxTokens ?? REASONING_MIN_OUTPUT_TOKENS;
+      body['max_completion_tokens'] = Math.max(requested, REASONING_MIN_OUTPUT_TOKENS);
+    } else if (req.maxTokens !== undefined) {
+      body['max_tokens'] = req.maxTokens;
+    }
     if (req.seed !== undefined) body['seed'] = req.seed;
     if (req.tools && req.tools.length > 0) {
       body['tools'] = req.tools.map((t) => ({

@@ -10,16 +10,19 @@
  * The optional TinyTroupe Python subprocess engine lives in `tinytroupe.ts` and
  * is selected by the host when `VENTUREOS_TINYTROUPE_PYTHON` is set.
  */
-import type { ChatRequest, ChatResponse, CallContext } from '@foundry/contracts';
+import type { ChatRequest, CallContext, ProviderId } from '@foundry/contracts';
+import {
+  generateStructured,
+  recommendedBudget,
+  resolveCapability,
+  StructuredParseError,
+  type ModelCapability,
+  type StructuredTelemetry,
+  type WorkflowStage,
+} from '@foundry/providers-core';
 
 import { evaluatePersonaSet } from './evaluation';
-import {
-  asString,
-  asStringArray,
-  clamp01,
-  parseJsonBlock,
-  PersonaLabParseError,
-} from './json';
+import { asString, asStringArray, clamp01, PersonaLabParseError } from './json';
 import {
   bcChallengePrompt,
   bcConsensusPrompt,
@@ -39,6 +42,8 @@ import type {
   CommitteeResponse,
   ConsensusLevel,
   FocusGroupTranscript,
+  GenerationTelemetry,
+  GenerationTelemetrySink,
   InterviewTranscript,
   OpinionChange,
   ParticipantOpinion,
@@ -54,31 +59,50 @@ export interface PersonaLabOptions {
   model: string;
   /** Required tenant/trace context for the provider call. */
   ctx: CallContext;
-  /** Max output tokens per call. Defaults vary per capability. */
+  /**
+   * Provider the model belongs to. Drives capability resolution (verbosity,
+   * native JSON support, output ceiling) so budgeting and structured-output
+   * handling adapt automatically — no per-provider branching in the workflow.
+   * Defaults to `'openai'` when omitted (backward compatible).
+   */
+  provider?: ProviderId;
+  /** Optional sink for per-generation telemetry (usage, finishReason, repair, retry). */
+  onTelemetry?: GenerationTelemetrySink;
+  /**
+   * Explicit output-budget overrides. When unset, budgets are derived
+   * adaptively from the resolved capability + workflow stage.
+   */
   maxTokensPersonas?: number;
   maxTokensTranscript?: number;
   maxTokensInsights?: number;
 }
 
 export class PersonaLab implements PersonaLabEngine {
+  /** Resolved once from (provider, model): verbosity, JSON support, ceiling, cost. */
+  private readonly capability: ModelCapability;
+
   constructor(
     private readonly chat: ChatFn,
     private readonly opts: PersonaLabOptions,
-  ) {}
+  ) {
+    this.capability = resolveCapability(opts.provider ?? 'openai', opts.model);
+  }
 
   async generatePersonas(input: {
     brief: PersonaLabBrief;
     n?: number;
   }): Promise<PersonaLabPersona[]> {
     const n = Math.max(1, Math.min(12, input.n ?? 6));
-    const req: ChatRequest = this.buildRequest(
+    return this.generate(
+      'personas',
       generatePersonasPrompt(input.brief, n),
-      this.opts.maxTokensPersonas ?? 2200,
+      this.opts.maxTokensPersonas,
+      (parsed) => {
+        const json = parsed as { personas?: unknown };
+        const arr = Array.isArray(json.personas) ? json.personas : [];
+        return arr.map((p, i) => coercePersona(p, i));
+      },
     );
-    const res = await this.chat(req);
-    const json = parseJsonBlock<{ personas?: unknown }>(stringContent(res));
-    const arr = Array.isArray(json.personas) ? json.personas : [];
-    return arr.map((p, i) => coercePersona(p, i));
   }
 
   async runInterview(input: {
@@ -87,13 +111,12 @@ export class PersonaLab implements PersonaLabEngine {
     questions: string[];
     brief: PersonaLabBrief;
   }): Promise<InterviewTranscript> {
-    const req = this.buildRequest(
+    return this.generate(
+      'interview',
       interviewPrompt(input.persona, input.brief, input.topic, input.questions),
-      this.opts.maxTokensTranscript ?? 1800,
+      this.opts.maxTokensTranscript,
+      (parsed) => coerceInterview(parsed as Record<string, unknown>, input.persona.id, input.topic),
     );
-    const res = await this.chat(req);
-    const json = parseJsonBlock<Record<string, unknown>>(stringContent(res));
-    return coerceInterview(json, input.persona.id, input.topic);
   }
 
   async runFocusGroup(input: {
@@ -103,13 +126,12 @@ export class PersonaLab implements PersonaLabEngine {
     rounds?: number;
   }): Promise<FocusGroupTranscript> {
     const rounds = Math.max(1, Math.min(5, input.rounds ?? 3));
-    const req = this.buildRequest(
+    return this.generate(
+      'focusGroup',
       focusGroupPrompt(input.personas, input.brief, input.topic, rounds),
-      this.opts.maxTokensTranscript ?? 2400,
+      this.opts.maxTokensTranscript,
+      (parsed) => coerceFocusGroup(parsed as Record<string, unknown>, input.personas, input.topic),
     );
-    const res = await this.chat(req);
-    const json = parseJsonBlock<Record<string, unknown>>(stringContent(res));
-    return coerceFocusGroup(json, input.personas, input.topic);
   }
 
   async runBuyingCommittee(input: {
@@ -121,50 +143,36 @@ export class PersonaLab implements PersonaLabEngine {
     const ids = new Set(personas.map((p) => p.id));
 
     // Phase 1 — initial positions
-    const r1 = await this.chat(
-      this.buildRequest(
-        bcInitialPositionsPrompt(personas, brief, offerSummary),
-        this.opts.maxTokensTranscript ?? 1800,
-      ),
+    const initialPositions = await this.generate(
+      'buyingCommittee',
+      bcInitialPositionsPrompt(personas, brief, offerSummary),
+      this.opts.maxTokensTranscript,
+      (p) => coerceOpinions((p as Record<string, unknown>)['initialPositions'], ids),
     );
-    const j1 = parseJsonBlock<Record<string, unknown>>(stringContent(r1));
-    const initialPositions = coerceOpinions(j1['initialPositions'], ids);
 
     // Phase 2 — challenges
-    const r2 = await this.chat(
-      this.buildRequest(
-        bcChallengePrompt(personas, brief, offerSummary, initialPositions),
-        this.opts.maxTokensTranscript ?? 1800,
-      ),
+    const challenges = await this.generate(
+      'buyingCommittee',
+      bcChallengePrompt(personas, brief, offerSummary, initialPositions),
+      this.opts.maxTokensTranscript,
+      (p) => coerceChallenges((p as Record<string, unknown>)['challenges'], ids),
     );
-    const j2 = parseJsonBlock<Record<string, unknown>>(stringContent(r2));
-    const challenges = coerceChallenges(j2['challenges'], ids);
 
     // Phase 3 — responses
-    const r3 = await this.chat(
-      this.buildRequest(
-        bcResponsePrompt(personas, brief, offerSummary, initialPositions, challenges),
-        this.opts.maxTokensTranscript ?? 1800,
-      ),
+    const responses = await this.generate(
+      'buyingCommittee',
+      bcResponsePrompt(personas, brief, offerSummary, initialPositions, challenges),
+      this.opts.maxTokensTranscript,
+      (p) => coerceResponses((p as Record<string, unknown>)['responses'], ids, challenges.length),
     );
-    const j3 = parseJsonBlock<Record<string, unknown>>(stringContent(r3));
-    const responses = coerceResponses(j3['responses'], ids, challenges.length);
 
     // Phase 4+5 — consensus and decision
-    const r4 = await this.chat(
-      this.buildRequest(
-        bcConsensusPrompt(
-          personas,
-          brief,
-          offerSummary,
-          initialPositions,
-          challenges,
-          responses,
-        ),
-        this.opts.maxTokensTranscript ?? 2200,
-      ),
+    const j4 = await this.generate(
+      'buyingCommittee',
+      bcConsensusPrompt(personas, brief, offerSummary, initialPositions, challenges, responses),
+      this.opts.maxTokensTranscript,
+      (p) => p as Record<string, unknown>,
     );
-    const j4 = parseJsonBlock<Record<string, unknown>>(stringContent(r4));
     const consensus = coerceOpinions(j4['consensus'], ids);
     const opinionChanges = coerceOpinionChanges(j4['opinionChanges'], ids);
 
@@ -196,26 +204,90 @@ export class PersonaLab implements PersonaLabEngine {
     personas: PersonaLabPersona[];
     transcripts: Array<InterviewTranscript | FocusGroupTranscript>;
   }): Promise<PersonaLabInsights> {
-    const req = this.buildRequest(
+    return this.generate(
+      'insights',
       insightsPrompt(input.personas, input.transcripts),
-      this.opts.maxTokensInsights ?? 1400,
+      this.opts.maxTokensInsights,
+      (parsed) => {
+        const json = parsed as Record<string, unknown>;
+        return {
+          topPainPoints: asStringArray(json['topPainPoints']),
+          topBuyingTriggers: asStringArray(json['topBuyingTriggers']),
+          topObjections: asStringArray(json['topObjections']),
+          recommendedPositioning: asString(json['recommendedPositioning']),
+          riskFlags: asStringArray(json['riskFlags']),
+          confidence: clamp01(json['confidence'], 0.5),
+        };
+      },
     );
-    const res = await this.chat(req);
-    const json = parseJsonBlock<Record<string, unknown>>(stringContent(res));
-    return {
-      topPainPoints: asStringArray(json['topPainPoints']),
-      topBuyingTriggers: asStringArray(json['topBuyingTriggers']),
-      topObjections: asStringArray(json['topObjections']),
-      recommendedPositioning: asString(json['recommendedPositioning']),
-      riskFlags: asStringArray(json['riskFlags']),
-      confidence: clamp01(json['confidence'], 0.5),
-    };
   }
 
   async validatePersonaSet(input: {
     personas: PersonaLabPersona[];
   }): Promise<PersonaSetEvaluation> {
     return evaluatePersonaSet(input.personas);
+  }
+
+  /**
+   * Single provider-independent structured-generation path. Resolves the output
+   * budget adaptively (unless the host set an explicit override), runs the
+   * shared pipeline (parse → repair → validate → one retry), and emits telemetry.
+   */
+  private async generate<T>(
+    stage: WorkflowStage,
+    messages: ChatRequest['messages'],
+    override: number | undefined,
+    coerce: (parsed: unknown) => T,
+  ): Promise<T> {
+    const budget = override ?? recommendedBudget(this.capability, stage);
+    const request = this.buildRequest(messages, budget);
+    let result;
+    try {
+      result = await generateStructured<T>({
+        chat: this.chat,
+        request,
+        coerce,
+        retryMaxTokens: this.capability.maxOutputTokens,
+      });
+    } catch (err) {
+      // Preserve PersonaLab's public error contract: the shared pipeline throws
+      // a provider-neutral StructuredParseError, but callers (and tests) expect
+      // PersonaLabParseError with its secret-redacted preview.
+      if (err instanceof StructuredParseError) {
+        throw new PersonaLabParseError('Failed to parse model response.', err.raw);
+      }
+      throw err;
+    }
+    const { data, telemetry } = result;
+    this.emitTelemetry(stage, telemetry);
+    return data;
+  }
+
+  private emitTelemetry(stage: WorkflowStage, t: StructuredTelemetry): void {
+    const sink = this.opts.onTelemetry;
+    if (!sink) return;
+    const cap = this.capability;
+    const estimatedCostUsd = cap.cost
+      ? (t.usage.promptTokens / 1000) * cap.cost.inputUsdPer1k +
+        (t.usage.completionTokens / 1000) * cap.cost.outputUsdPer1k
+      : undefined;
+    const event: GenerationTelemetry = {
+      provider: cap.provider,
+      model: this.opts.model,
+      stage,
+      promptTokens: t.usage.promptTokens,
+      completionTokens: t.usage.completionTokens,
+      totalTokens: t.usage.totalTokens,
+      ...(estimatedCostUsd !== undefined ? { estimatedCostUsd } : {}),
+      finishReason: t.finishReason,
+      jsonRepairApplied: t.repairApplied,
+      repairSucceeded: t.repairSucceeded,
+      truncated: t.truncated,
+      retryCount: t.retryCount,
+      finalStatus: t.finalStatus,
+      latencyMs: t.latencyMs,
+    };
+    sink(event);
   }
 
   private buildRequest(messages: ChatRequest['messages'], maxTokens: number): ChatRequest {
@@ -231,16 +303,6 @@ export class PersonaLab implements PersonaLabEngine {
 }
 
 // ── coercion helpers ─────────────────────────────────────────────────────────
-
-function stringContent(res: ChatResponse): string {
-  if (typeof res.content !== 'string') {
-    throw new PersonaLabParseError(
-      'Expected text content but got tool calls.',
-      JSON.stringify(res.content),
-    );
-  }
-  return res.content;
-}
 
 function coercePersona(raw: unknown, idx: number): PersonaLabPersona {
   const o = (raw ?? {}) as Record<string, unknown>;
