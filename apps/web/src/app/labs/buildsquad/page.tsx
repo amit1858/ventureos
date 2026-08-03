@@ -17,6 +17,8 @@ import type {
 } from '@foundry/buildsquad';
 import type { ResearchGraph, VentureRecommendation } from '@foundry/contracts';
 
+import { SignInNotice } from '../../../components/SignInNotice';
+
 interface ProviderProfile {
   id: string;
   providerType: string;
@@ -34,6 +36,7 @@ export default function BuildSquadPage() {
   const [selectedProviderId, setSelectedProviderId] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
   const [providerError, setProviderError] = useState<string | null>(null);
+  const [needsAuth, setNeedsAuth] = useState(false);
 
   const [recommendationJson, setRecommendationJson] = useState('');
   const [researchGraphJson, setResearchGraphJson] = useState('');
@@ -47,7 +50,7 @@ export default function BuildSquadPage() {
       try {
         const r = await fetch('/api/byok/providers', { cache: 'no-store' });
         if (r.status === 401) {
-          setProviderError('Real Mode requires sign-in. Sign in with Google for a private workspace, or use Demo Mode without any keys.');
+          setNeedsAuth(true);
           return;
         }
         const body = (await r.json()) as { profiles?: ProviderProfile[] };
@@ -130,7 +133,7 @@ export default function BuildSquadPage() {
       });
       const body = (await r.json()) as Envelope<BuildSquadArtifactPack>;
       if (!body.ok || !body.data) {
-        setError(body.reason ?? 'BuildSquad call failed.');
+        setError(body.reason ?? 'Build planning failed.');
         return;
       }
       setPack(body.data);
@@ -158,14 +161,20 @@ export default function BuildSquadPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-6">
       <header>
-        <h1 className="text-2xl font-semibold">BuildSquad</h1>
+        <h1 className="text-2xl font-semibold">Build Planning</h1>
         <p className="text-sm text-gray-600">
-          Turn a validated VentureLab recommendation into a build-ready artifact pack
+          Turn a validated recommendation into a build-ready artifact pack
           (product vision, PRD, MVP scope, user stories, architecture, roadmap, prototype brief)
           plus cross-agent critique. PIVOT and KILL recommendations get dedicated outputs.
         </p>
       </header>
 
+      {needsAuth && (
+        <SignInNotice
+          next="/labs/buildsquad"
+          message="Sign in to run build planning with your own provider keys — or explore the guided demo. No keys needed."
+        />
+      )}
       {providerError && (
         <div className="rounded border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
           <div>{providerError}</div>
@@ -214,7 +223,7 @@ export default function BuildSquadPage() {
 
       <div className="flex items-center gap-3">
         <button onClick={() => void run()} disabled={busy || !selectedProviderId || !selectedModel} className="rounded bg-black px-4 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50">
-          {busy ? 'Running…' : 'Run BuildSquad'}
+          {busy ? 'Running…' : 'Run build planning'}
         </button>
         {pack && (
           <>

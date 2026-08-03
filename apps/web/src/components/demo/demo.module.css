@@ -54,7 +54,7 @@
 }
 .bannerLink:hover { text-decoration: underline; }
 
-/* ---------- Judge guidance banner (sits above the demo banner) ---------- */
+/* ---------- Recommended-walkthrough banner (sits above the demo banner) ---------- */
 .judgeBanner {
   position: relative;
   border-radius: 12px;

@@ -23,6 +23,8 @@ import type {
   VentureRecommendation,
 } from '@foundry/contracts';
 
+import { SignInNotice } from '../../../components/SignInNotice';
+
 interface ProviderProfile {
   id: string;
   providerType: string;
@@ -75,6 +77,7 @@ export default function VentureLabPage() {
   const [selectedProviderId, setSelectedProviderId] = useState<string>('');
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [providerError, setProviderError] = useState<string | null>(null);
+  const [needsAuth, setNeedsAuth] = useState(false);
 
   const [brief, setBrief] = useState<PersonaLabBrief>(FACELESS_CRM_BRIEF);
   const [ventureId, setVentureId] = useState<string>('v-faceless-crm');
@@ -97,7 +100,7 @@ export default function VentureLabPage() {
       try {
         const r = await fetch('/api/byok/providers', { cache: 'no-store' });
         if (r.status === 401) {
-          setProviderError('Real Mode requires sign-in. Sign in with Google for a private workspace, or use Demo Mode without any keys.');
+          setNeedsAuth(true);
           return;
         }
         const body = await r.json() as { profiles?: ProviderProfile[] };
@@ -172,7 +175,7 @@ export default function VentureLabPage() {
       });
       const body = (await r.json()) as Envelope<VentureRecommendation>;
       if (!body.ok || !body.data) {
-        setError(body.reason ?? 'VentureLab analyse failed.');
+        setError(body.reason ?? 'Validation analyse failed.');
         return;
       }
       setRecommendation(body.data);
@@ -184,13 +187,19 @@ export default function VentureLabPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-6">
       <header>
-        <h1 className="text-2xl font-semibold">VentureLab</h1>
+        <h1 className="text-2xl font-semibold">Venture Validation</h1>
         <p className="text-sm text-gray-600">
           Should we <strong>Proceed</strong>, <strong>Pivot</strong>, or <strong>Kill</strong>?
           Evidence-based, deterministic, explainable.
         </p>
       </header>
 
+      {needsAuth && (
+        <SignInNotice
+          next="/labs/venture"
+          message="Sign in to run validation with your own provider keys — or explore the guided demo. No keys needed."
+        />
+      )}
       {providerError && (
         <div className="rounded border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
           <div>{providerError}</div>

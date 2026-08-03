@@ -233,7 +233,7 @@ export default function VentureWorkspacePage({ params }: Props) {
             <EmptyState
               icon="🕸"
               title="No research graph yet"
-              text="Build a research graph to surface god-nodes, contradictions and the strongest market signals."
+              text="Build a research graph to surface key concepts, contradictions and the strongest market signals."
               action={{ href: `/labs/research-graph?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Build research graph →' }}
             />
           )
@@ -246,8 +246,8 @@ export default function VentureWorkspacePage({ params }: Props) {
             <EmptyState
               icon="⚖"
               title="No recommendation yet"
-              text="Run VentureLab to get a Proceed / Pivot / Kill call with a scorecard, evidence and a validation roadmap."
-              action={{ href: `/labs/venture?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Run VentureLab →' }}
+              text="Run validation to get a Proceed / Pivot / Kill call with a scorecard, evidence and a validation roadmap."
+              action={{ href: `/labs/venture?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Run validation →' }}
             />
           )
         )}
@@ -268,11 +268,11 @@ export default function VentureWorkspacePage({ params }: Props) {
               icon="🛠"
               title="No build plan yet"
               text={derived.has.rec
-                ? 'Generate a BuildSquad pack to turn the recommendation into a PRD, MVP scope, user stories and an architecture brief.'
-                : 'BuildSquad needs a VentureLab recommendation first. Run VentureLab, then come back here.'}
+                ? 'Generate a build plan to turn the recommendation into a PRD, MVP scope, user stories and an architecture brief.'
+                : 'Build planning needs a validation recommendation first. Run validation, then come back here.'}
               action={derived.has.rec
-                ? { href: `/labs/buildsquad?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Generate BuildSquad plan →' }
-                : { href: `/labs/venture?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Run VentureLab →' }}
+                ? { href: `/labs/buildsquad?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Generate build plan →' }
+                : { href: `/labs/venture?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Run validation →' }}
             />
           )
         )}
@@ -317,8 +317,8 @@ function OverviewTab({
   const steps: { key: string; label: string; href: string | null; done: boolean; enabled: boolean; goTab: Tab }[] = [
     { key: 'personas', label: 'Generate personas', href: `/labs/persona?ventureId=${vid}`, done: derived.has.personas, enabled: true, goTab: 'personas' },
     { key: 'research', label: 'Build research graph', href: `/labs/research-graph?ventureId=${vid}`, done: derived.has.graph, enabled: true, goTab: 'research' },
-    { key: 'validation', label: 'Run VentureLab', href: `/labs/venture?ventureId=${vid}`, done: derived.has.rec, enabled: true, goTab: 'validation' },
-    { key: 'buildplan', label: 'Generate BuildSquad plan', href: `/labs/buildsquad?ventureId=${vid}`, done: derived.has.pack, enabled: derived.has.rec, goTab: 'buildplan' },
+    { key: 'validation', label: 'Run validation', href: `/labs/venture?ventureId=${vid}`, done: derived.has.rec, enabled: true, goTab: 'validation' },
+    { key: 'buildplan', label: 'Generate build plan', href: `/labs/buildsquad?ventureId=${vid}`, done: derived.has.pack, enabled: derived.has.rec, goTab: 'buildplan' },
     { key: 'export', label: 'Export to GitHub', href: null, done: derived.has.github, enabled: derived.has.pack, goTab: 'buildplan' },
   ];
   const next = steps.find((s) => !s.done && s.enabled) ?? steps.find((s) => !s.done) ?? null;
@@ -335,7 +335,7 @@ function OverviewTab({
               <Bar label="Persona coverage" value={r.personaCoverage} />
               <Bar label="Research coverage" value={r.researchCoverage} />
               <Bar label="Validation confidence" value={r.validationConfidence} />
-              <Bar label="BuildSquad completeness" value={r.buildsquadCompleteness} />
+              <Bar label="Build plan completeness" value={r.buildsquadCompleteness} />
               <Bar label="Risk coverage" value={r.riskCoverage} />
             </div>
           </div>
@@ -397,7 +397,7 @@ function OverviewTab({
                 <a className={cx(styles.btn, styles.btnPrimary)} href={derived.github.htmlUrl} target="_blank" rel="noreferrer">Open repository →</a>
               </>
             ) : (
-              <p className={cx(styles.muted)}>Not exported yet. Generate a BuildSquad plan, then export repo-ready artifacts to GitHub with your BYOK PAT.</p>
+              <p className={cx(styles.muted)}>Not exported yet. Generate a build plan, then export repo-ready artifacts to GitHub with your BYOK PAT.</p>
             )}
           </div>
         </div>
@@ -415,7 +415,7 @@ function OverviewTab({
             <button className={cx(styles.btn, styles.btnGhost)} onClick={() => onGoToTab('validation')}>View validation →</button>
           </div>
         ) : (
-          <p className={cx(styles.muted)}>No recommendation yet. Run VentureLab to get a Proceed / Pivot / Kill call.</p>
+          <p className={cx(styles.muted)}>No recommendation yet. Run validation to get a Proceed / Pivot / Kill call.</p>
         )}
       </div>
 

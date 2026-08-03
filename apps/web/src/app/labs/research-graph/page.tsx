@@ -20,6 +20,8 @@ import type {
 } from '@foundry/adapter-graphify';
 import { queryGraph } from '@foundry/adapter-graphify';
 
+import { SignInNotice } from '../../../components/SignInNotice';
+
 interface ProviderProfile {
   id: string;
   providerType: string;
@@ -54,6 +56,7 @@ export default function ResearchGraphPage() {
   const [selectedProviderId, setSelectedProviderId] = useState<string>('');
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [providerError, setProviderError] = useState<string | null>(null);
+  const [needsAuth, setNeedsAuth] = useState(false);
 
   const [ventureId, setVentureId] = useState('v-faceless-crm');
 
@@ -78,7 +81,7 @@ export default function ResearchGraphPage() {
       try {
         const r = await fetch('/api/byok/providers', { cache: 'no-store' });
         if (r.status === 401) {
-          setProviderError('Real Mode requires sign-in. Sign in with Google for a private workspace, or use Demo Mode without any keys.');
+          setNeedsAuth(true);
           return;
         }
         const body = await r.json() as { profiles?: ProviderProfile[] };
@@ -175,10 +178,16 @@ export default function ResearchGraphPage() {
         <h1 className="text-2xl font-semibold">Research Graph</h1>
         <p className="text-sm text-gray-600">
           Transform research notes into a structured graph of problems, segments, competitors, market signals,
-          features and opportunities. Used by VentureLab to ground assumption confidence and competitive risk.
+          features and opportunities. Used in evaluation to ground assumption confidence and competitive risk.
         </p>
       </header>
 
+      {needsAuth && (
+        <SignInNotice
+          next="/labs/research-graph"
+          message="Sign in to build a research graph with your own provider keys — or explore the guided demo. No keys needed."
+        />
+      )}
       {providerError && (
         <div className="rounded border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
           <div>{providerError}</div>
@@ -289,9 +298,9 @@ function GraphView({ graph }: { graph: ResearchGraph }) {
       </header>
 
       <section>
-        <h3 className="mb-2 text-sm font-medium uppercase tracking-wide text-gray-600">Strongest signals (god-nodes)</h3>
+        <h3 className="mb-2 text-sm font-medium uppercase tracking-wide text-gray-600">Key concepts (highest centrality)</h3>
         <ol className="list-decimal space-y-1 pl-5 text-sm">
-          {graph.godNodes.length === 0 && <li className="text-gray-500">No god-nodes computed.</li>}
+          {graph.godNodes.length === 0 && <li className="text-gray-500">No key concepts computed.</li>}
           {graph.godNodes.map((g, i) => (
             <li key={i}>{g.label} <span className="text-xs text-gray-500">· degree {g.degree} · community {g.community}</span></li>
           ))}

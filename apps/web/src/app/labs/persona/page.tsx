@@ -20,6 +20,8 @@ import type {
   PersonaSetEvaluation,
 } from '@foundry/contracts';
 
+import { SignInNotice } from '../../../components/SignInNotice';
+
 interface ProviderProfile {
   id: string;
   providerType: string;
@@ -46,6 +48,7 @@ export default function PersonaLabPage() {
   const [selectedProviderId, setSelectedProviderId] = useState<string>('');
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [providerError, setProviderError] = useState<string | null>(null);
+  const [needsAuth, setNeedsAuth] = useState(false);
 
   const [tinytroupeAvailable, setTinytroupeAvailable] = useState<boolean>(false);
   const [engine, setEngine] = useState<'builtin' | 'tinytroupe'>('builtin');
@@ -82,7 +85,7 @@ export default function PersonaLabPage() {
       try {
         const r = await fetch('/api/byok/providers', { cache: 'no-store' });
         if (r.status === 401) {
-          setProviderError('Real Mode requires sign-in. Sign in with Google for a private workspace, or use Demo Mode without any keys.');
+          setNeedsAuth(true);
           return;
         }
         const body = await r.json() as { profiles?: ProviderProfile[] };
@@ -220,12 +223,18 @@ export default function PersonaLabPage() {
 
   return (
     <section style={{ maxWidth: 1080 }}>
-      <h1>PersonaLab</h1>
+      <h1>Personas</h1>
       <p style={{ color: '#9aa0a6' }}>
         Persona generation and buying-committee simulation. All model calls run through your selected
         BYOK provider on the server — the browser never sees plaintext secrets.
       </p>
 
+      {needsAuth && (
+        <SignInNotice
+          next="/labs/persona"
+          message="Sign in to generate personas with your own provider keys — or explore the guided demo. No keys needed."
+        />
+      )}
       {providerError ? (
         <div style={{
           padding: '0.75rem 1rem',

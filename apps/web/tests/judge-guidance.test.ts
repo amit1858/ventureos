@@ -1,11 +1,13 @@
 /**
- * Judge guidance UI surface tests.
+ * Product-positioning UI surface tests.
  *
- * These guarantee that judge-facing call-outs stay visible on the four
- * routes a hackathon judge is likely to land on (homepage, demo, signin,
- * access) and in the two docs they're likely to read (README, hackathon
- * submission write-up). All checks are source-level static reads so they
- * stay fast and don't depend on a rendered DOM.
+ * The homepage and README lead with Foundry's product story and operating
+ * model. The guided demo, /signin and /access read as a product experience:
+ * a "Product tour" banner and a lightweight "prefer to look around first?"
+ * notice into the seeded demo — with no hackathon/judge framing. The archived
+ * submission docs under docs/ keep their original judge path as historical
+ * context. All checks are source-level static reads so they stay fast and
+ * DOM-free.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,89 +25,103 @@ function readRepo(rel: string): string {
   return fs.readFileSync(path.join(REPO_ROOT, rel), 'utf8');
 }
 
-describe('Homepage shows a judge-facing guidance card', () => {
+describe('Homepage leads with product positioning', () => {
   const src = readWeb(path.join('app', 'page.tsx'));
 
-  it('renders a labeled judge guidance section', () => {
-    expect(src).toMatch(/For judges/);
-    expect(src).toMatch(/Start with the zero-key demo/);
-    expect(src).toMatch(/data-testid="judge-guidance"/);
+  it('leads with the Foundry positioning line', () => {
+    expect(src).toMatch(/Where ideas become execution-ready ventures/);
+    expect(src).toMatch(/An AI-native Venture Operating System/);
   });
 
-  it('primary CTA links to the Faceless CRM demo', () => {
-    expect(src).toMatch(/Open Judge Demo/);
-    // Two links to /demo/faceless-crm are expected (hero "Try the demo →"
-    // and the new judge card primary CTA).
-    const matches = src.match(/\/demo\/faceless-crm/g) ?? [];
-    expect(matches.length).toBeGreaterThanOrEqual(2);
+  it('makes the operating model visible', () => {
+    for (const phase of ['Discover', 'Evaluate', 'Govern', 'Learn']) {
+      expect(src).toMatch(new RegExp(phase));
+    }
   });
 
-  it('also exposes GitHub repo and a Real Mode escape link', () => {
-    expect(src).toMatch(/View GitHub repo/);
-    // Tertiary link routes to /access for sign-in / Alpha Workspace.
-    expect(src).toMatch(/Sign in \/ Alpha Workspace for Real Mode/);
-    expect(src).toMatch(/href="\/access"/);
+  it('exposes a single primary CTA into the guided demo', () => {
+    expect(src).toMatch(/See the guided demo/);
+    expect(src).toMatch(/\/demo\/faceless-crm/);
+  });
+
+  it('does not foreground hackathon judging as the primary story', () => {
+    expect(src).not.toMatch(/For judges/);
+    expect(src).not.toMatch(/data-testid="judge-guidance"/);
   });
 });
 
-describe('Demo walkthrough labels itself as the recommended judge path', () => {
+describe('Demo walkthrough reads as a product tour', () => {
   const src = readWeb(path.join('components', 'demo', 'Walkthrough.tsx'));
 
-  it('renders a JudgeBanner above the Demo banner', () => {
-    expect(src).toMatch(/JudgeBanner/);
-    expect(src).toMatch(/Recommended judge path/);
-    expect(src).toMatch(/data-testid="judge-banner"/);
+  it('renders a TourBanner above the Demo banner', () => {
+    expect(src).toMatch(/<TourBanner \/>/);
+    expect(src).toMatch(/function TourBanner\(/);
+    expect(src).toMatch(/Recommended walkthrough/);
+    expect(src).toMatch(/data-testid="tour-banner"/);
   });
 
-  it('explicitly names zero-key, no sign-in, no provider keys', () => {
-    expect(src).toMatch(/zero-key demo/);
-    expect(src).toMatch(/does not require/);
-    // The Real Mode option is mentioned but not as the primary CTA.
-    expect(src).toMatch(/Real Mode supports BYOK/);
+  it('describes the seeded, no-key demo without judge framing', () => {
+    expect(src).toMatch(/needs no sign-in/);
+    expect(src).toMatch(/Real Mode adds BYOK/);
+    expect(src).not.toMatch(/For judges/);
+    expect(src).not.toMatch(/Recommended judge path/);
+    expect(src).not.toMatch(/data-testid="judge-banner"/);
+    expect(src).not.toMatch(/zero-key demo/);
   });
 });
 
-describe('/signin gives judges an escape hatch to the zero-key demo', () => {
+describe('/signin offers a product-tour notice into the seeded demo', () => {
   const src = readWeb(path.join('app', 'signin', 'page.tsx'));
 
-  it('contains a JudgeEscape component pointing at the demo', () => {
-    expect(src).toMatch(/JudgeEscape/);
-    expect(src).toMatch(/Just reviewing the submission\?/);
-    expect(src).toMatch(/Open Judge Demo/);
+  it('contains a DemoNotice component pointing at the demo', () => {
+    expect(src).toMatch(/function DemoNotice\(/);
+    expect(src).toMatch(/Prefer to look around first\?/);
+    expect(src).toMatch(/Open the guided demo/);
     expect(src).toMatch(/href="\/demo\/faceless-crm"/);
+    expect(src).toMatch(/data-testid="demo-notice"/);
   });
 
-  it('renders the escape in every signin branch (signed-in, alpha, signed-out)', () => {
-    // Three <JudgeEscape /> render sites (one per `return (` branch).
-    const matches = src.match(/<JudgeEscape \/>/g) ?? [];
+  it('renders the notice in every signin branch (signed-in, alpha, signed-out)', () => {
+    const matches = src.match(/<DemoNotice \/>/g) ?? [];
     expect(matches.length).toBe(3);
   });
+
+  it('carries no judge/hackathon framing', () => {
+    expect(src).not.toMatch(/For judges/);
+    expect(src).not.toMatch(/Open Judge Demo/);
+    expect(src).not.toMatch(/reviewing the submission/);
+  });
 });
 
-describe('/access gives judges an escape hatch to the zero-key demo', () => {
+describe('/access offers a product-tour notice into the seeded demo', () => {
   const src = readWeb(path.join('app', 'access', 'page.tsx'));
 
-  it('contains a JudgeEscape component pointing at the demo', () => {
-    expect(src).toMatch(/JudgeEscape/);
-    expect(src).toMatch(/Just reviewing the submission\?/);
-    expect(src).toMatch(/Open Judge Demo/);
+  it('contains a DemoNotice component pointing at the demo', () => {
+    expect(src).toMatch(/function DemoNotice\(/);
+    expect(src).toMatch(/Prefer to look around first\?/);
+    expect(src).toMatch(/Open the guided demo/);
     expect(src).toMatch(/href="\/demo\/faceless-crm"/);
+    expect(src).toMatch(/data-testid="demo-notice"/);
   });
 
-  it('renders the escape in every access branch', () => {
-    // Five branches: real-user, alpha-cookie, alpha-no-cookie, supabase-only, setup-required.
-    const matches = src.match(/<JudgeEscape \/>/g) ?? [];
+  it('renders the notice in every access branch', () => {
+    const matches = src.match(/<DemoNotice \/>/g) ?? [];
     expect(matches.length).toBe(5);
+  });
+
+  it('carries no judge/hackathon framing', () => {
+    expect(src).not.toMatch(/For judges/);
+    expect(src).not.toMatch(/Open Judge Demo/);
+    expect(src).not.toMatch(/hackathon judging/);
   });
 });
 
-describe('README and submission docs surface the judge path', () => {
-  it('README has a "For judges" section with the demo link', () => {
+describe('README leads with positioning; submission docs retain the historical judge path', () => {
+  it('README surfaces the operating model, the live demo and the naming history', () => {
     const src = readRepo('README.md');
-    expect(src).toMatch(/## For judges/);
-    expect(src).toMatch(/Open Judge Demo/);
+    expect(src).toMatch(/## Operating model/i);
     expect(src).toMatch(/ventureos-dun\.vercel\.app\/demo\/faceless-crm/);
-    expect(src).toMatch(/no sign-in, no provider key, no GitHub PAT/);
+    expect(src).toMatch(/originally .*VentureOS/i);
   });
 
   it('docs/hackathon-submission.md has a Recommended judge path section', () => {
@@ -121,28 +137,26 @@ describe('README and submission docs surface the judge path', () => {
   });
 });
 
-describe('Judge copy stays polished (no apology, no internals)', () => {
+describe('Product-tour copy stays polished (no apology, no internals)', () => {
   const surfaces = [
-    readWeb(path.join('app', 'page.tsx')),
     readWeb(path.join('components', 'demo', 'Walkthrough.tsx')),
     readWeb(path.join('app', 'signin', 'page.tsx')),
     readWeb(path.join('app', 'access', 'page.tsx')),
   ].join('\n');
 
-  it('never makes the product feel unfinished in judge banners', () => {
-    // The banner-area copy itself must not apologize. We narrow the
-    // check to the JudgeBanner/JudgeEscape/judge guidance blocks.
-    const judgeBlocks = [
-      /JudgeBanner[\s\S]*?\)\s*;\s*\}/,
-      /JudgeEscape[\s\S]*?\)\s*;\s*\}/,
-      /data-testid="judge-guidance"[\s\S]*?<\/section>/,
+  it('never makes the product feel unfinished in the tour banners', () => {
+    // Narrow the check to the TourBanner / DemoNotice blocks so we only
+    // police the product-tour copy itself.
+    const tourBlocks = [
+      /TourBanner[\s\S]*?\)\s*;\s*\}/,
+      /DemoNotice[\s\S]*?\)\s*;\s*\}/,
     ].map((re) => {
       const m = surfaces.match(re);
       return m ? m[0] : '';
     }).join('\n');
 
-    expect(judgeBlocks).not.toMatch(/sorry|apologi[sz]e|unfortunately|broken|TODO|FIXME|hack(?!athon)/i);
+    expect(tourBlocks).not.toMatch(/sorry|apologi[sz]e|unfortunately|broken|TODO|FIXME|hack(?!athon)/i);
     // No raw implementation details.
-    expect(judgeBlocks).not.toMatch(/getCurrentUser|getAuthDecision|serviceRoleClient|VentureJob/);
+    expect(tourBlocks).not.toMatch(/getCurrentUser|getAuthDecision|serviceRoleClient|VentureJob/);
   });
 });

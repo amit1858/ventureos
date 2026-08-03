@@ -16,6 +16,7 @@ import {
   parseByokMutationResponse,
   parseJsonBody,
 } from '../../../lib/byok-http';
+import { SignInNotice } from '../../../components/SignInNotice';
 
 const PROVIDERS: ProviderId[] = ['openai', 'anthropic', 'gemini', 'azure_openai', 'github'];
 
@@ -52,14 +53,16 @@ export default function ByokSettings() {
   const [profiles, setProfiles] = useState<ProviderProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [topError, setTopError] = useState<string | null>(null);
+  const [needsAuth, setNeedsAuth] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
+    setNeedsAuth(false);
     try {
       const r = await fetch('/api/byok/providers', { cache: 'no-store' });
       if (r.status === 401) {
-        setTopError('Real Mode requires sign-in. Sign in with Google for a private workspace, or use Demo Mode without any keys.');
+        setNeedsAuth(true);
         setProfiles([]);
         return;
       }
@@ -88,6 +91,12 @@ export default function ByokSettings() {
         plaintext. The browser only ever sees a masked preview plus non-sensitive metadata.
       </p>
 
+      {needsAuth && (
+        <SignInNotice
+          next="/settings/byok"
+          message="Sign in to manage your own provider keys — or explore the guided demo without any keys."
+        />
+      )}
       {topError ? (
         <div
           style={{

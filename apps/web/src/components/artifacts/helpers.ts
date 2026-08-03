@@ -86,7 +86,7 @@ export const ARTIFACT_LABEL: Record<VentureArtifactKind, string> = {
   persona_insights: 'Persona insights',
   research_graph: 'Research graph',
   venture_recommendation: 'Recommendation',
-  buildsquad_pack: 'BuildSquad pack',
+  buildsquad_pack: 'Build plan pack',
   evaluation_report: 'Evaluation report',
   github_repo: 'GitHub repo',
 };
@@ -102,7 +102,7 @@ export const EVENT_LABELS: Record<VentureTimelineEventKind, string> = {
   persona_insights_generated: 'Persona insights generated',
   research_graph_built: 'Research graph built',
   recommendation_generated: 'Recommendation generated',
-  buildsquad_pack_generated: 'BuildSquad pack generated',
+  buildsquad_pack_generated: 'Build plan generated',
   evaluation_report_generated: 'Evaluation report generated',
   job_started: 'Job started',
   job_progress: 'Job progress',
@@ -119,8 +119,8 @@ export const JOB_KIND_LABEL: Record<VentureJobKind, string> = {
   'personalab.run_buying_committee': 'Run buying committee',
   'personalab.extract_insights': 'Extract insights',
   'graphify.build': 'Build research graph',
-  'venturelab.recommend': 'VentureLab recommendation',
-  'buildsquad.plan': 'BuildSquad plan',
+  'venturelab.recommend': 'Validation recommendation',
+  'buildsquad.plan': 'Build plan',
   'github.export': 'GitHub export',
 };
 
@@ -128,16 +128,16 @@ export const JOB_KIND_LABEL: Record<VentureJobKind, string> = {
 export function labLinkForJob(jobKind: VentureJobKind, ventureId: string): { href: string; label: string } {
   const vid = encodeURIComponent(ventureId);
   if (jobKind.startsWith('personalab.')) {
-    return { href: `/labs/persona?ventureId=${vid}`, label: 'Re-run in PersonaLab' };
+    return { href: `/labs/persona?ventureId=${vid}`, label: 'Re-run personas' };
   }
   if (jobKind === 'graphify.build') {
-    return { href: `/labs/research-graph?ventureId=${vid}`, label: 'Re-run in Graphify' };
+    return { href: `/labs/research-graph?ventureId=${vid}`, label: 'Re-run research graph' };
   }
   if (jobKind === 'venturelab.recommend') {
-    return { href: `/labs/venture?ventureId=${vid}`, label: 'Re-run in VentureLab' };
+    return { href: `/labs/venture?ventureId=${vid}`, label: 'Re-run validation' };
   }
   if (jobKind === 'buildsquad.plan') {
-    return { href: `/labs/buildsquad?ventureId=${vid}`, label: 'Re-run in BuildSquad' };
+    return { href: `/labs/buildsquad?ventureId=${vid}`, label: 'Re-run build plan' };
   }
   if (jobKind === 'github.export') {
     return { href: `/ventures/${vid}?tab=buildplan`, label: 'Retry GitHub export' };

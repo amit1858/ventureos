@@ -3,7 +3,7 @@
  *
  * A `DemoVenture` is a fully-seeded, deterministic snapshot of a venture that
  * has already been driven end-to-end through every Foundry lab. It exists so
- * a judge or first-time user can experience the entire product surface —
+ * a first-time user can experience the entire product surface —
  * personas, buying committee, research graph, validation, build plan,
  * evaluation report and a (simulated) GitHub export — WITHOUT supplying any
  * BYOK provider key, Supabase project or GitHub token.

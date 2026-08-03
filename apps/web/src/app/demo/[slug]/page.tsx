@@ -15,9 +15,9 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: PageProps): Metadata {
   const demo = getDemoVenture(params.slug);
-  if (!demo) return { title: 'Demo · Foundry' };
+  if (!demo) return { title: 'Demo' };
   return {
-    title: `${demo.venture.title} · Demo · Foundry`,
+    title: `${demo.venture.title} · Demo`,
     description: demo.tagline,
   };
 }
