@@ -40,6 +40,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { getCredentialService } from './credentials';
 import { getVentureService } from './ventures';
 import { runPersonaLabAction, type PersonaLabAction, type PersonaLabEngine } from './personalab';
+import type { GenerationTelemetry } from '@foundry/personalab';
 import { runGraphifyBuild } from './graphify';
 import { runVentureLabAnalyze } from './venturelab';
 import { runBuildSquad } from './buildsquad';
@@ -56,7 +57,7 @@ declare global {
 
 function getJobStore(): JobStore {
   if (globalThis.__foundry_job_store) return globalThis.__foundry_job_store;
-  const url = process.env['SUPABASE_URL'];
+  const url = process.env['SUPABASE_URL'] ?? process.env['NEXT_PUBLIC_SUPABASE_URL'];
   const key = process.env['SUPABASE_SERVICE_ROLE_KEY'];
   let store: JobStore;
   if (url && key) {
@@ -152,6 +153,22 @@ async function recordProvider(
   }
 }
 
+/**
+ * Server-side diagnostic line for one structured generation. Every field is
+ * non-sensitive (provider/model/stage/finishReason + repair/retry counters) —
+ * no prompt text, response text, or credentials are logged. This is the
+ * observability seam the Release 1.1 "Model Diagnostics" surface will build on.
+ */
+function logPersonaLabTelemetry(action: PersonaLabAction, t: GenerationTelemetry): void {
+  const cost = t.estimatedCostUsd != null ? `$${t.estimatedCostUsd.toFixed(4)}` : 'n/a';
+  console.info(
+    `[personalab.telemetry] action=${action} provider=${t.provider} model=${t.model} ` +
+      `stage=${t.stage} finish=${t.finishReason} tokens=${t.promptTokens}/${t.completionTokens} ` +
+      `cost=${cost} repair=${t.jsonRepairApplied}(ok=${t.repairSucceeded}) truncated=${t.truncated} ` +
+      `retries=${t.retryCount} status=${t.finalStatus} latencyMs=${t.latencyMs}`,
+  );
+}
+
 function wrapPersonaLab(
   action: PersonaLabAction,
   kind: VentureArtifactKind,
@@ -176,6 +193,18 @@ function wrapPersonaLab(
       ...(input.offerSummary ? { offerSummary: input.offerSummary } : {}),
       ...(input.transcripts ? { transcripts: input.transcripts } : {}),
       ...(input.n ? { n: input.n } : {}),
+      onTelemetry: (t) => {
+        // Real per-call usage → accurate Run History cost (was always $0.00).
+        // The accumulator update inside recordUsage is synchronous, so this
+        // fire-and-forget call lands before the job's cost is computed.
+        void ctx.recordUsage({
+          providerName: t.provider,
+          providerModel: t.model,
+          promptTokens: t.promptTokens,
+          completionTokens: t.completionTokens,
+        });
+        logPersonaLabTelemetry(action, t);
+      },
     });
 
     if (!result.ok) throw new Error(result.reason);
@@ -197,7 +226,7 @@ const graphifyHandler: JobHandler = async (ctx) => {
   const stats = (result.data as { stats?: { nodes?: number }; godNodes?: unknown[] });
   return successResult(
     'research_graph',
-    `Graph with ${stats.stats?.nodes ?? 0} nodes, ${stats.godNodes?.length ?? 0} god-nodes`,
+    `Graph with ${stats.stats?.nodes ?? 0} nodes, ${stats.godNodes?.length ?? 0} key concepts`,
     result.data,
   );
 };

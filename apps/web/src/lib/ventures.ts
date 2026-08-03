@@ -1,7 +1,8 @@
 /**
  * Process-wide singleton Venture store + service (Sprint 2A.5 / 2A.6).
  *
- * Storage selection: if SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY are set, use
+ * Storage selection: if a Supabase URL (SUPABASE_URL, falling back to
+ * NEXT_PUBLIC_SUPABASE_URL) + SUPABASE_SERVICE_ROLE_KEY are set, use
  * SupabaseVentureStore so demo state survives a server restart. Otherwise fall
  * back to the in-memory store. Tenant isolation is enforced by the service
  * itself: every call carries ownerId, and the store keys all rows by
@@ -25,7 +26,7 @@ declare global {
 }
 
 function getSupabaseAdmin(): SupabaseClient | null {
-  const url = process.env['SUPABASE_URL'];
+  const url = process.env['SUPABASE_URL'] ?? process.env['NEXT_PUBLIC_SUPABASE_URL'];
   const key = process.env['SUPABASE_SERVICE_ROLE_KEY'];
   if (!url || !key) return null;
   if (!globalThis.__foundry_supabase_admin) {

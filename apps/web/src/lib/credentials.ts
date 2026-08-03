@@ -27,7 +27,7 @@ import {
   type ProviderValidator,
 } from '@foundry/credentials';
 import type { ProviderId } from '@foundry/contracts';
-import { ProviderError } from '@foundry/providers-core';
+import { ProviderError, ProviderModelNotFoundError } from '@foundry/providers-core';
 import { OpenAiAdapter, OPENAI_KNOWN_MODELS } from '@foundry/providers-openai';
 import { AnthropicAdapter, ANTHROPIC_KNOWN_MODELS } from '@foundry/providers-anthropic';
 import { GeminiAdapter, GEMINI_KNOWN_MODELS } from '@foundry/providers-gemini';
@@ -35,6 +35,7 @@ import { AzureOpenAiAdapter, AZURE_OPENAI_KNOWN_MODELS } from '@foundry/provider
 import { validatePat as validateGitHubPat } from '@foundry/adapter-github';
 
 import { serviceRoleClient } from './supabase/server';
+import { isValidatedModel, missingCredentialReason, unsupportedModelReason } from './model-support';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -111,7 +112,17 @@ const testPromptRunner: ProviderTestPromptRunner = async ({
   providerType, secret, config, modelId, prompt,
 }) => {
   const adapter = buildAdapter(providerType, config);
-  if (!adapter) return { ok: false, reason: `Test prompt for '${providerType}' is not implemented.` };
+  if (!adapter) {
+    if (providerType === 'azure_openai') {
+      return { ok: false, reason: missingCredentialReason(providerType, config) };
+    }
+    return { ok: false, reason: `Test prompt for '${providerType}' is not implemented.` };
+  }
+  // Graceful degradation: reject un-validated models with actionable guidance
+  // instead of a raw provider 400/404 later in the call.
+  if (!isValidatedModel(providerType, modelId)) {
+    return { ok: false, reason: unsupportedModelReason(modelId) };
+  }
   const key = { id: 'transient', provider: providerType, secret };
   try {
     const res = await adapter.chat(
@@ -133,6 +144,9 @@ const testPromptRunner: ProviderTestPromptRunner = async ({
       finishReason: res.finishReason,
     };
   } catch (e) {
+    if (e instanceof ProviderModelNotFoundError) {
+      return { ok: false, reason: unsupportedModelReason(modelId) };
+    }
     return { ok: false, reason: e instanceof ProviderError ? e.message : 'Test prompt failed.' };
   }
 };
