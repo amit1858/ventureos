@@ -5,7 +5,7 @@
  *   1. Continue with Google — primary path for invited testers. Submits a
  *      form POST to /api/auth/google/start which redirects to Supabase OAuth.
  *   2. Open Demo Mode — anyone can browse this without sign-in.
- *   3. Use Alpha Workspace — fallback for hackathon judging; only shown if
+ *   3. Use Alpha Workspace — fallback for shared testing; only shown if
  *      VENTUREOS_ALPHA_ACCESS=true is set on the server.
  *
  * If the visitor is already signed in we short-circuit and offer "Continue".
@@ -13,10 +13,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { ALPHA_USER, alphaAccessEnabled, getAuthDecision } from '../../lib/auth';
+import { ALPHA_USER, allowlistEmails, alphaAccessEnabled, getAuthDecision } from '../../lib/auth';
 
 export const metadata: Metadata = {
-  title: 'Sign in to Foundry',
+  title: 'Sign in',
   description:
     'Sign in with Google to create ventures, save BYOK providers, run validation workflows and export to GitHub.',
 };
@@ -37,6 +37,9 @@ const SIGNIN_ERRORS: Record<string, string> = {
 export default async function SignInPage({ searchParams }: SignInPageProps) {
   const decision = await getAuthDecision();
   const enabled = alphaAccessEnabled();
+  // Only advertise an allowlist restriction when one is actually configured.
+  // With an empty/unset allowlist, Google sign-in is open to any account.
+  const restricted = allowlistEmails().size > 0;
   const next =
     typeof searchParams?.next === 'string' &&
     searchParams.next.startsWith('/') &&
@@ -52,7 +55,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     return (
       <section style={layout}>
         <Header />
-        <JudgeEscape />
+        <DemoNotice />
         <Card>
           <h2 style={h2}>You are signed in</h2>
           <p style={muted}>Real Mode is already available for <strong>{decision.user.email}</strong>.</p>
@@ -71,7 +74,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     return (
       <section style={layout}>
         <Header />
-        <JudgeEscape />
+        <DemoNotice />
         <Card>
           <h2 style={h2}>Alpha workspace active</h2>
           <p style={muted}>
@@ -96,7 +99,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   return (
     <section style={layout}>
       <Header />
-      <JudgeEscape />
+      <DemoNotice />
       <Card>
         <h2 style={h2}>Sign in to Foundry</h2>
         <p style={muted}>
@@ -125,9 +128,18 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           </div>
         </form>
         <p style={fineprint}>
-          Sign-in is restricted to an alpha allowlist. If your Google account is not on the
-          list you will see a polite access-denied message — your information is never stored
-          beyond what Supabase needs for the session.
+          {restricted ? (
+            <>
+              Sign-in is currently limited to an approved allowlist. If your Google account is
+              not on the list you will see a polite access-denied message — your information is
+              never stored beyond what Supabase needs for the session.
+            </>
+          ) : (
+            <>
+              Sign in with Google to create, save, and manage your ventures. Your information is
+              never stored beyond what Supabase needs for the session.
+            </>
+          )}
         </p>
       </Card>
     </section>
@@ -162,12 +174,12 @@ function Card({ children }: { children: React.ReactNode }) {
   );
 }
 
-function JudgeEscape() {
+function DemoNotice() {
   return (
     <aside
       role="note"
-      aria-label="Judge guidance"
-      data-testid="judge-escape"
+      aria-label="Guided demo"
+      data-testid="demo-notice"
       style={{
         marginBottom: '1rem',
         padding: '0.85rem 1rem',
@@ -193,10 +205,10 @@ function JudgeEscape() {
           border: '1px solid rgba(122, 163, 255, 0.45)',
         }}
       >
-        For judges
+        Product tour
       </span>
       <span style={{ color: '#e8e8ea', fontSize: '0.9rem' }}>
-        Just reviewing the submission? Open the zero-key demo.
+        Prefer to look around first? Open the guided demo — no keys needed.
       </span>
       <span style={{ flex: 1 }} />
       <Link
@@ -211,7 +223,7 @@ function JudgeEscape() {
           fontSize: '0.88rem',
         }}
       >
-        Open Judge Demo →
+        Open the guided demo →
       </Link>
     </aside>
   );

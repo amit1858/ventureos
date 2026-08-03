@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { getAuthDecision } from '../../lib/auth';
 
 export const metadata: Metadata = {
-  title: 'Access not available — Foundry',
+  title: 'Access not available',
   description: 'Your account is signed in but is not on the Foundry alpha allowlist.',
 };
 

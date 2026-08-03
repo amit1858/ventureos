@@ -4,9 +4,10 @@
  *     /api/auth/google/start.
  *   - /access source mentions Google sign-in (3-way CTA).
  *   - /access-denied source contains "alpha allowlist" copy + sign out form.
- *   - The 6 Real-Mode client pages route their primary CTA at /signin?next=
- *     (not /access?next= alone), so non-allowlisted users land on the right
- *     guidance screen.
+ *   - The 6 Real-Mode client pages gate sign-in through the shared
+ *     <SignInNotice> component (an informational notice, not a red error),
+ *     which routes users to /signin?next= so non-allowlisted users land on
+ *     the right guidance screen.
  *   - Production-facing UI never mentions internal helper names like
  *     `getCurrentUser`, `getAuthDecision`, `serviceRoleClient` (which would
  *     suggest leakage of implementation details into user-facing copy).
@@ -45,7 +46,7 @@ describe('/signin and /access-denied wiring', () => {
   });
 });
 
-describe('Real Mode pages prefer /signin over raw alpha link', () => {
+describe('Real Mode pages gate sign-in through the shared SignInNotice', () => {
   const realModePages = [
     'app/settings/byok/page.tsx',
     'app/ventures/page.tsx',
@@ -55,10 +56,16 @@ describe('Real Mode pages prefer /signin over raw alpha link', () => {
     'app/labs/buildsquad/page.tsx',
   ];
 
+  it('SignInNotice routes users to /signin?next=', () => {
+    const src = read(path.join('components', 'SignInNotice.tsx'));
+    expect(src).toMatch(/\/signin\?next=/);
+  });
+
   for (const rel of realModePages) {
-    it(`${rel} primary CTA links to /signin?next=`, () => {
+    it(`${rel} shows the auth gate via <SignInNotice next=…>`, () => {
       const src = read(rel);
-      expect(src, `${rel} should link to /signin?next=`).toMatch(/\/signin\?next=/);
+      expect(src, `${rel} should render <SignInNotice next=…>`)
+        .toMatch(/<SignInNotice\b[\s\S]{0,120}?next=/);
       // Must NOT advertise alpha workspace as the only path.
       expect(src, `${rel} should not still display the "Continue to Alpha Workspace" button`)
         .not.toMatch(/Continue to Alpha Workspace/);
