@@ -2,55 +2,48 @@
 
 [![Live demo](https://img.shields.io/badge/Live%20demo-ventureos--dun.vercel.app-blueviolet?logo=vercel)](https://ventureos-dun.vercel.app/demo/faceless-crm)
 [![Sign in](https://img.shields.io/badge/Sign%20in-Google%20OAuth-4285F4?logo=google)](https://ventureos-dun.vercel.app/signin)
-[![Tag](https://img.shields.io/badge/release-v1.0--submission-success)](https://github.com/amit1858/foundry-venture-os/releases/tag/v1.0-submission)
 [![License](https://img.shields.io/badge/license-TBD-lightgrey)](#license)
 
-> **An AI-native Venture Operating System that helps teams decide what deserves to be built before engineering begins.** Foundry helps product teams transform raw ideas into validated, execution-ready ventures using collaborative AI agents — not a single chatbot.
+> **An AI-native Venture Operating System that helps teams decide what deserves to be built before engineering begins.** Foundry turns raw ideas into validated, execution-ready ventures using collaborative AI agents — not a single chatbot.
 
 > _Foundry was originally developed and submitted as **VentureOS** for the Microsoft Build AI / HackerEarth challenge. It was renamed as the product evolved beyond the original submission._
 
-## What is this?
-
-Foundry takes a one-paragraph idea brief and produces a **simulated buying committee**, a **typed research graph**, a **Proceed / Pivot / Kill recommendation** with confidence, a **BuildSquad plan** (PRD · architecture · roadmap · user stories), an **evaluation report** with provenance, and a **real GitHub repository** under your account — all produced by specialized agents collaborating through typed artifacts on a single `Venture` object.
-
-**Read [`docs/product.md`](docs/product.md) for the full product story** — what it does, who it's for, why it's different, and the concrete value it delivers.
-
-- 🎬 **Try the demo (zero keys):** [`/demo/faceless-crm`](https://ventureos-dun.vercel.app/demo/faceless-crm) — a fully seeded "Faceless CRM for SMB" venture taken from idea to GitHub-ready artifacts
-- 🛠️ **Run it on your own idea (BYOK):** [`/signin`](https://ventureos-dun.vercel.app/signin) — sign in with Google, add your own OpenAI / Anthropic / Gemini / Azure OpenAI key + a GitHub PAT, create a venture, and let the swarm produce a real evaluation and a real GitHub repo
-- 🧠 **Read the product narrative:** [`docs/product.md`](docs/product.md) — value, audience, differentiation, architecture, access modes, status
-- 📚 **Read the architecture:** [`docs/architecture-overview.md`](docs/architecture-overview.md) — five-plane monorepo, contracts-first agents, VentureJob primitive, provider isolation
+**▶ See the guided demo (no sign-in, no keys):** [ventureos-dun.vercel.app/demo/faceless-crm](https://ventureos-dun.vercel.app/demo/faceless-crm) — a fully seeded "Faceless CRM for SMB" venture taken from idea to build-ready.
 
 ---
 
-## For judges
+## The problem
 
-> **Microsoft Build AI / HackerEarth — Agent Swarms track.**
+Most teams commit months of engineering to ventures that were never going to work. The bottleneck isn't engineering speed — it's the **discovery-to-build loop**:
 
-**Recommended path:**
+- Customer discovery is slow, biased, and rarely run against an honest objection set.
+- Opportunity sizing is anecdote-driven; "go / pivot / kill" is decided on vibes.
+- The gap between a validated insight and a buildable plan is huge and usually re-done from scratch.
+- Nobody can tell you *which model produced this paragraph, when, and on what evidence*.
 
-1. Open the live app: <https://ventureos-dun.vercel.app/>
-2. Click **"Open Judge Demo"** on the homepage, or go directly to <https://ventureos-dun.vercel.app/demo/faceless-crm>
-3. Review the complete zero-key demo: personas, buying committee deliberation, research graph, VentureLab recommendation, BuildSquad plan, evaluation report, and simulated GitHub export.
+Today's AI tools accelerate **execution** (Copilot, Cursor). Foundry accelerates **the decision to build the right thing** — the deliberation layer in front of your IDE.
 
-This path requires **no sign-in, no provider key, no GitHub PAT, and no setup** — every artifact is seeded and the same for every judge.
+## Why Foundry
 
-**Real Mode** is available for deeper testing through Google sign-in or the Alpha Workspace plus BYOK provider configuration. See [`docs/hackathon/README.md`](docs/hackathon/README.md) for the full submission pack (deck PDF, 3-min demo script, submission-form copy, screenshots).
+Most "AI for product" tools generate documents. Foundry instead **runs the decision** you'd want to make before building:
 
----
+- A **buying committee** of synthetic buyers, ops, finance and economic buyers actually *deliberates* about your offer and surfaces objections.
+- Research becomes a **typed graph** of problems, customers, competitors, risks and contradictions — not a wall of bullet points.
+- A validation engine issues a **Proceed / Pivot / Kill** recommendation with an explicit confidence score and its reasoning.
+- Every artifact records the **model and provider** behind it, so a decision can be traced back to its evidence.
 
-## Why this exists
+## Operating model
 
-Most "AI for product" tools generate documents. Foundry instead **simulates the decision** you'd want to make before building:
+Foundry expresses one repeatable path as four phases — the mental model of an operating system for building ventures:
 
-- Synthetic SMB buyers, ops, finance leads and economic buyers form a buying committee and actually **deliberate** about your offer.
-- Research is converted into a typed graph of problems, customers, competitors, risks and contradictions — not a wall of bullet points.
-- A venture validation engine produces a **Proceed / Pivot / Kill** recommendation with an explicit confidence score and provenance.
-- BuildSquad agents (PM, UX, architecture, engineering, QA, GTM) turn validated ventures into PRDs, roadmaps, user stories and a 14-file GitHub-ready repository.
-- Every venture comes with an `EVALUATION_REPORT.md` that names the model and provider behind each artifact.
+| Phase | What happens |
+|---|---|
+| **Discover** | Synthetic personas and a typed research graph turn assumptions into evidence. |
+| **Evaluate** | A validation engine weighs problem strength, urgency, willingness to pay and execution risk into a Proceed / Pivot / Kill call. |
+| **Govern** | Every venture carries its readiness, latest decision and provenance in one place — nothing advances to build on a hunch. |
+| **Learn** | Evaluation reports name the model and provider behind each artifact, turning every venture into a repeatable, auditable record. |
 
-This is the architecture pattern people mean by **agent swarms**: many specialized agents collaborating through a shared Venture context and versioned artifacts, not a single chatbot.
-
----
+Under the hood these map to three labs — **PersonaLab** (simulate customers), **VentureLab** (score the opportunity), and **BuildSquad** (produce PRD · architecture · roadmap · repository).
 
 ## How it works
 
@@ -67,72 +60,49 @@ Each step is a **VentureJob** that produces a typed, versioned artifact attached
 | Idea Intake | Brief capture | Venture record | Scope captured |
 | PersonaLab | Synthetic customer simulation | Persona set + interviews | Persona coverage |
 | Buying Committee | Multi-persona deliberation | Committee transcript + consensus | Objections · opinion changes · confidence |
-| Research Graph | Evidence mapping | Problem / customer / competitor graph | Contradictions and god-nodes |
+| Research Graph | Evidence mapping | Problem / customer / competitor graph | Contradictions and key concepts |
 | VentureLab | Venture decision engine | Proceed / Pivot / Kill recommendation | Confidence score |
-| BuildSquad | Planning swarm (PM/UX/Arch/Eng/QA/GTM) | PRD · architecture · roadmap · stories | Build readiness |
+| BuildSquad | Planning agent group (PM/UX/Arch/Eng/QA/GTM) | PRD · architecture · roadmap · stories | Build readiness |
 | Evaluation | Quality & provenance agent | `EVALUATION_REPORT.md` | Readiness + risk coverage |
 | GitHub Export | Execution handoff agent | GitHub repo (14 files) | Repo URL + short commit SHA |
 
-See **[`docs/agent-swarms.md`](docs/agent-swarms.md)** for what each agent group does in detail, and **[`docs/architecture-overview.md`](docs/architecture-overview.md)** for the contracts and execution model.
+See **[docs/agent-swarms.md](docs/agent-swarms.md)** for how each agent group collaborates, and **[docs/architecture-overview.md](docs/architecture-overview.md)** for the contracts and execution model.
 
----
-
-## Demo Mode (no keys)
-
-Foundry ships a fully seeded **Demo Mode** so judges, reviewers and teammates can experience the full pipeline without any API keys, Supabase, GitHub PAT, or network calls to providers.
-
-- **URL:** `/demo/faceless-crm`
-- **Scenario:** "Faceless CRM for SMB" — opinionated SMB sales-ops product
-- **What's seeded:** Venture, personas, buying-committee deliberation, research graph, VentureLab recommendation, BuildSquad pack, evaluation report, simulated GitHub export, timeline.
-- **Banner:** Every demo page is labelled `Demo Mode — seeded data, no API keys used` so it can never be confused with Real Mode.
-
-Demo Mode reuses the **same renderers** as Real Mode — what you see is what your Real-Mode venture would look like.
-
-See **[`docs/demo-mode.md`](docs/demo-mode.md)** and **[`docs/demo-script.md`](docs/demo-script.md)** for guided walkthroughs (3 / 5 / 7 minute versions).
-
----
-
-## Real Mode (BYOK)
-
-Bring your own keys to run the swarm on your own idea.
-
-There are three ways to enter Real Mode:
-
-- **Sign in with Google** (recommended for shared deployments) — visit `/signin`, click **Continue with Google**. Each Google user gets a **private** workspace; ventures, BYOK credentials, jobs and GitHub export state are scoped to that user. Optionally restrict who can sign in via `VENTUREOS_ALLOWED_EMAILS` (see [`docs/deployment.md`](docs/deployment.md#google-sign-in-supabase-auth-shared-deployments)). Non-allowlisted users land on a polite `/access-denied` page.
-- **Alpha Workspace** (hackathon fallback) — visit `/access` and click **Continue to Alpha Workspace** (requires `VENTUREOS_ALPHA_ACCESS=true` on the server). A **shared** `alpha-user` identity. Useful for judging or personal demos — not appropriate for multiple unrelated testers.
-- **Local dev** — seed the `vos_dev_user` cookie locally (see [`docs/setup-local.md`](docs/setup-local.md)). Honoured only when `NODE_ENV !== 'production'`; the deployed app never reveals dev-cookie instructions.
-
-Once you're in:
-
-1. `/settings/byok` — add an LLM credential (OpenAI · Anthropic · Gemini · Azure OpenAI) and a GitHub PAT.
-2. `/ventures/new` — create a Venture from a brief.
-3. From the Venture Workspace, run the labs in order: PersonaLab → Buying Committee → Research Graph → VentureLab → BuildSquad.
-4. Generate the Evaluation Report.
-5. **Preview** the GitHub export (no token required) and then push to a new repo on your account.
-
-The Workspace Overview always shows:
-
-- Readiness ring + per-dimension coverage
-- Latest recommendation, confidence and active jobs
-- Next-best-action with deep-links to the right lab
-- GitHub export status with the short commit SHA and a "Copy URL" / "Open repo" pair
-- Structured, actionable failure blocks when a job errors (e.g. `repo_exists`, `invalid_token`, `insufficient_scope`, `rate_limited`)
-
-See **[`docs/security-byok.md`](docs/security-byok.md)** for the BYOK model and credential storage.
-
----
-
-## Architecture (one paragraph)
+## Architecture
 
 Foundry is a **TypeScript-first monorepo** (pnpm + turbo) with a strict five-plane layout — Experience, Orchestration, Lab, Provider, Persistence. Every lab is a pure package (`@foundry/personalab`, `@foundry/venturelab`, `@foundry/buildsquad`, `@foundry/research-graph`) that consumes and produces JSON contracts from `@foundry/contracts`. Long-running work runs as a `VentureJob` so the UI always sees status / progress / provider · model · cost / elapsed / failure guidance. Provider SDKs (OpenAI, Anthropic, Gemini, Azure OpenAI, Octokit) live only in their named adapter packages, enforced by a custom `lint:arch` check.
 
-Foundry is **designed around real multi-agent and graph-based patterns**, including **TinyTroupe-style persona simulation** and **Graphify-inspired research graph workflows**. The TypeScript implementation is the canonical runtime; Python adapters are scaffolded for future deep integration but the TS path is what the live product uses today.
+For the full architecture, see **[docs/architecture-overview.md](docs/architecture-overview.md)**. For the internal Sprint −1 design doc, see [docs/architecture.md](docs/architecture.md).
 
-For the full architecture, see [`docs/architecture-overview.md`](docs/architecture-overview.md). For the internal Sprint −1 design doc, see [`docs/architecture.md`](docs/architecture.md).
+## Capabilities
 
----
+- **Multi-provider LLM routing** through adapter packages in `packages/providers/*` (OpenAI · Anthropic · Gemini · Azure OpenAI). All BYOK.
+- **Persona simulation.** PersonaLab generates and runs a buying committee that deliberates and changes positions; a Python TinyTroupe adapter is scaffolded in `packages/adapters/tinytroupe-py/` for future runtime integration.
+- **Research-graph workflows.** `@foundry/research-graph` produces typed graphs of problems, segments, competitors and risks, surfacing contradictions and the highest-leverage **key concepts**; Graphify adapters are scaffolded in `packages/adapters/graphify-*/`.
+- **BuildSquad planning** in `packages/buildsquad` — PM, UX, architecture, engineering, QA and GTM agents producing a 14-file GitHub-ready scaffold via the deterministic `renderRepoScaffold`.
+- **GitHub export** via `packages/adapters/github-ts/` (Octokit, isolated by the `lint:arch` check).
 
-## Quick start
+> **Naming note:** the canonical runtime today is TypeScript. We don't claim full Python TinyTroupe / Graphify parity at runtime — the adapters exist as integration seams for the deferred Python path.
+
+## Screenshots
+
+The canonical, Foundry-branded screenshot set is being recaptured from the current UI. In the meantime:
+
+- **Guided demo (live):** [ventureos-dun.vercel.app/demo/faceless-crm](https://ventureos-dun.vercel.app/demo/faceless-crm) is the best way to see the current product end-to-end.
+- Earlier submission screenshots, captured under the original **VentureOS** branding, are preserved as historical artifacts in [docs/archive/ventureos-submission/screenshots/](docs/archive/ventureos-submission/screenshots/).
+
+## Demo Mode (no keys)
+
+Foundry ships a fully seeded **Demo Mode** so reviewers and teammates can experience the full pipeline without any API keys, Supabase, GitHub PAT, or provider calls.
+
+- **URL:** `/demo/faceless-crm`
+- **Scenario:** "Faceless CRM for SMB" — an opinionated SMB sales-ops product.
+- **What's seeded:** Venture, personas, buying-committee deliberation, research graph, VentureLab recommendation, BuildSquad pack, evaluation report, simulated GitHub export, timeline.
+- **Banner:** every demo page is labelled `Demo Mode — seeded data, no API keys used`, so it can never be confused with Real Mode.
+
+Demo Mode reuses the **same renderers** as Real Mode — what you see is what your Real-Mode venture would look like. See **[docs/demo-mode.md](docs/demo-mode.md)** and **[docs/demo-script.md](docs/demo-script.md)** for guided walkthroughs.
+
+## Running locally
 
 Prerequisites:
 
@@ -144,15 +114,9 @@ corepack pnpm install
 corepack pnpm --filter "@foundry/web" dev
 ```
 
-Web app runs at `http://localhost:3000` (or `3100` if 3000 is busy).
+The web app runs at `http://localhost:3000` (or `3100` if 3000 is busy). You can open `/demo/faceless-crm` immediately — Demo Mode needs no environment variables. For Real Mode setup (Supabase, encryption key, BYOK), see **[docs/setup-local.md](docs/setup-local.md)**.
 
-You can hit `/demo/faceless-crm` immediately with no other setup — Demo Mode requires no environment variables.
-
-For Real Mode setup (Supabase, encryption key, BYOK), see **[`docs/setup-local.md`](docs/setup-local.md)**.
-
----
-
-## Quality gates
+**Quality gates:**
 
 ```powershell
 corepack pnpm run lint
@@ -162,116 +126,60 @@ corepack pnpm run test
 corepack pnpm run build
 ```
 
-Or run them all:
+## Real Mode (BYOK)
 
-```powershell
-corepack pnpm run ci
-```
+Bring your own keys to run the pipeline on your own idea. There are three ways in:
 
-Current state on `main`:
+- **Sign in with Google** (recommended for shared deployments) — `/signin` → **Continue with Google**. Each user gets a **private** workspace. Optionally restrict sign-in via `VENTUREOS_ALLOWED_EMAILS` (see [docs/deployment.md](docs/deployment.md#google-sign-in-supabase-auth-shared-deployments)).
+- **Alpha Workspace** (shared fallback) — `/access` → **Continue to Alpha Workspace** (requires `VENTUREOS_ALPHA_ACCESS=true`). A shared `alpha-user` identity — fine for personal demos, not for multiple unrelated testers.
+- **Local dev** — seed the `vos_dev_user` cookie locally (see [docs/setup-local.md](docs/setup-local.md)); honoured only when `NODE_ENV !== 'production'`.
 
-- ✅ `lint`
-- ✅ `lint:arch` (no provider-SDK or cross-boundary violations)
-- ✅ `typecheck` — all packages
-- ✅ `test` — web + buildsquad + contracts + adapters
-- ✅ `build` — all 16 packages including the Next.js app
+Then: `/settings/byok` (add an LLM key + GitHub PAT) → `/ventures/new` (create a Venture) → run the labs in order → generate the Evaluation Report → preview and push the GitHub export. See **[docs/security-byok.md](docs/security-byok.md)** for the BYOK model.
 
----
+**Supported providers & models.** Foundry works across OpenAI (GPT-4o / GPT-4.1 families and the GPT-5 / o-series reasoning models), Anthropic (Claude 4.x), Google Gemini (2.x) and Azure OpenAI — all BYOK. Recommended first-choice models are **GPT-4o mini**, **GPT-4.1**, and **Claude Sonnet**. Selecting an unvalidated model returns clear guidance rather than a raw provider error. See the full **[model compatibility matrix](docs/model-compatibility.md)** for per-model support, testing status, and known limitations.
 
-## Deploying to Vercel
+## Security
 
-Two supported modes (full details in **[`docs/deployment.md`](docs/deployment.md)**):
+- BYOK secrets are **server-side only** and never exposed to the browser.
+- Secrets are **encrypted at rest** with `VENTUREOS_CREDENTIAL_ENCRYPTION_KEY` and shown in the UI only as masked values.
+- GitHub exports never include `.env`, tokens or credentials — a dedicated test asserts no `ghp_…` shapes ever appear in exported files.
+- `.env*` is git-ignored. Import boundaries (`lint:arch`) prevent app and lab code from importing provider SDKs directly.
 
-1. **Zero-Key Demo Deployment** — no env vars, public-safe, recommended for judges. Demo Mode works end-to-end; Real Mode shows a graceful "Real Mode requires workspace access" card.
-2. **Full Real Mode Deployment** — set the Supabase + encryption env vars; provider keys and the GitHub PAT are entered through the BYOK UI, **never** as Vercel env vars. Two access modes are supported on top of that base configuration:
-   - **Google sign-in** (recommended for sharing with a small group of testers) — see **[Google sign-in (Supabase Auth)](docs/deployment.md#google-sign-in-supabase-auth-shared-deployments)**. Each tester gets a private workspace; restrict who can sign in with `VENTUREOS_ALLOWED_EMAILS`.
-   - **Alpha Workspace** (hackathon fallback for judges or personal testing) — see **[Alpha Access Mode](docs/deployment.md#alpha-access-mode-deployed-real-mode)**. A shared `alpha-user` identity gated by `VENTUREOS_ALPHA_ACCESS=true`.
+See **[docs/security-byok.md](docs/security-byok.md)** and **[docs/security.md](docs/security.md)**.
 
-> **Microsoft / Azure AD machines:** Vercel rejects CLI deploys when the
-> local Git commit author email can't be matched to a verified GitHub
-> account. Use this exact sequence — *not* `git push` — to deploy:
->
-> ```bash
-> git remote remove origin
-> vercel deploy --prod
-> git remote add origin https://github.com/amit1858/foundry-venture-os.git
-> git push origin main
-> ```
->
-> See [`docs/deployment.md`](docs/deployment.md#vercel-deployment-from-microsoft--azure-ad-machines) for the detailed procedure, error table, and pre/post-deployment checklists.
+## Roadmap
 
----
+Where Foundry is headed — near-term hardening and the deeper Python persona/graph integration — is tracked in **[docs/product-roadmap.md](docs/product-roadmap.md)**.
 
-## AI tools and integrations
+## Vision
 
-- **Multi-provider LLM routing** through adapter packages in `packages/providers/*` (OpenAI · Anthropic · Gemini · Azure OpenAI). All BYOK.
-- **TinyTroupe-style persona simulation.** PersonaLab generates and runs a buying committee that deliberates and changes positions; a Python TinyTroupe adapter is scaffolded in `packages/adapters/tinytroupe-py/` for future runtime integration.
-- **Graphify-inspired research graph workflows.** `@foundry/research-graph` produces typed graphs of problems, segments, competitors and risks with contradictions and god-nodes surfaced; Graphify adapters are scaffolded in `packages/adapters/graphify-*/` for future runtime integration.
-- **BuildSquad planning swarm** in `packages/buildsquad` — PM, UX, architecture, engineering, QA, GTM agents producing a 14-file GitHub-ready scaffold via the deterministic `renderRepoScaffold`.
-- **GitHub export** via `packages/adapters/github-ts/` (Octokit, isolated by the `lint:arch` check).
-
-> **Naming note:** the canonical runtime today is TypeScript. We do not claim full Python TinyTroupe / Graphify parity at runtime — the adapters exist as integration seams for the deferred Python path.
-
----
-
-## Security & public-repo safety
-
-- BYOK secrets are server-side only and never exposed to the browser.
-- Secrets are encrypted at rest with `VENTUREOS_CREDENTIAL_ENCRYPTION_KEY` and surfaced in UI only as masked values.
-- GitHub exports never include `.env`, tokens, or credentials. There is a dedicated test asserting no `ghp_…` shapes ever appear in exported file contents.
-- `.env*` is git-ignored. No environment files, API keys, Supabase keys, GitHub PATs or runtime logs are committed.
-- Import boundaries (`lint:arch`) prevent app and lab code from importing provider SDKs directly.
-
-See **[`docs/security-byok.md`](docs/security-byok.md)** and **[`docs/security.md`](docs/security.md)**.
-
----
+The longer arc — an AI-native operating system for deciding what deserves to be built — is described in **[docs/vision.md](docs/vision.md)**.
 
 ## Documentation
 
-Public-facing:
-
-- **[Product overview (start here)](docs/product.md)** — what Foundry is, who it's for, why it's different, value it offers
-- **[Hackathon submission pack](docs/hackathon/README.md)** — deck PDF, 3-min demo script, submission form copy, screenshots
-- [Agent Swarms](docs/agent-swarms.md) — the multi-agent design
-- [Architecture overview](docs/architecture-overview.md)
-- [BYOK & security](docs/security-byok.md)
-- [Demo Mode](docs/demo-mode.md)
-- [Demo script (3 / 5 / 7 min)](docs/demo-script.md)
-- [Deployment](docs/deployment.md)
-- [Local setup](docs/setup-local.md)
-- [Known limitations](docs/known-limitations.md)
-- [E2E test plan](docs/e2e-test-plan.md)
-
-Internal design docs (kept for context):
-
+- **[Product overview (start here)](docs/product.md)** — what Foundry is, who it's for, why it's different
+- [Architecture overview](docs/architecture-overview.md) · [Agent design](docs/agent-swarms.md)
+- [BYOK & security](docs/security-byok.md) · [Security architecture](docs/security.md)
+- [Model compatibility matrix](docs/model-compatibility.md) — supported providers & models, testing status, limitations
+- [Demo Mode](docs/demo-mode.md) · [Demo script (3 / 5 / 7 min)](docs/demo-script.md)
+- [Deployment](docs/deployment.md) · [Local setup](docs/setup-local.md)
 - [Vision](docs/vision.md) · [Product roadmap](docs/product-roadmap.md) · [Repository structure](docs/repository-structure.md)
-- [Original Sprint −1 architecture](docs/architecture.md) · [Provider abstraction](docs/provider-abstraction.md)
-- [Faceless CRM reference scenario](docs/faceless-crm-reference-scenario.md) · [Evaluation framework](docs/evaluation-framework.md)
-- [Adapter strategy](docs/adapter-strategy.md)
-- [Hackathon write-up (long form)](docs/hackathon-submission.md)
+- [Known limitations](docs/known-limitations.md) · [E2E test plan](docs/e2e-test-plan.md)
 
----
+## Project history
 
-## Hackathon submission
+Foundry was originally developed and submitted as **VentureOS** for the **Microsoft Build AI / HackerEarth** challenge, and renamed as the product matured. The original submission materials are preserved, unchanged, as historical artifacts:
 
-Foundry is submitted to the **Microsoft Build AI / HackerEarth — Agent Swarms** track.
+- **[Submission deck (PDF)](docs/archive/ventureos-submission/VentureOS-Submission-Deck.pdf)** — the original 10-slide VentureOS deck
+- **[Live-app screenshots](docs/archive/ventureos-submission/screenshots/)** — dated captures of the original VentureOS UI
+- **[Long-form write-up](docs/hackathon-submission.md)** and the **[submission pack](docs/hackathon/README.md)**
 
-- 📊 **[Submission deck (PDF)](docs/archive/ventureos-submission/VentureOS-Submission-Deck.pdf)** — 10 slides, < 1 MB _(archived historical VentureOS deck; a Foundry-branded deck is pending)_
-- 🎬 **[3-minute demo script](docs/hackathon/demo-script.md)** — teleprompter + shot list
-- 📝 **[Submission form copy](docs/hackathon/submission-form.md)** — ready to paste
-- 🖼️ **[Live-app screenshots](docs/archive/ventureos-submission/screenshots/)** — dated, real _(archived historical VentureOS UI; Foundry-branded screenshots pending recapture)_
-- ✍️ **[Long-form write-up](docs/hackathon-submission.md)** — the original deep dive
-
-**Primary judging path:** <https://ventureos-dun.vercel.app/demo/faceless-crm> (no sign-in, no keys).
-
----
+The seeded demo remains the fastest way to review the product end-to-end: <https://ventureos-dun.vercel.app/demo/faceless-crm> (no sign-in, no keys).
 
 ## Team
 
-- Built by **Amit Pandey** (`@amit1858`), with GitHub Copilot as a pair-programming partner.
-
----
+Built by **Amit Pandey** ([@amit1858](https://github.com/amit1858)), with GitHub Copilot as a pair-programming partner.
 
 ## License
 
-This is a research / hackathon project. License TBD. Do not redistribute production credentials or seeded customer data without permission.
+Research / hackathon project. License TBD. Do not redistribute production credentials or seeded customer data without permission.
