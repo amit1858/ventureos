@@ -86,10 +86,25 @@ For the full architecture, see **[docs/architecture-overview.md](docs/architectu
 
 ## Screenshots
 
-The canonical, Foundry-branded screenshot set is being recaptured from the current UI. In the meantime:
+Canonical, Foundry-branded captures from the live Release 1.0 UI at **[ventureos-dun.vercel.app](https://ventureos-dun.vercel.app)**.
 
-- **Guided demo (live):** [ventureos-dun.vercel.app/demo/faceless-crm](https://ventureos-dun.vercel.app/demo/faceless-crm) is the best way to see the current product end-to-end.
-- Earlier submission screenshots, captured under the original **VentureOS** branding, are preserved as historical artifacts in [docs/archive/ventureos-submission/screenshots/](docs/archive/ventureos-submission/screenshots/).
+**Landing — the operating model**
+
+![Foundry landing page](docs/screenshots/landing.png)
+
+**Guided demo — a full venture, end to end.** The seeded *Faceless CRM for SMB* walkthrough runs the entire Discover → Evaluate → Govern → Learn pipeline with no sign-in, provider keys, or GitHub access.
+
+![Foundry guided demo](docs/screenshots/demo-faceless-crm.png)
+
+**About — how the operating model fits together**
+
+![About Foundry](docs/screenshots/about.png)
+
+**Open sign-in.** Demo Mode is public; Google sign-in unlocks private ventures, saved BYOK providers, validation runs, and GitHub export.
+
+![Foundry sign-in](docs/screenshots/signin.png)
+
+More captures — [demo index](docs/screenshots/demo.png), [security](docs/screenshots/security.png), and [privacy](docs/screenshots/privacy.png) — live in [docs/screenshots/](docs/screenshots/). Earlier screenshots captured under the original **VentureOS** branding are preserved as historical artifacts in [docs/archive/ventureos-submission/screenshots/](docs/archive/ventureos-submission/screenshots/).
 
 ## Demo Mode (no keys)
 
