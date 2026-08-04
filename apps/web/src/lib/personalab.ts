@@ -78,6 +78,12 @@ export interface RunPersonaLabInput {
    * real token usage/cost and structured-output diagnostics (repair/retry).
    */
   onTelemetry?: (telemetry: GenerationTelemetry) => void;
+  /**
+   * Optional cooperative abort signal. The job layer wires this to the
+   * orchestrator's per-job hard timeout so a hung provider call is aborted
+   * instead of running to the serverless function ceiling.
+   */
+  signal?: AbortSignal;
 }
 
 export type PersonaLabResult =
@@ -198,6 +204,7 @@ function buildOptions(
     ctx,
     ...(provider ? { provider } : {}),
     ...(input.onTelemetry ? { onTelemetry: input.onTelemetry } : {}),
+    ...(input.signal ? { signal: input.signal } : {}),
   };
 }
 

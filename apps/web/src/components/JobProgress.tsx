@@ -23,14 +23,24 @@ import {
 } from './artifacts';
 
 const TERMINAL = new Set(['succeeded', 'failed', 'cancelled']);
+/** Error codes that represent a timeout/abort rather than a genuine handler error. */
+const TIMEOUT_CODES = new Set(['timed_out', 'stale_timeout', 'provider_timeout', 'incomplete']);
+/**
+ * Absolute client-side polling cap. The server reconciles an orphaned job to a
+ * terminal state well before this (stale threshold ~330s), so this only exists so
+ * the UI can NEVER poll forever even if the server somehow keeps returning RUNNING.
+ */
+const MAX_POLL_MS = 360_000;
 
 export function useJob(jobId: string | null, pollMs = 750): { job: VentureJob | null; error: string | null } {
   const [job, setJob] = useState<VentureJob | null>(null);
   const [error, setError] = useState<string | null>(null);
   const stopped = useRef(false);
+  const startedAt = useRef(0);
 
   useEffect(() => {
     stopped.current = false;
+    startedAt.current = Date.now();
     if (!jobId) { setJob(null); return; }
     let timer: ReturnType<typeof setTimeout> | null = null;
     const tick = async () => {
@@ -41,6 +51,10 @@ export function useJob(jobId: string | null, pollMs = 750): { job: VentureJob | 
         if (!j.ok) { setError(j.reason ?? 'Failed to load job.'); return; }
         setJob(j.job as VentureJob);
         if (!TERMINAL.has(j.job.status)) {
+          if (Date.now() - startedAt.current >= MAX_POLL_MS) {
+            setError('This job is taking longer than expected. Refresh to check its latest status — it will be marked failed automatically if it stalled.');
+            return;
+          }
           timer = setTimeout(() => void tick(), pollMs);
         }
       } catch (e) {
@@ -130,7 +144,10 @@ export function JobProgress({ jobId, onCancel }: JobProgressProps) {
 
       {job.status === 'failed' ? (
         <div className={cx(styles.jobError)}>
-          <p className={cx(styles.jobErrorTitle)}>Job failed{job.errorCode ? ` · ${job.errorCode}` : ''}</p>
+          <p className={cx(styles.jobErrorTitle)}>
+            {job.errorCode && TIMEOUT_CODES.has(job.errorCode) ? 'Job timed out' : 'Job failed'}
+            {job.errorCode ? ` · ${job.errorCode}` : ''}
+          </p>
           {job.errorMessage ? <p style={{ margin: '0 0 0.4rem' }}>{job.errorMessage}</p> : null}
           <p style={{ margin: '0 0 0.5rem' }} className={cx(styles.muted)}>
             Nothing was saved. Check the related provider key is valid, then re-run — your venture context is preserved.

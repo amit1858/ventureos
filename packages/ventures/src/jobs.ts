@@ -53,6 +53,12 @@ export interface JobUsageReport {
 
 export interface JobHandlerContext {
   job: VentureJob;
+  /**
+   * Aborts when the job exceeds its hard timeout or is cancelled. Handlers that
+   * make provider calls MUST forward this to the model SDK so a hung request is
+   * cancelled promptly instead of running to the serverless function ceiling.
+   */
+  signal: AbortSignal;
   reportProgress(update: JobProgressUpdate): Promise<void>;
   recordUsage(usage: JobUsageReport): Promise<void>;
   isCancelled(): Promise<boolean>;
@@ -183,6 +189,52 @@ export function estimateCostCents(
 
 // ── orchestrator ────────────────────────────────────────────────────────────
 
+/** Statuses that represent a completed lifecycle — never overwritten once set. */
+const TERMINAL_STATUSES: ReadonlySet<VentureJobStatus> = new Set([
+  'succeeded',
+  'failed',
+  'cancelled',
+]);
+/** Statuses that represent work that has not yet reached a terminal state. */
+const ACTIVE_STATUSES: readonly VentureJobStatus[] = ['queued', 'running'];
+
+/**
+ * Hard per-job execution timeout. Sits *below* the platform function ceiling
+ * (Vercel Hobby + Fluid Compute = 300s) so we abort the provider call and record
+ * a terminal state ourselves before the platform kills the invocation and orphans
+ * the row. ~60s of headroom is left for the terminal write + poll observation.
+ */
+const DEFAULT_JOB_TIMEOUT_MS = 240_000;
+/**
+ * Age past which a still-active job is considered orphaned (its invocation was
+ * terminated before it could finalise) and is reconciled to `failed`. Exceeds the
+ * platform ceiling so a legitimately-running job is never reconciled prematurely.
+ */
+const DEFAULT_STALE_JOB_MS = 330_000;
+
+/**
+ * Thrown when a caller tries to start a job while an equivalent one is genuinely
+ * still active for the same venture, letting the API layer answer 409 instead of
+ * spawning duplicate concurrent runs.
+ */
+export class DuplicateActiveJobError extends Error {
+  constructor(
+    public readonly jobKind: VentureJobKind,
+    public readonly existingJobId: string,
+  ) {
+    super(`A ${friendlyJobKind(jobKind)} job is already running for this venture.`);
+    this.name = 'DuplicateActiveJobError';
+  }
+}
+
+/** Internal sentinel: the hard timeout / cancellation aborted the handler race. */
+class JobAbortedError extends Error {
+  constructor() {
+    super('Job aborted before the handler resolved.');
+    this.name = 'JobAbortedError';
+  }
+}
+
 export interface JobOrchestratorOptions {
   now?: () => Date;
   generateId?: (prefix: string) => string;
@@ -193,6 +245,10 @@ export interface JobOrchestratorOptions {
    * scheduler so they can await the handler.
    */
   scheduler?: (run: () => Promise<void>) => void;
+  /** Hard per-job execution timeout in ms (default 240000, below the 300s ceiling). */
+  jobTimeoutMs?: number;
+  /** Age in ms past which an active job is reconciled to failed (default 330000). */
+  staleJobMs?: number;
 }
 
 export class JobOrchestrator {
@@ -210,6 +266,12 @@ export class JobOrchestrator {
   /** Per-job cooperative cancellation flag. */
   private readonly cancelled = new Set<string>();
 
+  /** Live AbortControllers for in-process handlers, keyed by jobId (for cancel/timeout). */
+  private readonly controllers = new Map<string, AbortController>();
+
+  private readonly jobTimeoutMs: number;
+  private readonly staleJobMs: number;
+
   constructor(
     private readonly jobs: JobStore,
     private readonly service: VentureService,
@@ -219,6 +281,8 @@ export class JobOrchestrator {
     this.generateId = opts.generateId ?? defaultJobIdGenerator();
     this.pricingTable = opts.pricingTable ?? DEFAULT_PRICING_TABLE;
     this.scheduler = opts.scheduler ?? ((run) => { void run(); });
+    this.jobTimeoutMs = opts.jobTimeoutMs ?? DEFAULT_JOB_TIMEOUT_MS;
+    this.staleJobMs = opts.staleJobMs ?? DEFAULT_STALE_JOB_MS;
   }
 
   register(kind: VentureJobKind, handler: JobHandler): void {
@@ -272,43 +336,61 @@ export class JobOrchestrator {
   }
 
   /**
-   * Cooperative cancel. Queued jobs are terminated immediately. Running jobs
-   * are flagged; the handler must check `ctx.isCancelled()` at checkpoints.
-   * In-flight provider calls are not aborted (Sprint 2B).
+   * Cooperative + durable cancel. Signals any in-process handler to abort its
+   * provider call, then persists a terminal `cancelled` state immediately so the
+   * cancellation survives even when the original invocation is already gone.
+   * Idempotent: a job that is already terminal is returned unchanged.
    */
   async cancel(ownerId: string, jobId: string): Promise<VentureJob | null> {
     const j = await this.jobs.getJob(ownerId, jobId);
     if (!j) return null;
-    if (j.status === 'queued') {
-      const at = this.now().toISOString();
-      const next: VentureJob = {
-        ...j,
-        status: 'cancelled',
-        finishedAt: at,
-        executionDurationMs: 0,
-      };
-      await this.jobs.replaceJob(next);
-      await this.emitTimeline(next, 'job_failed', `Cancelled before start: ${friendlyJobKind(j.jobKind)}`);
-      return next;
+    if (TERMINAL_STATUSES.has(j.status)) return j;
+
+    this.cancelled.add(jobId);
+    this.controllers.get(jobId)?.abort();
+
+    const finishedAt = this.now();
+    const wasQueued = j.status === 'queued';
+    const startedAtMs = j.startedAt ? new Date(j.startedAt).getTime() : finishedAt.getTime();
+    const { job: next, applied } = await this.finalize(j, {
+      status: 'cancelled',
+      finishedAt: finishedAt.toISOString(),
+      executionDurationMs: wasQueued ? 0 : Math.max(0, finishedAt.getTime() - startedAtMs),
+      estimatedCostCents: this.computeCostCents(j),
+    });
+    if (applied) {
+      await this.emitTimeline(
+        next,
+        'job_failed',
+        wasQueued
+          ? `Cancelled before start: ${friendlyJobKind(j.jobKind)}`
+          : `Cancelled: ${friendlyJobKind(j.jobKind)}`,
+      );
     }
-    if (j.status === 'running') {
-      this.cancelled.add(j.jobId);
-      return j;
-    }
-    return j;
+    this.usage.delete(jobId);
+    return next;
   }
 
   /**
-   * Internal: execute the handler. Wraps every state transition in
-   * try/catch so handler errors are persisted as `failed`, never thrown
-   * out of the scheduler.
+   * Internal: execute the handler under a hard timeout. Every path is wrapped so
+   * the job ALWAYS reaches a terminal state — handler errors, provider hangs, and
+   * even failures inside our own persistence are converted to a terminal row so a
+   * job can never be left RUNNING forever.
    */
   private async run(jobId: string, ownerId: string): Promise<void> {
     let job = await this.jobs.getJob(ownerId, jobId);
     if (!job) return;
+    // First-terminal-wins at the very start: a cancel (or reconcile) can land
+    // between enqueue and the scheduler invoking us. Never resurrect that row to
+    // `running` — and never spend a provider call on an already-cancelled job.
+    if (TERMINAL_STATUSES.has(job.status)) {
+      this.usage.delete(jobId);
+      this.controllers.delete(jobId);
+      return;
+    }
     const handler = this.handlers.get(job.jobKind);
     if (!handler) {
-      job = await this.markFailed(job, 'no_handler', `No handler registered for ${job.jobKind}.`);
+      await this.markFailed(job, 'no_handler', `No handler registered for ${job.jobKind}.`);
       return;
     }
 
@@ -318,8 +400,6 @@ export class JobOrchestrator {
       ...job,
       status: 'running',
       startedAt: startedAt.toISOString(),
-      // providerModel is pinned at start; handler may have already passed it,
-      // otherwise it stays null and is filled by the first recordUsage call.
     });
     await this.emitTimeline(
       job,
@@ -327,77 +407,103 @@ export class JobOrchestrator {
       `Started ${friendlyJobKind(job.jobKind)}${job.providerName ? ` via ${job.providerName}${job.providerModel ? `/${job.providerModel}` : ''}` : ''}`,
     );
 
-    let result: JobHandlerResult;
-    try {
-      result = await handler(this.makeContext(job));
-    } catch (err) {
-      const message = sanitizeError(err);
-      // Refetch so usage-driven provider/model fields populated by the handler
-      // before it threw are captured on the failed row.
-      const latest = (await this.jobs.getJob(ownerId, jobId)) ?? job;
-      await this.markFailed(latest, 'handler_error', message);
-      return;
+    // Hard timeout: abort the provider call (and lose the handler race) if it runs
+    // past the platform-safe deadline, so we record a terminal state before the
+    // serverless function is killed.
+    const controller = new AbortController();
+    this.controllers.set(jobId, controller);
+    const timer = setTimeout(() => controller.abort(), this.jobTimeoutMs);
+    if (typeof (timer as { unref?: () => void }).unref === 'function') {
+      (timer as { unref: () => void }).unref();
     }
 
-    // Pick up any provider/model fields the handler populated via recordUsage.
-    job = (await this.jobs.getJob(ownerId, jobId)) ?? job;
+    try {
+      const handlerPromise = handler(this.makeContext(job, controller.signal));
+      // Swallow a late rejection from an abandoned (timed-out) handler so it can
+      // never surface as an unhandled rejection after we've moved on.
+      void handlerPromise.catch(() => {});
+      const result = await this.raceAbort(handlerPromise, controller.signal);
 
-    if (this.cancelled.has(job.jobId)) {
-      this.cancelled.delete(job.jobId);
+      // First-terminal-wins: a concurrent cancel or stale-reconcile may have
+      // finalised the row while the handler ran. Never resurrect it, and never
+      // present an artifact for a job the user cancelled.
+      const current = (await this.jobs.getJob(ownerId, jobId)) ?? job;
+      if (TERMINAL_STATUSES.has(current.status)) {
+        this.usage.delete(jobId);
+        return;
+      }
+      if (this.cancelled.has(jobId)) {
+        await this.finalizeCancelled(current, startedAt);
+        return;
+      }
+
+      // Attach artifact (if produced) before marking succeeded so the timeline
+      // ordering reads naturally: started → artifact attached → succeeded.
+      let artifactVersion: number | null = null;
+      let outputArtifactId: string | null = null;
+      if (result.artifact) {
+        const artifact = await this.service.attachArtifact({
+          ownerId: current.ownerId,
+          ventureId: current.ventureId,
+          artifactKind: result.artifact.artifactKind,
+          summary: result.artifact.summary,
+          payload: result.artifact.payload,
+        });
+        artifactVersion = artifact.version;
+        outputArtifactId = artifact.artifactId;
+      }
+
       const finishedAt = this.now();
       const duration = finishedAt.getTime() - startedAt.getTime();
-      const finalised = await this.persist({
-        ...job,
-        status: 'cancelled',
+      const { job: finalised, applied } = await this.finalize(current, {
+        status: 'succeeded',
+        progress: 1,
+        stepLabel: result.finalStepLabel ?? current.stepLabel,
         finishedAt: finishedAt.toISOString(),
         executionDurationMs: duration,
-        estimatedCostCents: this.computeCostCents(job),
+        estimatedCostCents: this.computeCostCents(current),
+        artifactVersion,
+        outputArtifactId,
       });
-      await this.emitTimeline(finalised, 'job_failed', `Cancelled: ${friendlyJobKind(job.jobKind)}`);
-      return;
+      if (applied) {
+        await this.emitTimeline(
+          finalised,
+          'job_succeeded',
+          `Completed ${friendlyJobKind(finalised.jobKind)}${artifactVersion ? ` v${artifactVersion}` : ''} in ${duration}ms${finalised.estimatedCostCents != null ? ` (~$${(finalised.estimatedCostCents / 100).toFixed(2)})` : ''}`,
+        );
+      }
+      this.usage.delete(jobId);
+    } catch (err) {
+      const latest = (await this.jobs.getJob(ownerId, jobId)) ?? job;
+      if (TERMINAL_STATUSES.has(latest.status)) {
+        this.usage.delete(jobId);
+      } else if (this.cancelled.has(jobId)) {
+        await this.finalizeCancelled(latest, startedAt);
+      } else if (err instanceof JobAbortedError || controller.signal.aborted) {
+        await this.markFailed(
+          latest,
+          'timed_out',
+          'The model did not respond within the allowed time and the request was aborted. Nothing was saved — you can retry.',
+        );
+      } else {
+        await this.markFailed(latest, 'handler_error', sanitizeError(err));
+      }
+    } finally {
+      clearTimeout(timer);
+      this.controllers.delete(jobId);
+      // Terminal guarantee: if any path above failed to persist a terminal state
+      // (e.g. the store write itself threw), force one now.
+      const check = await this.jobs.getJob(ownerId, jobId);
+      if (check && !TERMINAL_STATUSES.has(check.status)) {
+        await this.markFailed(check, 'incomplete', 'Job ended without reaching a terminal state.');
+      }
     }
-
-    // Attach artifact (if produced) before marking succeeded so the timeline
-    // ordering reads naturally: started → artifact attached → succeeded.
-    let artifactVersion: number | null = null;
-    let outputArtifactId: string | null = null;
-    if (result.artifact) {
-      const artifact = await this.service.attachArtifact({
-        ownerId: job.ownerId,
-        ventureId: job.ventureId,
-        artifactKind: result.artifact.artifactKind,
-        summary: result.artifact.summary,
-        payload: result.artifact.payload,
-      });
-      artifactVersion = artifact.version;
-      outputArtifactId = artifact.artifactId;
-    }
-
-    const finishedAt = this.now();
-    const duration = finishedAt.getTime() - startedAt.getTime();
-    const finalised = await this.persist({
-      ...job,
-      status: 'succeeded',
-      progress: 1,
-      stepLabel: result.finalStepLabel ?? job.stepLabel,
-      finishedAt: finishedAt.toISOString(),
-      executionDurationMs: duration,
-      estimatedCostCents: this.computeCostCents(job),
-      artifactVersion,
-      outputArtifactId,
-    });
-
-    await this.emitTimeline(
-      finalised,
-      'job_succeeded',
-      `Completed ${friendlyJobKind(job.jobKind)}${artifactVersion ? ` v${artifactVersion}` : ''} in ${duration}ms${finalised.estimatedCostCents != null ? ` (~$${(finalised.estimatedCostCents / 100).toFixed(2)})` : ''}`,
-    );
-    this.usage.delete(job.jobId);
   }
 
-  private makeContext(initial: VentureJob): JobHandlerContext {
+  private makeContext(initial: VentureJob, signal: AbortSignal): JobHandlerContext {
     return {
       job: initial,
+      signal,
       reportProgress: async (update) => {
         const j = await this.jobs.getJob(initial.ownerId, initial.jobId);
         if (!j) return;
@@ -435,9 +541,8 @@ export class JobOrchestrator {
   ): Promise<VentureJob> {
     const finishedAt = this.now();
     const startedAtMs = job.startedAt ? new Date(job.startedAt).getTime() : finishedAt.getTime();
-    const duration = finishedAt.getTime() - startedAtMs;
-    const next = await this.persist({
-      ...job,
+    const duration = Math.max(0, finishedAt.getTime() - startedAtMs);
+    const { job: next, applied } = await this.finalize(job, {
       status: 'failed',
       finishedAt: finishedAt.toISOString(),
       executionDurationMs: duration,
@@ -445,9 +550,131 @@ export class JobOrchestrator {
       errorCode: code,
       errorMessage: message,
     });
-    await this.emitTimeline(next, 'job_failed', `Failed ${friendlyJobKind(job.jobKind)}: ${message}`);
+    if (applied) {
+      await this.emitTimeline(next, 'job_failed', `Failed ${friendlyJobKind(job.jobKind)}: ${message}`);
+    }
     this.usage.delete(job.jobId);
     return next;
+  }
+
+  /**
+   * The single writer for terminal states. Re-reads the row and refuses to
+   * overwrite an already-terminal job (first-terminal-wins), which prevents a
+   * late handler from resurrecting a cancelled/timed-out job or presenting a
+   * partial artifact as complete. Returns whether the write was actually applied
+   * so callers emit a timeline event exactly once.
+   */
+  private async finalize(
+    job: VentureJob,
+    patch: Partial<VentureJob>,
+  ): Promise<{ job: VentureJob; applied: boolean }> {
+    const current = (await this.jobs.getJob(job.ownerId, job.jobId)) ?? job;
+    if (TERMINAL_STATUSES.has(current.status)) {
+      return { job: current, applied: false };
+    }
+    const next: VentureJob = { ...current, ...patch };
+    await this.jobs.replaceJob(next);
+    return { job: next, applied: true };
+  }
+
+  private async finalizeCancelled(job: VentureJob, startedAt: Date): Promise<void> {
+    const finishedAt = this.now();
+    const duration = Math.max(0, finishedAt.getTime() - startedAt.getTime());
+    const { job: next, applied } = await this.finalize(job, {
+      status: 'cancelled',
+      finishedAt: finishedAt.toISOString(),
+      executionDurationMs: duration,
+      estimatedCostCents: this.computeCostCents(job),
+    });
+    if (applied) {
+      await this.emitTimeline(next, 'job_failed', `Cancelled: ${friendlyJobKind(job.jobKind)}`);
+    }
+    this.cancelled.delete(job.jobId);
+    this.usage.delete(job.jobId);
+  }
+
+  /** Race the handler against its abort signal; rejects with JobAbortedError on abort. */
+  private raceAbort<T>(work: Promise<T>, signal: AbortSignal): Promise<T> {
+    if (signal.aborted) return Promise.reject(new JobAbortedError());
+    return new Promise<T>((resolve, reject) => {
+      const onAbort = () => reject(new JobAbortedError());
+      signal.addEventListener('abort', onAbort, { once: true });
+      work.then(
+        (v) => { signal.removeEventListener('abort', onAbort); resolve(v); },
+        (e) => { signal.removeEventListener('abort', onAbort); reject(e); },
+      );
+    });
+  }
+
+  /**
+   * If a job is active but older than the stale threshold, reconcile it to
+   * `failed(stale_timeout)`. Safe because nothing legitimate runs past the
+   * platform ceiling; returns the (possibly updated) job.
+   */
+  private async reconcileOne(job: VentureJob): Promise<VentureJob> {
+    if (!ACTIVE_STATUSES.includes(job.status)) return job;
+    const anchorIso = job.startedAt ?? job.createdAt;
+    const ageMs = this.now().getTime() - new Date(anchorIso).getTime();
+    if (ageMs < this.staleJobMs) return job;
+    const finishedAt = this.now();
+    const { job: next, applied } = await this.finalize(job, {
+      status: 'failed',
+      finishedAt: finishedAt.toISOString(),
+      executionDurationMs: job.startedAt
+        ? Math.max(0, finishedAt.getTime() - new Date(job.startedAt).getTime())
+        : 0,
+      estimatedCostCents: this.computeCostCents(job),
+      errorCode: 'stale_timeout',
+      errorMessage:
+        'This job exceeded the platform execution window and was reconciled as failed. Nothing was saved — you can retry.',
+    });
+    if (applied) {
+      await this.emitTimeline(next, 'job_failed', `Reconciled stale ${friendlyJobKind(job.jobKind)} as failed`);
+      this.usage.delete(job.jobId);
+      this.controllers.delete(job.jobId);
+    }
+    return next;
+  }
+
+  /** Read a job, reconciling it first if it is an orphaned (stale) active row. */
+  async getJobReconciled(ownerId: string, jobId: string): Promise<VentureJob | null> {
+    const job = await this.jobs.getJob(ownerId, jobId);
+    if (!job) return null;
+    return this.reconcileOne(job);
+  }
+
+  /** Sweep active jobs for an owner (optionally one venture); fail any that are orphaned. */
+  async reconcileStale(q: { ownerId: string; ventureId?: string }): Promise<VentureJob[]> {
+    const active = await this.jobs.listJobs({
+      ownerId: q.ownerId,
+      ...(q.ventureId ? { ventureId: q.ventureId } : {}),
+      statuses: [...ACTIVE_STATUSES],
+    });
+    const reconciled: VentureJob[] = [];
+    for (const job of active) {
+      const before = job.status;
+      const next = await this.reconcileOne(job);
+      if (before !== next.status) reconciled.push(next);
+    }
+    return reconciled;
+  }
+
+  /**
+   * Find a genuinely-active job of the given kind for a venture, after first
+   * reconciling any stale rows. Used to prevent duplicate concurrent runs.
+   */
+  async findActiveJob(
+    ownerId: string,
+    ventureId: string,
+    jobKind: VentureJobKind,
+  ): Promise<VentureJob | null> {
+    await this.reconcileStale({ ownerId, ventureId });
+    const active = await this.jobs.listJobs({
+      ownerId,
+      ventureId,
+      statuses: [...ACTIVE_STATUSES],
+    });
+    return active.find((j) => j.jobKind === jobKind) ?? null;
   }
 
   private async persist(j: VentureJob): Promise<VentureJob> {

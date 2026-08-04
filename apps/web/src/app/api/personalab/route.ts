@@ -16,6 +16,7 @@
 import { NextResponse } from 'next/server';
 
 import type { VentureJobKind } from '@foundry/contracts';
+import { DuplicateActiveJobError } from '@foundry/ventures';
 
 import { requireUser, UnauthorizedError } from '../../../lib/auth';
 import { runPersonaLabAction, type RunPersonaLabInput, type PersonaLabAction, type PersonaLabEngine } from '../../../lib/personalab';
@@ -23,6 +24,9 @@ import { enqueueAndWait, getJobOrchestrator } from '../../../lib/jobs';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+// Allow long-running provider work up to the platform ceiling. The orchestrator
+// aborts a hung job at 240s (below this) so the function always returns cleanly.
+export const maxDuration = 300;
 
 const ACTIONS: ReadonlySet<PersonaLabAction> = new Set([
   'generatePersonas',
@@ -127,6 +131,13 @@ export async function POST(req: Request) {
     };
 
     if (body.async === true) {
+      const activeJob = await getJobOrchestrator().findActiveJob(user.id, ventureId, jobKind);
+      if (activeJob) {
+        return NextResponse.json(
+          { ok: false, reason: 'A job of this type is already running for this venture.', jobId: activeJob.jobId },
+          { status: 409 },
+        );
+      }
       const job = await getJobOrchestrator().enqueue({
         ownerId: user.id,
         ventureId,
@@ -154,6 +165,12 @@ export async function POST(req: Request) {
   } catch (e) {
     if (e instanceof UnauthorizedError) {
       return NextResponse.json({ ok: false, reason: 'Unauthorized' }, { status: 401 });
+    }
+    if (e instanceof DuplicateActiveJobError) {
+      return NextResponse.json(
+        { ok: false, reason: 'A job of this type is already running for this venture.', jobId: e.existingJobId },
+        { status: 409 },
+      );
     }
     const message = e instanceof Error ? e.message : 'PersonaLab call failed.';
     return NextResponse.json({ ok: false, reason: sanitize(message) }, { status: 500 });

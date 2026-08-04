@@ -40,7 +40,7 @@ export {
  * exercising every translation path.
  */
 export interface OpenAiLike {
-  chat: { completions: { create: (params: Record<string, unknown>) => Promise<RawCompletion> } };
+  chat: { completions: { create: (params: Record<string, unknown>, options?: { signal?: AbortSignal }) => Promise<RawCompletion> } };
   models: { list: () => Promise<unknown> };
 }
 
@@ -142,8 +142,17 @@ export class OpenAiAdapter implements ProviderAdapter {
 
     let completion: RawCompletion;
     try {
-      completion = await client.chat.completions.create(params);
+      completion = await client.chat.completions.create(
+        params,
+        req.signal ? { signal: req.signal } : undefined,
+      );
     } catch (e) {
+      // A hard-timeout abort surfaces as an SDK abort error; translate it to a
+      // stable, secret-safe message so the job layer records a clean terminal
+      // state rather than a provider-specific stack.
+      if (req.signal?.aborted) {
+        throw new ProviderError('OpenAI request aborted after exceeding the hard timeout.');
+      }
       throw translateError(e);
     }
 

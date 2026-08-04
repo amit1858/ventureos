@@ -24,6 +24,7 @@ import {
   InMemoryJobStore,
   JobOrchestrator,
   SupabaseJobStore,
+  DuplicateActiveJobError,
   type JobHandler,
   type JobHandlerContext,
   type JobHandlerResult,
@@ -74,10 +75,34 @@ function getJobStore(): JobStore {
 
 export function getJobOrchestrator(): JobOrchestrator {
   if (globalThis.__foundry_job_orchestrator) return globalThis.__foundry_job_orchestrator;
-  const orch = new JobOrchestrator(getJobStore(), getVentureService());
+  const orch = new JobOrchestrator(getJobStore(), getVentureService(), readJobTimingOptions());
   registerHandlers(orch);
   globalThis.__foundry_job_orchestrator = orch;
   return orch;
+}
+
+/**
+ * Containment lever (incident fix): the hard per-job timeout and the stale-job
+ * reconciliation threshold default to the platform-safe values baked into the
+ * orchestrator (240s / 330s, both sitting either side of the Vercel Fluid 300s
+ * ceiling). Operators can override either — without a redeploy — via
+ * `FOUNDRY_JOB_TIMEOUT_MS` / `FOUNDRY_STALE_JOB_MS` to tighten containment if a
+ * provider misbehaves. Unset or invalid values keep the defaults.
+ */
+function readJobTimingOptions(): { jobTimeoutMs?: number; staleJobMs?: number } {
+  const opts: { jobTimeoutMs?: number; staleJobMs?: number } = {};
+  const timeout = positiveIntEnv('FOUNDRY_JOB_TIMEOUT_MS');
+  if (timeout != null) opts.jobTimeoutMs = timeout;
+  const stale = positiveIntEnv('FOUNDRY_STALE_JOB_MS');
+  if (stale != null) opts.staleJobMs = stale;
+  return opts;
+}
+
+function positiveIntEnv(name: string): number | undefined {
+  const raw = process.env[name];
+  if (!raw) return undefined;
+  const n = Number.parseInt(raw, 10);
+  return Number.isFinite(n) && n > 0 ? n : undefined;
 }
 
 // ── input shapes ──────────────────────────────────────────────────────────
@@ -193,6 +218,7 @@ function wrapPersonaLab(
       ...(input.offerSummary ? { offerSummary: input.offerSummary } : {}),
       ...(input.transcripts ? { transcripts: input.transcripts } : {}),
       ...(input.n ? { n: input.n } : {}),
+      signal: ctx.signal,
       onTelemetry: (t) => {
         // Real per-call usage → accurate Run History cost (was always $0.00).
         // The accumulator update inside recordUsage is synchronous, so this
@@ -327,9 +353,20 @@ export async function enqueueAndWait(input: {
   credentialId?: string;
   pollIntervalMs?: number;
   timeoutMs?: number;
+  /** When true (default) refuse to start if an equivalent job is already active. */
+  preventDuplicate?: boolean;
 }): Promise<{ job: VentureJob; artifactPayload: unknown | null }> {
   const orch = getJobOrchestrator();
   const store = getJobStore();
+
+  // Refuse to spawn a duplicate concurrent run for the same venture + kind. A
+  // prior failed/cancelled/timed-out job is terminal (not active) so retries are
+  // always allowed; only a genuinely in-flight job blocks.
+  if (input.preventDuplicate !== false) {
+    const active = await orch.findActiveJob(input.ownerId, input.ventureId, input.jobKind);
+    if (active) throw new DuplicateActiveJobError(input.jobKind, active.jobId);
+  }
+
   const created = await orch.enqueue({
     ownerId: input.ownerId,
     ventureId: input.ventureId,
@@ -339,20 +376,30 @@ export async function enqueueAndWait(input: {
   });
   const jobId = created.jobId;
   const interval = input.pollIntervalMs ?? 100;
-  const deadline = Date.now() + (input.timeoutMs ?? 5 * 60 * 1000);
+  // Poll deadline sits above the orchestrator's hard job timeout (240s) but below
+  // the platform function ceiling (300s), so by the time we stop polling the
+  // orchestrator has already written a terminal state that we can observe.
+  const deadline = Date.now() + (input.timeoutMs ?? 250_000);
   while (Date.now() < deadline) {
     const job = await store.getJob(input.ownerId, jobId);
     if (job && TERMINAL.has(job.status)) {
-      let artifactPayload: unknown | null = null;
-      if (job.status === 'succeeded' && job.outputArtifactId) {
-        const artifacts = await getVentureService().listArtifacts(job.ownerId, job.ventureId);
-        artifactPayload = artifacts.find((a) => a.artifactId === job.outputArtifactId)?.payload ?? null;
-      }
-      return { job, artifactPayload };
+      return { job, artifactPayload: await loadArtifactPayload(job) };
     }
     await new Promise((r) => setTimeout(r, interval));
   }
-  throw new Error(`Job ${jobId} did not terminate within timeout.`);
+  // Deadline hit without observing a terminal state (should be unreachable given
+  // the orchestrator's own timeout). Reconcile and return the terminal row rather
+  // than throwing a non-terminal error at the caller.
+  const reconciled = (await orch.getJobReconciled(input.ownerId, jobId)) ?? created;
+  return { job: reconciled, artifactPayload: await loadArtifactPayload(reconciled) };
+}
+
+async function loadArtifactPayload(job: VentureJob): Promise<unknown | null> {
+  if (job.status === 'succeeded' && job.outputArtifactId) {
+    const artifacts = await getVentureService().listArtifacts(job.ownerId, job.ventureId);
+    return artifacts.find((a) => a.artifactId === job.outputArtifactId)?.payload ?? null;
+  }
+  return null;
 }
 
 export { getJobStore };

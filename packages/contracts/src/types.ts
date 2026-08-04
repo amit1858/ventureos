@@ -318,6 +318,13 @@ export interface ChatRequest {
   seed?: number;
   cacheable?: boolean;
   ctx: CallContext;
+  /**
+   * Optional cooperative abort signal. Adapters that honour it (OpenAI) pass it
+   * to the underlying provider SDK so a hung request is aborted cleanly instead
+   * of running to the serverless function ceiling. Purely runtime — never
+   * serialized — so it is safe as an optional field on the wire contract.
+   */
+  signal?: AbortSignal;
 }
 
 export interface ChatResponse {
