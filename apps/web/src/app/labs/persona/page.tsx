@@ -217,7 +217,7 @@ function PersonaBody({ lab }: { lab: VentureLab }) {
         <BriefField label="Customer type"  value={brief.customerType}     onChange={(v) => setBrief({ ...brief, customerType: v })} />
         <BriefField label="Region"         value={brief.region}           onChange={(v) => setBrief({ ...brief, region: v })} />
         <BriefField label="Business size"  value={brief.businessSize}     onChange={(v) => setBrief({ ...brief, businessSize: v })} />
-        <BriefField label="Additional context" value={brief.additionalContext ?? ''} onChange={(v) => setBrief({ ...brief, additionalContext: v })} />
+        <BriefField label="Additional context" value={brief.additionalContext ?? ''} onChange={(v) => setBrief({ ...brief, additionalContext: v })} multiline />
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem', alignItems: 'baseline' }}>
           <label>
             How many personas?
@@ -227,7 +227,12 @@ function PersonaBody({ lab }: { lab: VentureLab }) {
               style={{ ...inputStyle, width: 80 }}
             />
           </label>
-          <button onClick={generate} disabled={busy !== null || !lab.selectedProviderId} style={primaryBtn}>
+          <button
+            onClick={generate}
+            disabled={busy !== null || !lab.selectedProviderId}
+            title={!lab.selectedProviderId ? 'Select a provider credential above to generate personas' : undefined}
+            style={primaryBtn}
+          >
             {busy === 'generatePersonas' ? `Generating… ${elapsed}s` : 'Generate personas'}
           </button>
         </div>
@@ -353,11 +358,30 @@ function PersonaBody({ lab }: { lab: VentureLab }) {
 
 // ── widgets ──────────────────────────────────────────────────────────────────
 
-function BriefField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function BriefField({
+  label,
+  value,
+  onChange,
+  multiline = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  multiline?: boolean;
+}) {
   return (
     <label style={{ display: 'block', marginTop: '0.4rem' }}>
       {label}
-      <input value={value} onChange={(e) => onChange(e.target.value)} style={inputStyle} />
+      {multiline ? (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          rows={4}
+          style={{ ...inputStyle, resize: 'vertical', minHeight: '5rem', lineHeight: 1.5 }}
+        />
+      ) : (
+        <input value={value} onChange={(e) => onChange(e.target.value)} style={inputStyle} />
+      )}
     </label>
   );
 }
@@ -403,7 +427,7 @@ function TranscriptPanel({ title, turns, summary }: {
       <h4 style={{ margin: 0 }}>{title}</h4>
       {turns.map((t, i) => (
         <p key={i} style={{ margin: '0.4rem 0', color: '#cbd0d4' }}>
-          <strong style={{ color: '#7aa3ff' }}>{t.who}:</strong> {t.content}
+          <strong style={{ color: 'var(--accent)' }}>{t.who}:</strong> {t.content}
         </p>
       ))}
       {summary ? (
@@ -655,8 +679,8 @@ const cardStyle: React.CSSProperties = {
   borderRadius: 8, background: '#15171c',
 };
 const primaryBtn: React.CSSProperties = {
-  padding: '0.5rem 0.9rem', background: '#3a6bdc', color: 'white',
-  border: 0, borderRadius: 6, cursor: 'pointer',
+  padding: '0.5rem 0.9rem', background: 'var(--accent)', color: 'var(--on-accent)',
+  border: 0, borderRadius: 6, cursor: 'pointer', fontWeight: 600,
 };
 const secondaryBtn: React.CSSProperties = {
   padding: '0.45rem 0.8rem', background: '#1f232b', color: '#cbd0d4',
