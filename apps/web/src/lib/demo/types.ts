@@ -2,13 +2,13 @@
  * Demo Mode data model.
  *
  * A `DemoVenture` is a fully-seeded, deterministic snapshot of a venture that
- * has already been driven end-to-end through every VentureOS lab. It exists so
- * a judge or first-time user can experience the entire product surface —
+ * has already been driven end-to-end through every Foundry lab. It exists so
+ * a first-time user can experience the entire product surface —
  * personas, buying committee, research graph, validation, build plan,
  * evaluation report and a (simulated) GitHub export — WITHOUT supplying any
  * BYOK provider key, Supabase project or GitHub token.
  *
- * Everything here is typed against `@ventureos/contracts`, so the demo cannot
+ * Everything here is typed against `@foundry/contracts`, so the demo cannot
  * drift from the real artifact shapes the labs emit. Demo data is intentionally
  * separate from Real Mode: Real Mode remains the default product path and is
  * never touched by anything in this folder.
@@ -24,7 +24,7 @@ import type {
   VentureRecommendation,
   VentureSummary,
   VentureTimelineEvent,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 /** A simulated GitHub export result (no token used, nothing pushed). */
 export interface DemoExport {

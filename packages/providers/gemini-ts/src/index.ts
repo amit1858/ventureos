@@ -7,11 +7,11 @@ import type {
   DecryptedKey,
   ProviderCapabilities,
   ToolCall,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 import {
   ProviderError,
   type ProviderAdapter,
-} from '@ventureos/providers-core';
+} from '@foundry/providers-core';
 
 import { costUsd, KNOWN_MODELS } from './cost';
 import { translateError } from './errors-map';
@@ -168,9 +168,9 @@ export class GeminiAdapter implements ProviderAdapter {
   async validateCredentials(key: DecryptedKey): Promise<{ valid: boolean; reason?: string }> {
     const client = this.client(key);
     try {
-      // Cheapest probe: 1-token generate against the smallest model.
+      // Cheapest probe: 1-token generate against a current small model.
       const model = client.getGenerativeModel({
-        model: 'gemini-1.5-flash-latest',
+        model: 'gemini-2.0-flash',
         generationConfig: { maxOutputTokens: 1 },
       });
       await model.generateContent({

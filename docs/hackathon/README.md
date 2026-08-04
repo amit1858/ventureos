@@ -1,26 +1,26 @@
-# VentureOS — Hackathon Submission Pack
+# Foundry — Hackathon Submission Pack
 
 > **Microsoft Build AI / HackerEarth · Agent Swarms track · v1.0-submission**
 >
 > Live app · <https://ventureos-dun.vercel.app>
 > Demo path · <https://ventureos-dun.vercel.app/demo/faceless-crm>
-> Repo · <https://github.com/amit1858/ventureos>
+> Repo · <https://github.com/amit1858/foundry-venture-os>
 
 This folder contains everything a judge or evaluator needs to assess
-VentureOS without running the codebase.
+Foundry without running the codebase.
 
 ## Contents
 
 | File | What it is |
 | --- | --- |
-| [`VentureOS-Submission-Deck.pdf`](./VentureOS-Submission-Deck.pdf) | 10-slide submission deck (PDF, < 1 MB) |
+| [`VentureOS-Submission-Deck.pdf`](../archive/ventureos-submission/VentureOS-Submission-Deck.pdf) | 10-slide submission deck (PDF, < 1 MB) — archived historical VentureOS artifact |
 | [`demo-script.md`](./demo-script.md) | 3-minute voiceover script + shot list for the live walkthrough video |
 | [`submission-form.md`](./submission-form.md) | Ready-to-paste copy for the HackerEarth submission form |
-| [`screenshots/`](./screenshots/) | Real, dated screenshots of the deployed product |
+| [`screenshots/`](../archive/ventureos-submission/screenshots/) | Archived historical VentureOS screenshots; Foundry-branded recapture pending |
 
 ## Primary judging path
 
-The fastest way to evaluate VentureOS end-to-end is the zero-key Demo Mode:
+The fastest way to evaluate Foundry end-to-end is the zero-key Demo Mode:
 
 1. Open <https://ventureos-dun.vercel.app/>
 2. Click **Try the demo**
@@ -33,7 +33,7 @@ seeded so the agent-swarm output is identical for every judge.
 
 ## Why this fits the Agent Swarms track
 
-VentureOS is not a single chat-bot. It orchestrates a swarm of
+Foundry is not a single chat-bot. It orchestrates a swarm of
 specialized agents across the venture lifecycle:
 
 | Step | Agent group | Output |

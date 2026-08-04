@@ -5,7 +5,7 @@ import {
   ProviderModelNotFoundError,
   ProviderUnavailableError,
   RateLimited,
-} from '@ventureos/providers-core';
+} from '@foundry/providers-core';
 
 /**
  * Translate an unknown error thrown by the `openai` SDK into the provider-layer taxonomy.

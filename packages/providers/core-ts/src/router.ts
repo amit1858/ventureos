@@ -1,4 +1,4 @@
-import type { ChatRequest, ChatResponse } from '@ventureos/contracts';
+import type { ChatRequest, ChatResponse } from '@foundry/contracts';
 import type {
   BudgetGuard,
   KeyResolver,

@@ -27,7 +27,7 @@ import type {
   VentureArtifact,
   VentureArtifactKind,
   VentureRecommendation,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import {
   InMemoryJobStore,

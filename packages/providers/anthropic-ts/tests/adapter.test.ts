@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { ChatRequest, DecryptedKey } from '@ventureos/contracts';
+import type { ChatRequest, DecryptedKey } from '@foundry/contracts';
 import {
   ProviderAuthError,
   ProviderModelNotFoundError,
   ProviderUnavailableError,
   RateLimited,
   runProviderConformance,
-} from '@ventureos/providers-core';
+} from '@foundry/providers-core';
 
 import { AnthropicAdapter, type AnthropicLike } from '../src/index';
 import { costUsd, RETIRED_MODELS, DEFAULT_VALIDATION_MODEL, KNOWN_MODELS } from '../src/cost';

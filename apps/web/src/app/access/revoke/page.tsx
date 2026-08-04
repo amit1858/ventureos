@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Revoke Alpha Access — VentureOS',
+  title: 'Revoke Alpha Access',
 };
 
 export const dynamic = 'force-dynamic';

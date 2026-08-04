@@ -12,17 +12,17 @@
  */
 import 'server-only';
 
-import type { CallContext, ChatRequest, ChatResponse, ProviderId } from '@ventureos/contracts';
-import { ProviderError } from '@ventureos/providers-core';
-import { OpenAiAdapter } from '@ventureos/providers-openai';
-import { AnthropicAdapter } from '@ventureos/providers-anthropic';
-import { GeminiAdapter } from '@ventureos/providers-gemini';
-import { AzureOpenAiAdapter } from '@ventureos/providers-azure-openai';
+import type { CallContext, ChatRequest, ChatResponse, ProviderId } from '@foundry/contracts';
+import { ProviderError } from '@foundry/providers-core';
+import { OpenAiAdapter } from '@foundry/providers-openai';
+import { AnthropicAdapter } from '@foundry/providers-anthropic';
+import { GeminiAdapter } from '@foundry/providers-gemini';
+import { AzureOpenAiAdapter } from '@foundry/providers-azure-openai';
 import {
   VentureLab,
   type VentureLabInput,
   type VentureRecommendation,
-} from '@ventureos/venturelab';
+} from '@foundry/venturelab';
 
 import { getCredentialService } from './credentials';
 

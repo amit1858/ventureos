@@ -1,4 +1,4 @@
-# VentureOS — System Architecture
+# Foundry — System Architecture
 
 > Sprint −1 deliverable. Architectural intent and contracts. Not an implementation spec.
 

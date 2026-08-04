@@ -1,4 +1,4 @@
-import type { ResearchGraph } from '@ventureos/contracts';
+import type { ResearchGraph } from '@foundry/contracts';
 
 import { cx, prob, styles } from './helpers';
 import { RawJson, Stat } from './primitives';
@@ -18,13 +18,13 @@ export function ResearchGraphView({ graph }: { graph: ResearchGraph }) {
       <div className={cx(styles.grid4)}>
         <Stat value={graph.stats?.nodes ?? nodes.length} label="Nodes" />
         <Stat value={graph.stats?.edges ?? edges.length} label="Edges" />
-        <Stat value={graph.godNodes?.length ?? 0} label="God-nodes" />
+        <Stat value={graph.godNodes?.length ?? 0} label="Key concepts" />
         <Stat value={graph.contradictions?.length ?? 0} label="Contradictions" />
       </div>
 
       <div className={cx(styles.grid2)}>
         <div className={cx(styles.card)}>
-          <p className={cx(styles.cardTitle)}>God-nodes (highest centrality)</p>
+          <p className={cx(styles.cardTitle)}>Key concepts (highest centrality)</p>
           {graph.godNodes && graph.godNodes.length > 0 ? (
             <div className={cx(styles.tableWrap)}>
               <table className={cx(styles.table)}>
@@ -36,7 +36,7 @@ export function ResearchGraphView({ graph }: { graph: ResearchGraph }) {
                 </tbody>
               </table>
             </div>
-          ) : <p className={cx(styles.muted)}>No god-nodes identified.</p>}
+          ) : <p className={cx(styles.muted)}>No key concepts identified.</p>}
         </div>
         <div className={cx(styles.card)}>
           <p className={cx(styles.cardTitle)}>Strongest signals</p>

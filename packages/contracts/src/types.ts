@@ -859,7 +859,7 @@ export interface BuildSquadArtifactEvaluation {
 
 // ──────────── Venture (Sprint 2A.5) ────────────────────────────────────────
 //
-// The Venture is the top-level container in VentureOS. Every PersonaSet,
+// The Venture is the top-level container in Foundry. Every PersonaSet,
 // ResearchGraph, VentureRecommendation, and BuildSquadArtifactPack belongs to
 // exactly one Venture. Artifacts are versioned per (ventureId, kind) and
 // every attach emits a VentureTimelineEvent. The Venture is owned by a single
@@ -997,7 +997,7 @@ export interface VentureSummary {
 
 // ──────────── VentureJob (Sprint 2A.6) ─────────────────────────────────────
 //
-// Every long-running unit of work in VentureOS is a VentureJob: lab runs,
+// Every long-running unit of work in Foundry is a VentureJob: lab runs,
 // GitHub exports, evaluation regenerations. Jobs persist their lifecycle
 // (status + progress + observability metrics) so the workspace can survive
 // process restarts and surface dead-air to the user.

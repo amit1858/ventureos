@@ -1,10 +1,10 @@
-# VentureOS root Python workspace (uv).
+# Foundry root Python workspace (uv).
 # Python packages live under packages/**/python and packages/adapters/*-py.
 
 [project]
-name = "ventureos-workspace"
+name = "foundry-workspace"
 version = "0.0.0"
-description = "VentureOS Python workspace root (not installable; aggregates member packages)."
+description = "Foundry Python workspace root (not installable; aggregates member packages)."
 requires-python = ">=3.11"
 
 [tool.uv.workspace]

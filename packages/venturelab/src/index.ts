@@ -1,5 +1,5 @@
 /**
- * @ventureos/venturelab — public API.
+ * @foundry/venturelab — public API.
  *
  * VentureLab consumes PersonaLab + buying-committee outputs and produces a
  * single auditable `VentureRecommendation`. The decision is computed by a

@@ -1,15 +1,15 @@
--- VentureOS Sprint 1C: BYOK credential storage schema.
+-- Foundry Sprint 1C: BYOK credential storage schema.
 --
 -- Design notes:
 --   * `users` shadows `auth.users` so we can FK + show display name without
 --     joining the auth schema. `id` matches `auth.uid()`.
 --   * `provider_credentials.encrypted_secret` is a JSON envelope produced by
---     `@ventureos/credentials` (AES-256-GCM). NEVER queried by the browser.
+--     `@foundry/credentials` (AES-256-GCM). NEVER queried by the browser.
 --   * Row-Level Security is the defence-in-depth layer. The Node service uses
 --     the service-role key (bypasses RLS) and enforces `user_id = $auth` itself,
 --     so even a future direct-from-client read with the anon key would be safe.
 --   * Soft delete via `deleted_at`. Listing queries always filter it out.
---   * `provider_type` uses the same vocabulary as ProviderId in @ventureos/contracts.
+--   * `provider_type` uses the same vocabulary as ProviderId in @foundry/contracts.
 
 create extension if not exists "pgcrypto";
 

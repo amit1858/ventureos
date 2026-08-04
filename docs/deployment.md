@@ -1,6 +1,6 @@
 # Deployment
 
-VentureOS ships as a Next.js 14 App-Router app inside a pnpm + Turborepo
+Foundry ships as a Next.js 14 App-Router app inside a pnpm + Turborepo
 workspace. This page is the single source of truth for deploying it.
 
 > **TL;DR for the hackathon:** run the [Required deployment procedure for
@@ -17,7 +17,7 @@ There are two supported deployment modes:
 
 Provider API keys (OpenAI, Anthropic, Gemini, Azure OpenAI) and the **GitHub
 PAT** are **never** Vercel environment variables. They are entered through the
-VentureOS BYOK UI at `/settings/byok` and stored encrypted at rest.
+Foundry BYOK UI at `/settings/byok` and stored encrypted at rest.
 
 ---
 
@@ -57,7 +57,7 @@ Enable Corepack once per machine: `corepack enable`.
 ```bash
 git remote remove origin
 vercel deploy --prod
-git remote add origin https://github.com/amit1858/ventureos.git
+git remote add origin https://github.com/amit1858/foundry-venture-os.git
 git push origin main
 ```
 
@@ -80,7 +80,7 @@ git remote remove origin
 vercel deploy --prod
 
 # 4. Restore GitHub remote
-git remote add origin https://github.com/amit1858/ventureos.git
+git remote add origin https://github.com/amit1858/foundry-venture-os.git
 
 # 5. Confirm remote is restored
 git remote -v
@@ -100,7 +100,7 @@ git push origin main
 | Deployment rejected because Git author cannot be verified | Git remote still attached during Vercel deploy | `git remote remove origin`, then `vercel deploy --prod` |
 | `error: No such remote: 'origin'` | Remote already removed from a previous attempt | Skip the remove step and run `vercel deploy --prod` |
 | `vercel deploy` exits with code 137 | `--debug` can cause OOM on Windows | Re-run without `--debug` |
-| Git push fails because origin is missing | Remote was not restored | `git remote add origin https://github.com/amit1858/ventureos.git` |
+| Git push fails because origin is missing | Remote was not restored | `git remote add origin https://github.com/amit1858/foundry-venture-os.git` |
 | Browser shows old chunks or odd runtime behavior | Cached old Vercel assets | Hard refresh with `Ctrl+Shift+R` (or `Cmd+Shift+R`) |
 | Real Mode shows *"Server is not configured for Real Mode"* | Supabase env vars missing | Either use Demo Mode or configure Real Mode env vars (see Mode 2) |
 
@@ -122,7 +122,7 @@ variables, no Supabase, no API keys, no PAT.
 
 - `/` — homepage with multi-agent Agent Swarms positioning
 - `/demo` — demo index
-- `/demo/faceless-crm` — full seeded VentureOS pipeline end-to-end
+- `/demo/faceless-crm` — full seeded Foundry pipeline end-to-end
 - Personas, buying committee, research graph, VentureLab recommendation,
   BuildSquad plan, evaluation report, simulated GitHub export
 
@@ -197,7 +197,7 @@ settings** unless explicitly required in the future.
 
 The deployed app does not include a full sign-up / sign-in flow yet. To make
 deployed Real Mode usable for hackathon judges and testers without leaking
-developer-only instructions, VentureOS ships a lightweight **Alpha Access**
+developer-only instructions, Foundry ships a lightweight **Alpha Access**
 screen at `/access`.
 
 ### How it works
@@ -211,7 +211,7 @@ screen at `/access`.
    which sets the `ventureos_alpha_access=1` HttpOnly cookie and redirects to
    the requested Real Mode page (defaults to `/settings/byok`).
 4. From that point on, the server resolves the visitor as the shared
-   `alpha-user` identity (id `alpha-user`, email `alpha@ventureos.local`).
+   `alpha-user` identity (id `alpha-user`, email `alpha@foundry.local`).
    BYOK, ventures, labs, jobs, artifacts, timeline and GitHub export all use
    this identity.
 5. Visitors can revoke access at `/access/revoke`. Encrypted BYOK credentials
@@ -407,11 +407,11 @@ corepack pnpm run lint:arch
 corepack pnpm run typecheck
 corepack pnpm run test
 corepack pnpm run build
-corepack pnpm --filter @ventureos/web start
+corepack pnpm --filter @foundry/web start
 ```
 
 The app boots on `http://localhost:3000` by default. Override with
-`PORT=3100 corepack pnpm --filter @ventureos/web start`.
+`PORT=3100 corepack pnpm --filter @foundry/web start`.
 
 ---
 
@@ -425,10 +425,10 @@ is Vercel-specific; self-hosted deploys do not need it.
 ```bash
 corepack enable
 corepack pnpm install --frozen-lockfile
-corepack pnpm --filter @ventureos/web build
+corepack pnpm --filter @foundry/web build
 
 NODE_ENV=production PORT=3000 \
-  corepack pnpm --filter @ventureos/web start
+  corepack pnpm --filter @foundry/web start
 ```
 
 Front with nginx / Caddy / Cloudflare Tunnel. Set env vars in the process
@@ -449,7 +449,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 RUN corepack enable
 COPY --from=deps /app .
-RUN corepack pnpm --filter @ventureos/web build
+RUN corepack pnpm --filter @foundry/web build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
@@ -457,7 +457,7 @@ ENV NODE_ENV=production
 RUN corepack enable
 COPY --from=builder /app .
 EXPOSE 3000
-CMD ["corepack", "pnpm", "--filter", "@ventureos/web", "start"]
+CMD ["corepack", "pnpm", "--filter", "@foundry/web", "start"]
 ```
 
 Pass env vars via `docker run -e …` or your orchestrator's secret store. No

@@ -5,7 +5,7 @@
  * single JSON object that conforms to the documented shape. Keep prompts
  * deterministic and explicit so cheap models can comply.
  */
-import type { ChatMessage } from '@ventureos/contracts';
+import type { ChatMessage } from '@foundry/contracts';
 
 import type {
   PersonaLabBrief,
@@ -15,7 +15,7 @@ import type {
 } from './types';
 
 const SYSTEM_BASE = [
-  'You are PersonaLab, a persona-simulation engine for VentureOS.',
+  'You are PersonaLab, a persona-simulation engine for Foundry.',
   'You always reply with a SINGLE JSON object that matches the requested schema.',
   'Output ONLY the JSON object. Do not include any text before or after the JSON.',
   'Do not wrap the JSON in markdown fences (no ```json, no ```).',

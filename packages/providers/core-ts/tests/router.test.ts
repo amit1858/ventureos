@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ChatRequest, DecryptedKey, ProviderRoute } from '@ventureos/contracts';
+import type { ChatRequest, DecryptedKey, ProviderRoute } from '@foundry/contracts';
 import {
   BudgetExceeded,
   InMemoryBudgetGuard,

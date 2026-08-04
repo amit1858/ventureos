@@ -29,6 +29,9 @@ export interface EncryptionEnvelope {
 const ENV_KEY = 'VENTUREOS_CREDENTIAL_ENCRYPTION_KEY';
 const KEY_BYTES = 32;
 const IV_BYTES = 12;
+// Domain-separation tag baked into stored credential fingerprints. Intentionally
+// retains the legacy "ventureos" prefix (and :v1 version tag): changing it would
+// alter every fingerprint and break matching against already-persisted rows.
 const FINGERPRINT_DOMAIN = 'ventureos:credential-fingerprint:v1';
 
 export class CredentialCrypto {

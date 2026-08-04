@@ -5,7 +5,7 @@ import {
   ProviderModelNotFoundError,
   ProviderUnavailableError,
   RateLimited,
-} from '@ventureos/providers-core';
+} from '@foundry/providers-core';
 
 /**
  * Translate an unknown error from the Anthropic SDK into the provider taxonomy.

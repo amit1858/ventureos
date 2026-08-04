@@ -57,7 +57,7 @@ Control: `control.begin("sim.cache.json")`, `control.checkpoint()`, `control.end
 
 ## 7. Limitations & risks
 
-| Concern | Detail | Impact on VentureOS |
+| Concern | Detail | Impact on Foundry |
 | --- | --- | --- |
 | **Single-process, GIL-bound** | `TinyWorld.run` is sequential; parallelism only at factory population generation. | Scaling focus groups is hard; we will shard at the venture-job level (one worker per simulation), not within a simulation. |
 | **OpenAI-default LLM client** | Provider abstraction is shallow; Anthropic and Gemini are not first-class. | We must replace its client with our provider layer (see §10 below). This is a real fork-or-monkeypatch decision. |
@@ -75,17 +75,17 @@ Control: `control.begin("sim.cache.json")`, `control.checkpoint()`, `control.end
 - Microsoft-backed; 4 active maintainers; recent releases (vision modality in v0.7.0).
 - Frequent minor releases; semver not strictly observed pre-1.0.
 
-## 9. Recommended VentureOS integration strategy
+## 9. Recommended Foundry integration strategy
 
 **Role:** PersonaLab's persona generation, focus groups, 1:1 interviews, stakeholder simulations, buying-committee simulations, and survey-style data collection.
 
 **Integration shape:**
 
-1. **Wrap, do not fork (initially).** TinyTroupe is consumed via a `TinyTroupeAdapter` (Python package) sitting in `packages/adapters/tinytroupe/`. The adapter is the only code in VentureOS that imports `tinytroupe.*`.
+1. **Wrap, do not fork (initially).** TinyTroupe is consumed via a `TinyTroupeAdapter` (Python package) sitting in `packages/adapters/tinytroupe/`. The adapter is the only code in Foundry that imports `tinytroupe.*`.
 2. **Subprocess isolation per venture.** Each PersonaLab simulation runs in its own worker process. This sidesteps TinyTroupe's process-global state and lets us run many ventures concurrently across a worker pool.
 3. **Replace the LLM client.** TinyTroupe's `openai_utils` is monkey-patched (or, preferably, a small upstream PR adds a client-injection hook) so that all model calls flow through our `ProviderClient`. This single change is what makes BYOK real for PersonaLab.
 4. **Define our own persona schema.** Our `PersonaSet` JSON schema in `packages/contracts/` is the canonical format. The adapter converts to/from `.agent.json` at the boundary. We never let TinyTroupe's evolving persona format become our wire format.
-5. **Use TinyTroupe's primitives, our orchestration.** We use `TinyPerson`, `TinyWorld`, `TinySocialNetwork`, `TinyPersonFactory`, `ResultsExtractor` — but the simulation script (which questions, in which order, with which fan-out) is VentureOS code.
+5. **Use TinyTroupe's primitives, our orchestration.** We use `TinyPerson`, `TinyWorld`, `TinySocialNetwork`, `TinyPersonFactory`, `ResultsExtractor` — but the simulation script (which questions, in which order, with which fan-out) is Foundry code.
 6. **Run validators by default.** `TinyPersonValidator` and `Proposition` are invoked on every generated persona and every focus-group transcript; the score becomes the artifact's `quality_score`.
 7. **Cache responsibly.** Disable TinyTroupe's local file cache; substitute our tenant-scoped Redis cache via the provider layer (so cache hits are auditable and isolated).
 8. **Per-job budget injection.** The adapter passes a `BudgetGuard` into the simulation that aborts at the next provider-call boundary if exceeded.
@@ -94,7 +94,7 @@ Control: `control.begin("sim.cache.json")`, `control.checkpoint()`, `control.end
 **Concrete adapter surface (sketch):**
 
 ```python
-# packages/adapters/tinytroupe/src/ventureos_tinytroupe/adapter.py
+# packages/adapters/tinytroupe/src/foundry_tinytroupe/adapter.py
 class TinyTroupeAdapter:
     def __init__(self, provider: ProviderClient, budget: BudgetGuard, tenant_id: str): ...
 
@@ -131,7 +131,7 @@ We fork upstream into `vendor/tinytroupe/` if **any** of the following:
 
 Otherwise, we stay on the upstream PyPI / git release pinned by exact version.
 
-## 10. Risks specific to VentureOS embedding (ranked)
+## 10. Risks specific to Foundry embedding (ranked)
 
 1. **Provider-injection brittleness.** Monkeypatching `openai_utils` is fragile across upstream refactors. Mitigate with a small upstream PR + a contract test that runs on every TinyTroupe version bump.
 2. **Cost explosion in long focus groups.** Hard cap `MAX_EPISODE_LENGTH`, set per-job budget, enforce in provider layer.

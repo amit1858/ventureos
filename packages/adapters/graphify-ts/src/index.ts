@@ -1,5 +1,5 @@
 /**
- * @ventureos/adapter-graphify — Sprint 1F.
+ * @foundry/adapter-graphify — Sprint 1F.
  *
  * Architectural notes:
  *   * The Python `graphify` package is gated to `packages/adapters/graphify-py/`

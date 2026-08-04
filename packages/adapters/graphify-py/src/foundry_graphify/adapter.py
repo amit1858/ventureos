@@ -1,5 +1,5 @@
 """
-VentureOS ↔ Graphify adapter (interface only).
+Foundry ↔ Graphify adapter (interface only).
 
 Architectural rules:
   * `graphify` / `graphifyy` may ONLY be imported inside this package.
@@ -12,9 +12,9 @@ from __future__ import annotations
 
 from typing import Any, Protocol
 
-from ventureos_contracts import IdeaBrief, ResearchGraph
-from ventureos_providers import ProviderClient
-from ventureos_providers.errors import NotImplementedError as _NotImplemented
+from foundry_contracts import IdeaBrief, ResearchGraph
+from foundry_providers import ProviderClient
+from foundry_providers.errors import NotImplementedError as _NotImplemented
 
 
 class GraphifyAdapter(Protocol):

@@ -10,7 +10,7 @@
  *   2. If VENTUREOS_ALPHA_ACCESS=true is set on the server AND the visitor has
  *      explicitly opted in by visiting `/access` (which sets the
  *      `ventureos_alpha_access` HttpOnly cookie), resolve as the shared
- *      `alpha-user` identity. This is the deployed-hackathon Real Mode path.
+ *      `alpha-user` identity. This is the deployed-alpha Real Mode path.
  *   3. In non-production builds only, fall back to the legacy `vos_dev_user`
  *      JSON cookie used by local dev and CI. This path is hard-disabled in
  *      production so the deployed app never reveals dev-cookie instructions.
@@ -41,7 +41,7 @@ export type AuthDecision =
 // Legacy dev cookie. Honoured only when NODE_ENV !== 'production'.
 const DEV_COOKIE = 'vos_dev_user';
 
-// Hackathon-alpha cookie set by POST /api/access/alpha.
+// Alpha-access cookie set by POST /api/access/alpha.
 export const ALPHA_ACCESS_COOKIE = 'ventureos_alpha_access';
 
 // Stable workspace identity used by Alpha Access. Isolated and clearly named so
@@ -49,7 +49,7 @@ export const ALPHA_ACCESS_COOKIE = 'ventureos_alpha_access';
 // as real users.
 export const ALPHA_USER: AuthenticatedUser = {
   id: 'alpha-user',
-  email: 'alpha@ventureos.local',
+  email: 'alpha@foundry.local',
 };
 
 function supabaseConfigured(): boolean {

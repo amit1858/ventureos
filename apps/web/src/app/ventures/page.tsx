@@ -9,7 +9,9 @@
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { VentureSummary, VentureStatus } from '@ventureos/contracts';
+import type { VentureSummary, VentureStatus } from '@foundry/contracts';
+
+import { SignInNotice } from '../../components/SignInNotice';
 
 const STATUSES: VentureStatus[] = [
   'draft', 'researching', 'validating', 'pivoting', 'approved', 'building', 'archived', 'rejected',
@@ -29,6 +31,7 @@ const STATUS_COLOUR: Record<VentureStatus, string> = {
 export default function MyVenturesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [needsAuth, setNeedsAuth] = useState(false);
   const [ventures, setVentures] = useState<VentureSummary[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'' | VentureStatus>('');
@@ -37,9 +40,10 @@ export default function MyVenturesPage() {
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setNeedsAuth(false);
     try {
       const r = await fetch('/api/ventures', { cache: 'no-store' });
-      if (r.status === 401) { setError('Real Mode requires sign-in. Sign in with Google for a private workspace, or use Demo Mode without any keys.'); return; }
+      if (r.status === 401) { setNeedsAuth(true); return; }
       const body = (await r.json()) as { ok: boolean; ventures?: VentureSummary[]; reason?: string };
       if (!body.ok) { setError(body.reason ?? 'Failed to load ventures.'); return; }
       setVentures(body.ventures ?? []);
@@ -70,17 +74,35 @@ export default function MyVenturesPage() {
     return out;
   }, [ventures, search, statusFilter, sort]);
 
+  // Portfolio at a glance — derived purely from the ventures already loaded.
+  const stats = useMemo(() => {
+    const total = ventures.length;
+    const inEval = ventures.filter((s) => ['researching', 'validating', 'pivoting'].includes(s.venture.status)).length;
+    const advanced = ventures.filter((s) => ['approved', 'building'].includes(s.venture.status)).length;
+    const avgReadiness = total ? Math.round(ventures.reduce((a, s) => a + s.readiness.overall, 0) / total) : 0;
+    return { total, inEval, advanced, avgReadiness };
+  }, [ventures]);
+
   return (
-    <section style={{ maxWidth: 1100, margin: '0 auto', padding: '1.5rem' }}>
+    <section>
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
         <div>
           <h1 style={{ margin: 0 }}>My Ventures</h1>
           <p style={{ color: '#9aa0a6', margin: '0.25rem 0 0' }}>
-            Every persona, research graph, recommendation and BuildSquad pack belongs to a Venture.
+            Your portfolio of ventures — each with its research, validation and build plan in one place.
           </p>
         </div>
         <a href="/ventures/new" style={primaryBtn}>+ New venture</a>
       </header>
+
+      {!error && ventures.length > 0 && (
+        <div style={statStrip}>
+          <StatTile label="Ventures" value={stats.total} />
+          <StatTile label="In evaluation" value={stats.inEval} accent="#f3b350" />
+          <StatTile label="Advanced to build" value={stats.advanced} accent="#56c596" />
+          <StatTile label="Avg readiness" value={`${stats.avgReadiness}%`} accent="#8b7bf0" />
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
         <input
@@ -100,37 +122,30 @@ export default function MyVenturesPage() {
         </select>
       </div>
 
+      {needsAuth && <SignInNotice next="/ventures" />}
       {error && (
         <div style={{ ...card, padding: '1rem 1.25rem', marginBottom: '1rem' }}>
           <p style={{ color: '#ef6a6a', margin: 0 }}>{error}</p>
-          <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <a href="/signin?next=/ventures" style={{ ...primaryBtn, fontSize: '0.85rem' }}>Sign in with Google</a>
-            <a
-              href="/demo"
-              style={{
-                padding: '0.5rem 0.85rem',
-                background: 'transparent',
-                color: '#cbd0d4',
-                borderRadius: 6,
-                border: '1px solid #2a2a2a',
-                textDecoration: 'none',
-                fontSize: '0.85rem',
-              }}
-            >
-              Open Demo Mode
-            </a>
-          </div>
         </div>
       )}
       {loading && <p style={{ color: '#9aa0a6' }}>Loading…</p>}
-      {!loading && filtered.length === 0 && (
-        <div style={{ ...card, textAlign: 'center', padding: '2rem' }}>
-          <p style={{ color: '#9aa0a6' }}>
-            No ventures match. {ventures.length === 0
-              ? 'Create your first one to get started.'
-              : 'Try clearing the search or filter.'}
+      {!loading && !error && !needsAuth && ventures.length === 0 && (
+        <div style={{ ...card, padding: '2rem', maxWidth: 640, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ margin: '0 0 0.5rem' }}>Start your first venture</h2>
+          <p style={{ color: '#9aa0a6', margin: '0 0 1.1rem', lineHeight: 1.6 }}>
+            A venture is the home for one idea — its personas, research graph, validation
+            recommendation and build plan all live together. Foundry walks it from a raw idea to a
+            Proceed / Pivot / Kill decision you can defend.
           </p>
-          {ventures.length === 0 && <a href="/ventures/new" style={primaryBtn}>Create a venture</a>}
+          <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a href="/ventures/new" style={primaryBtn}>+ New venture</a>
+            <a href="/demo/faceless-crm" style={ghostBtn}>See a worked example →</a>
+          </div>
+        </div>
+      )}
+      {!loading && !error && ventures.length > 0 && filtered.length === 0 && (
+        <div style={{ ...card, textAlign: 'center', padding: '2rem' }}>
+          <p style={{ color: '#9aa0a6', margin: 0 }}>No ventures match. Try clearing the search or filter.</p>
         </div>
       )}
 
@@ -195,8 +210,17 @@ function ProgressBar({ label, value }: { label: string; value: number }) {
         <span>{label}</span><span>{value}%</span>
       </div>
       <div style={{ height: 4, background: '#2a2a2a', borderRadius: 2 }}>
-        <div style={{ height: '100%', width: `${value}%`, background: '#7aa3ff', borderRadius: 2 }} />
+        <div style={{ height: '100%', width: `${value}%`, background: '#8b7bf0', borderRadius: 2 }} />
       </div>
+    </div>
+  );
+}
+
+function StatTile({ label, value, accent = '#e8e8ea' }: { label: string; value: number | string; accent?: string }) {
+  return (
+    <div style={{ ...card, padding: '0.85rem 1rem', flex: '1 1 150px' }}>
+      <div style={{ fontSize: '1.5rem', fontWeight: 700, color: accent, lineHeight: 1.1 }}>{value}</div>
+      <div style={{ fontSize: '0.72rem', color: '#9aa0a6', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.2rem' }}>{label}</div>
     </div>
   );
 }
@@ -214,6 +238,14 @@ const inputStyle: React.CSSProperties = {
   border: '1px solid #2a2a2a', borderRadius: 6, fontSize: '0.9rem',
 };
 const primaryBtn: React.CSSProperties = {
-  padding: '0.5rem 0.85rem', background: '#7aa3ff', color: '#0b0b0e',
+  padding: '0.5rem 0.85rem', background: '#8b7bf0', color: '#fff',
   borderRadius: 6, fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem',
+};
+const ghostBtn: React.CSSProperties = {
+  padding: '0.5rem 0.85rem', background: 'transparent', color: '#cbd0d4',
+  border: '1px solid #34343c', borderRadius: 6, fontWeight: 600,
+  textDecoration: 'none', fontSize: '0.9rem',
+};
+const statStrip: React.CSSProperties = {
+  display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1.25rem',
 };

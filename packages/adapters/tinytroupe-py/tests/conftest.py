@@ -1,5 +1,5 @@
 """
-Ensure `src/` is on sys.path so tests can `import ventureos_tinytroupe.*`
+Ensure `src/` is on sys.path so tests can `import foundry_tinytroupe.*`
 without requiring `pip install -e .` first.
 """
 from __future__ import annotations

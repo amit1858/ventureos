@@ -1,12 +1,12 @@
 # Architecture Overview
 
-A public-facing summary of how VentureOS is put together. For the internal Sprint −1 architectural-intent document, see [`architecture.md`](architecture.md).
+A public-facing summary of how Foundry is put together. For the internal Sprint −1 architectural-intent document, see [`architecture.md`](architecture.md).
 
 ## Goals
 
 1. **Loose coupling to external engines.** TinyTroupe-style persona work and Graphify-inspired graph work can each be swapped or vendored without rewriting labs.
 2. **BYOK from day zero.** No subsystem imports a provider SDK directly. All vendor SDKs live behind adapter packages enforced by `lint:arch`.
-3. **Typed artifacts between phases.** Every lab consumes and produces JSON-Schema contracts from `@ventureos/contracts`. No free-form prompt chaining at lab boundaries.
+3. **Typed artifacts between phases.** Every lab consumes and produces JSON-Schema contracts from `@foundry/contracts`. No free-form prompt chaining at lab boundaries.
 4. **Async-first.** Long-running labs run as durable `VentureJob`s, not request/response.
 5. **Observability as code.** Every LLM call carries `trace_id`, `lab`, `agent`, `artifact_id`; cost and latency are recorded.
 6. **Single-tenant by default, multi-tenant by design.** Tenant ID is a first-class column where persistence exists.
@@ -67,12 +67,12 @@ packages/
 
 - `@octokit/*` imports only from `packages/adapters/github-ts/**`
 - vendor LLM SDKs only from their respective `packages/providers/**`
-- `apps/**` may import only `@ventureos/*` packages, never raw vendor SDKs
+- `apps/**` may import only `@foundry/*` packages, never raw vendor SDKs
 - labs may not import other labs directly — they communicate through artifacts
 
 ## Contracts-first
 
-Every lab boundary is a JSON Schema in `@ventureos/contracts`. The current major artifact types:
+Every lab boundary is a JSON Schema in `@foundry/contracts`. The current major artifact types:
 
 - `Brief`, `PersonaSet`, `CommitteeTranscript`
 - `ResearchGraph` (`nodes`, `edges`, `godNodes`, `contradictions`, `stats`)

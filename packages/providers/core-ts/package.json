@@ -1,5 +1,5 @@
 {
-  "name": "@ventureos/providers-core",
+  "name": "@foundry/providers-core",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ventureos/contracts": "workspace:*"
+    "@foundry/contracts": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.6.0",

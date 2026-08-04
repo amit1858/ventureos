@@ -1,9 +1,9 @@
-import type { ChatMessage } from '@ventureos/contracts';
+import type { ChatMessage } from '@foundry/contracts';
 
 import { EDGE_TYPES, NODE_TYPES } from './types';
 import type { GraphifyInput } from './types';
 
-const SYSTEM = `You are a research-graph extraction engine for VentureOS Graphify.
+const SYSTEM = `You are a research-graph extraction engine for Foundry Graphify.
 
 OUTPUT CONTRACT (NON-NEGOTIABLE):
 - Return a SINGLE JSON object — no prose, no markdown fences.

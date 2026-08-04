@@ -33,7 +33,7 @@ import type {
   VentureRecommendationEvaluation,
   VentureRisk,
   VentureScore,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 export type {
   BuyingCommitteeDeliberation,

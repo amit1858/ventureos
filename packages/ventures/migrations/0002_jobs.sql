@@ -1,4 +1,4 @@
--- VentureOS Sprint 2A.6 — VentureJob persistence.
+-- Foundry Sprint 2A.6 — VentureJob persistence.
 --
 -- Every long-running unit of work is a row here. Status transitions and
 -- observability fields (provider, model, duration, cost) are persisted as

@@ -8,21 +8,28 @@ export interface ModelPricing {
 }
 
 const PRICING: Record<string, ModelPricing> = {
+  // Gemini 2.x family (current).
+  'gemini-2.5-pro':          { inputUsdPer1k: 0.00125,  outputUsdPer1k: 0.01 },
+  'gemini-2.5-flash':        { inputUsdPer1k: 0.0003,   outputUsdPer1k: 0.0025 },
+  'gemini-2.5-flash-lite':   { inputUsdPer1k: 0.0001,   outputUsdPer1k: 0.0004 },
+  'gemini-2.0-flash':        { inputUsdPer1k: 0.0001,   outputUsdPer1k: 0.0004 },
+  'gemini-2.0-flash-exp':    { inputUsdPer1k: 0.0001,   outputUsdPer1k: 0.0004 },
+  'gemini-2.0-flash-lite':   { inputUsdPer1k: 0.000075, outputUsdPer1k: 0.0003 },
+  // Gemini 1.5 family (legacy; nearing Google EOL — kept for existing configs).
   'gemini-1.5-pro':         { inputUsdPer1k: 0.00125, outputUsdPer1k: 0.005 },
   'gemini-1.5-pro-latest':  { inputUsdPer1k: 0.00125, outputUsdPer1k: 0.005 },
   'gemini-1.5-flash':       { inputUsdPer1k: 0.000075, outputUsdPer1k: 0.0003 },
   'gemini-1.5-flash-latest':{ inputUsdPer1k: 0.000075, outputUsdPer1k: 0.0003 },
   'gemini-1.5-flash-8b':    { inputUsdPer1k: 0.0000375, outputUsdPer1k: 0.00015 },
-  'gemini-2.0-flash':       { inputUsdPer1k: 0.0001,  outputUsdPer1k: 0.0004 },
-  'gemini-2.0-flash-exp':   { inputUsdPer1k: 0.0001,  outputUsdPer1k: 0.0004 },
   'text-embedding-004':     { inputUsdPer1k: 0,       outputUsdPer1k: 0 },
 };
 
 export const KNOWN_MODELS: ReadonlyArray<string> = Object.freeze([
-  'gemini-1.5-pro-latest',
-  'gemini-1.5-flash-latest',
-  'gemini-1.5-flash-8b',
+  'gemini-2.5-flash',
+  'gemini-2.5-pro',
   'gemini-2.0-flash',
+  'gemini-1.5-flash-latest',
+  'gemini-1.5-pro-latest',
 ]);
 
 export function pricingFor(modelId: string): ModelPricing {

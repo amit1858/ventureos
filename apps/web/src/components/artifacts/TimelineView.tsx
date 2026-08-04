@@ -1,4 +1,4 @@
-import type { VentureTimelineEvent } from '@ventureos/contracts';
+import type { VentureTimelineEvent } from '@foundry/contracts';
 
 import { cx, EVENT_LABELS, fmtCostCents, fmtDuration, fmtTime, styles } from './helpers';
 

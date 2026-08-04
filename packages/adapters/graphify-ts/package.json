@@ -1,5 +1,5 @@
 {
-  "name": "@ventureos/adapter-graphify",
+  "name": "@foundry/adapter-graphify",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ventureos/contracts": "workspace:*"
+    "@foundry/contracts": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",

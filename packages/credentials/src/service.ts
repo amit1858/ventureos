@@ -14,8 +14,8 @@
  *   - puts secrets into audit metadata
  *   - logs the secret
  */
-import type { ProviderId } from '@ventureos/contracts';
-import { maskKey, validateKeyShape } from '@ventureos/security';
+import type { ProviderId } from '@foundry/contracts';
+import { maskKey, validateKeyShape } from '@foundry/security';
 
 import type { AuditLogger } from './audit';
 import { CredentialCrypto } from './crypto';

@@ -19,7 +19,7 @@
  */
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import type { GitHubRepoArtifactPayload } from '@ventureos/contracts';
+import type { GitHubRepoArtifactPayload } from '@foundry/contracts';
 
 import {
   decodeJobErrorMessage,
@@ -32,11 +32,11 @@ const FAKE_PAT_FRAGMENT = 'ghp_fakepatthatshouldneverberendered';
 
 describe('encodeJobErrorMessage / decodeJobErrorMessage', () => {
   it('roundtrips a code through the job error channel', () => {
-    const msg = encodeJobErrorMessage('repo_exists', 'Repository ventureos-x already exists.');
-    expect(msg).toBe('[repo_exists] Repository ventureos-x already exists.');
+    const msg = encodeJobErrorMessage('repo_exists', 'Repository foundry-x already exists.');
+    expect(msg).toBe('[repo_exists] Repository foundry-x already exists.');
     const decoded = decodeJobErrorMessage(msg);
     expect(decoded.reasonCode).toBe('repo_exists');
-    expect(decoded.reason).toBe('Repository ventureos-x already exists.');
+    expect(decoded.reason).toBe('Repository foundry-x already exists.');
   });
 
   it('falls back gracefully when the prefix is missing', () => {

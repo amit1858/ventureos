@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * VentureOS architectural boundary check.
+ * Foundry architectural boundary check.
  *
  * Rules (CI-enforced):
  *   1. Provider SDKs (`openai`, `@anthropic-ai/sdk`, `@google/generative-ai`, `@azure/openai`)
@@ -10,7 +10,7 @@
  *        - `graphify` / `graphifyy` → `packages/adapters/graphify-py/`
  *        - `@bradygaster/squad-cli` (Squad-OSS) → `packages/adapters/squad-ts/`
  *        - `@octokit/*` → `packages/adapters/github-ts/`
- *   3. App code (`apps/**`) may only import from `@ventureos/*` packages, never SDKs directly.
+ *   3. App code (`apps/**`) may only import from `@foundry/*` packages, never SDKs directly.
  *
  * Exits non-zero with a list of violations.
  */

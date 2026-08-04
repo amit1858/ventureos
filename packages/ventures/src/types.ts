@@ -1,5 +1,5 @@
 /**
- * @ventureos/ventures — Venture domain (Sprint 2A.5).
+ * @foundry/ventures — Venture domain (Sprint 2A.5).
  *
  * Re-exports the Venture-shaped contracts plus internal helper types.
  */
@@ -30,7 +30,7 @@ export type {
   VentureSpendSummary,
   GitHubRepoArtifactPayload,
   ProviderId,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import type {
   Venture,
@@ -39,7 +39,7 @@ import type {
   VentureArtifactKind,
   VentureTimelineEvent,
   VentureTimelineEventKind,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 /** Tenant-scoped query — every call MUST carry ownerId. */
 export interface OwnerScoped {

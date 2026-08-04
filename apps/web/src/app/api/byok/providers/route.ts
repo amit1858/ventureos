@@ -5,7 +5,7 @@
  * No route ever returns the plaintext secret, the encrypted envelope, or the fingerprint.
  */
 import { NextResponse } from 'next/server';
-import type { ProviderId } from '@ventureos/contracts';
+import type { ProviderId } from '@foundry/contracts';
 
 import { requireUser, UnauthorizedError } from '../../../../lib/auth';
 import { sanitizeApiError } from '../../../../lib/api-errors';

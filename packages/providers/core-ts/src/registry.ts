@@ -1,5 +1,5 @@
 import type { ProviderAdapter } from './types';
-import type { ProviderId } from '@ventureos/contracts';
+import type { ProviderId } from '@foundry/contracts';
 
 /**
  * Process-local registry. The router holds an instance and looks adapters up by `ProviderId`.

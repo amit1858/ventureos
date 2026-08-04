@@ -5,7 +5,7 @@ import { cx, styles } from './helpers';
 /**
  * Minimal, dependency-free, XSS-safe Markdown → React renderer.
  *
- * Supports the constructs the VentureOS renderers actually emit: ATX headings
+ * Supports the constructs the Foundry renderers actually emit: ATX headings
  * (#/##/###), paragraphs, nested unordered lists, `**bold**`, `_italic_` /
  * `*italic*`, `` `inline code` ``, blockquotes and horizontal rules. Output is
  * built from React elements only — never `dangerouslySetInnerHTML`.

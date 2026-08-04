@@ -8,7 +8,7 @@
  */
 import { useState } from 'react';
 
-import type { Venture } from '@ventureos/contracts';
+import type { Venture } from '@foundry/contracts';
 
 export default function NewVenturePage() {
   const [title, setTitle] = useState('');
@@ -44,7 +44,7 @@ export default function NewVenturePage() {
       <h1 style={{ marginTop: 0 }}>Create venture</h1>
       <p style={{ color: '#9aa0a6' }}>
         Name your venture. You can fill in the rest of the brief later — every persona,
-        research note, recommendation and BuildSquad pack will attach here.
+        research note, recommendation and build plan will attach here.
       </p>
       <Field label="Title *" value={title} onChange={setTitle} />
       <Field label="Description" value={description} onChange={setDescription} multi />

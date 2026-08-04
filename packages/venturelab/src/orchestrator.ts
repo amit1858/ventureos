@@ -8,7 +8,7 @@
  * Everything else (scoring, decision, risks, next steps, executive summary)
  * is deterministic. The LLM never produces a decision or an overall score.
  */
-import type { CallContext, ChatRequest, ChatResponse } from '@ventureos/contracts';
+import type { CallContext, ChatRequest, ChatResponse } from '@foundry/contracts';
 
 import { analyzeAll, dedupeEvidence } from './analyzers';
 import { computeConfidenceScore, computeOverallScore, decide } from './decision';

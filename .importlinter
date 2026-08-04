@@ -3,21 +3,21 @@
 
 [importlinter]
 root_packages =
-  ventureos_contracts
-  ventureos_providers
-  ventureos_security
-  ventureos_tinytroupe
-  ventureos_graphify
+  foundry_contracts
+  foundry_providers
+  foundry_security
+  foundry_tinytroupe
+  foundry_graphify
 
 # --- TinyTroupe must only be imported from the adapter package -------------
 [importlinter:contract:tinytroupe-isolation]
 name = TinyTroupe SDK is confined to its adapter
 type = forbidden
 source_modules =
-  ventureos_contracts
-  ventureos_providers
-  ventureos_security
-  ventureos_graphify
+  foundry_contracts
+  foundry_providers
+  foundry_security
+  foundry_graphify
 forbidden_modules =
   tinytroupe
 
@@ -26,10 +26,10 @@ forbidden_modules =
 name = Graphify SDK is confined to its adapter
 type = forbidden
 source_modules =
-  ventureos_contracts
-  ventureos_providers
-  ventureos_security
-  ventureos_tinytroupe
+  foundry_contracts
+  foundry_providers
+  foundry_security
+  foundry_tinytroupe
 forbidden_modules =
   graphify
   graphifyy
@@ -39,11 +39,11 @@ forbidden_modules =
 name = Python code must not import provider SDKs directly
 type = forbidden
 source_modules =
-  ventureos_contracts
-  ventureos_providers
-  ventureos_security
-  ventureos_tinytroupe
-  ventureos_graphify
+  foundry_contracts
+  foundry_providers
+  foundry_security
+  foundry_tinytroupe
+  foundry_graphify
 forbidden_modules =
   openai
   anthropic

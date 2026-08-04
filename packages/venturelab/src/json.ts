@@ -1,5 +1,5 @@
 /**
- * Tiny JSON helpers — duplicated from @ventureos/personalab to keep the
+ * Tiny JSON helpers — duplicated from @foundry/personalab to keep the
  * package boundary clean (personalab is a peer, not a parent).
  */
 export class VentureLabParseError extends Error {

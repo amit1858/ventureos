@@ -58,7 +58,7 @@ The orchestrator (`VentureLab.analyze`) makes **exactly two LLM calls** — both
 
 ## Package
 
-**`@ventureos/venturelab`** (`packages/venturelab/`):
+**`@foundry/venturelab`** (`packages/venturelab/`):
 
 | File | Role |
 | --- | --- |
@@ -119,7 +119,7 @@ Friction/risk are inverted before weighting (`100 − score`) so higher composit
 ## Exit criteria
 
 - [x] Contracts extended with full `VentureRecommendation` shape.
-- [x] `@ventureos/venturelab` builds clean (`tsc -p packages/venturelab/tsconfig.json`).
+- [x] `@foundry/venturelab` builds clean (`tsc -p packages/venturelab/tsconfig.json`).
 - [x] **20/20 tests pass** (`vitest run --root packages/venturelab`).
 - [x] Recommendation is deterministic given fixed inputs — re-running `synthesise()` on the same signals/assumptions yields identical output.
 - [x] LLM output is bounded to extraction; the decision, overall score, confidence, rationale, risks, and roadmap are all rule-engine output.

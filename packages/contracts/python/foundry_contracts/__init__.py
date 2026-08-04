@@ -1,4 +1,4 @@
-"""Hand-mirrored Pydantic models for VentureOS schemas. Keep in lockstep with src/types.ts."""
+"""Hand-mirrored Pydantic models for Foundry schemas. Keep in lockstep with src/types.ts."""
 
 from __future__ import annotations
 

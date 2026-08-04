@@ -1,5 +1,5 @@
 """
-VentureOS ↔ TinyTroupe adapter (Sprint 1D).
+Foundry ↔ TinyTroupe adapter (Sprint 1D).
 
 Architectural rules (enforced by scripts/check-import-boundaries.mjs):
   * `tinytroupe` may ONLY be imported inside this package.
@@ -39,7 +39,7 @@ class TinyTroupeRuntime:
 
     Methods accept already-validated dicts (brief + args) and return
     JSON-serialisable dicts that match the contract types declared in
-    `@ventureos/contracts` (PersonaLab*).
+    `@foundry/contracts` (PersonaLab*).
     """
 
     def __init__(self) -> None:
@@ -138,7 +138,7 @@ class TinyTroupeRuntime:
         challenges, responses, consensus) via `TinyWorld.broadcast` + `world.run(1)`.
         Each phase captures the new utterances each agent emits and converts
         them into the structured deliberation shape declared in
-        `@ventureos/contracts` (`BuyingCommitteeDeliberation`).
+        `@foundry/contracts` (`BuyingCommitteeDeliberation`).
 
         The decision is derived from the FINAL consensus positions, not from
         keyword scoring over the whole transcript.

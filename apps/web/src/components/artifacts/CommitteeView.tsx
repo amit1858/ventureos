@@ -1,4 +1,4 @@
-import type { BuyingCommitteeTranscript, PersonaLabPersona } from '@ventureos/contracts';
+import type { BuyingCommitteeTranscript, PersonaLabPersona } from '@foundry/contracts';
 
 import { cx, POSITION_LABELS, positionClass, prob, stanceClass, styles } from './helpers';
 import { Badge, DecisionBadge } from './primitives';

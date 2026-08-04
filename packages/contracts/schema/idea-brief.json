@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://ventureos.dev/schema/idea-brief.json",
+  "$id": "https://foundry.dev/schema/idea-brief.json",
   "title": "IdeaBrief",
   "type": "object",
   "additionalProperties": false,

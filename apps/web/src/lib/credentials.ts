@@ -25,29 +25,30 @@ import {
   SupabaseCredentialStore,
   type ProviderTestPromptRunner,
   type ProviderValidator,
-} from '@ventureos/credentials';
-import type { ProviderId } from '@ventureos/contracts';
-import { ProviderError } from '@ventureos/providers-core';
-import { OpenAiAdapter, OPENAI_KNOWN_MODELS } from '@ventureos/providers-openai';
-import { AnthropicAdapter, ANTHROPIC_KNOWN_MODELS } from '@ventureos/providers-anthropic';
-import { GeminiAdapter, GEMINI_KNOWN_MODELS } from '@ventureos/providers-gemini';
-import { AzureOpenAiAdapter, AZURE_OPENAI_KNOWN_MODELS } from '@ventureos/providers-azure-openai';
-import { validatePat as validateGitHubPat } from '@ventureos/adapter-github';
+} from '@foundry/credentials';
+import type { ProviderId } from '@foundry/contracts';
+import { ProviderError, ProviderModelNotFoundError } from '@foundry/providers-core';
+import { OpenAiAdapter, OPENAI_KNOWN_MODELS } from '@foundry/providers-openai';
+import { AnthropicAdapter, ANTHROPIC_KNOWN_MODELS } from '@foundry/providers-anthropic';
+import { GeminiAdapter, GEMINI_KNOWN_MODELS } from '@foundry/providers-gemini';
+import { AzureOpenAiAdapter, AZURE_OPENAI_KNOWN_MODELS } from '@foundry/providers-azure-openai';
+import { validatePat as validateGitHubPat } from '@foundry/adapter-github';
 
 import { serviceRoleClient } from './supabase/server';
+import { isValidatedModel, missingCredentialReason, unsupportedModelReason } from './model-support';
 
 declare global {
   // eslint-disable-next-line no-var
-  var __ventureos_credential_service: CredentialService | undefined;
+  var __foundry_credential_service: CredentialService | undefined;
   // eslint-disable-next-line no-var
-  var __ventureos_credential_audit: InMemoryAuditLogger | SupabaseAuditLogger | undefined;
+  var __foundry_credential_audit: InMemoryAuditLogger | SupabaseAuditLogger | undefined;
 }
 
 export function getCredentialService(): CredentialService {
-  if (globalThis.__ventureos_credential_service) return globalThis.__ventureos_credential_service;
+  if (globalThis.__foundry_credential_service) return globalThis.__foundry_credential_service;
   const crypto = buildCrypto();
   const { store, audit } = buildBackends();
-  globalThis.__ventureos_credential_audit = audit;
+  globalThis.__foundry_credential_audit = audit;
   const service = new CredentialService({
     store,
     audit,
@@ -56,7 +57,7 @@ export function getCredentialService(): CredentialService {
     testPromptRunner,
     modelCatalog,
   });
-  globalThis.__ventureos_credential_service = service;
+  globalThis.__foundry_credential_service = service;
   return service;
 }
 
@@ -111,7 +112,17 @@ const testPromptRunner: ProviderTestPromptRunner = async ({
   providerType, secret, config, modelId, prompt,
 }) => {
   const adapter = buildAdapter(providerType, config);
-  if (!adapter) return { ok: false, reason: `Test prompt for '${providerType}' is not implemented.` };
+  if (!adapter) {
+    if (providerType === 'azure_openai') {
+      return { ok: false, reason: missingCredentialReason(providerType, config) };
+    }
+    return { ok: false, reason: `Test prompt for '${providerType}' is not implemented.` };
+  }
+  // Graceful degradation: reject un-validated models with actionable guidance
+  // instead of a raw provider 400/404 later in the call.
+  if (!isValidatedModel(providerType, modelId)) {
+    return { ok: false, reason: unsupportedModelReason(modelId) };
+  }
   const key = { id: 'transient', provider: providerType, secret };
   try {
     const res = await adapter.chat(
@@ -133,6 +144,9 @@ const testPromptRunner: ProviderTestPromptRunner = async ({
       finishReason: res.finishReason,
     };
   } catch (e) {
+    if (e instanceof ProviderModelNotFoundError) {
+      return { ok: false, reason: unsupportedModelReason(modelId) };
+    }
     return { ok: false, reason: e instanceof ProviderError ? e.message : 'Test prompt failed.' };
   }
 };

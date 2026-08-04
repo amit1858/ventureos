@@ -34,7 +34,7 @@ import type {
   ResearchGraph,
   StoryPriority,
   VentureRecommendation,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 export type {
   BuildSquadAgentCritique,

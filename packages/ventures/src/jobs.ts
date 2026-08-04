@@ -1,7 +1,7 @@
 /**
  * Job orchestration for the Venture domain (Sprint 2A.6).
  *
- * Every long-running unit of work in VentureOS is a VentureJob. Jobs persist
+ * Every long-running unit of work in Foundry is a VentureJob. Jobs persist
  * their full lifecycle (queued → running → succeeded|failed|cancelled) so the
  * workspace survives a process restart and so the UI never has to render a
  * mystery spinner.
@@ -19,7 +19,7 @@ import type {
   VentureJobStatus,
   VentureTimelineEvent,
   VentureTimelineEventKind,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import type { VentureService } from './service.js';
 

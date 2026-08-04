@@ -1,6 +1,6 @@
-# VentureOS — 5-Minute Demo Script (Faceless CRM)
+# Foundry — 5-Minute Demo Script (Faceless CRM)
 
-This is the recommended walkthrough for showing VentureOS end-to-end **without any API
+This is the recommended walkthrough for showing Foundry end-to-end **without any API
 keys**. It maps 1:1 to the Demo Mode page at **`/demo/faceless-crm`**.
 
 > Demo Mode is read-only and seeded. It never calls a provider, Supabase or GitHub.
@@ -19,7 +19,7 @@ keys**. It maps 1:1 to the Demo Mode page at **`/demo/faceless-crm`**.
 ## The script (~5 minutes)
 
 ### 0:00 — Homepage (15s)
-> "VentureOS turns a raw idea into a validated, build-ready venture. It uses an agent
+> "Foundry turns a raw idea into a validated, build-ready venture. It uses an agent
 > swarm — synthetic personas, a buying committee, a research graph, a validation engine
 > and a build squad — to decide *what to build before you build it*. It's BYOK-first:
 > your keys, encrypted, server-side."
@@ -77,7 +77,7 @@ Scroll to **Evaluation report**, then **GitHub export**.
 
 ### 5:00 — Close (10s)
 > "Every step you saw is an agent in a swarm, every artifact is traceable to the job and model
-> that produced it, and none of it required an API key to demonstrate. That's VentureOS."
+> that produced it, and none of it required an API key to demonstrate. That's Foundry."
 
 ---
 
@@ -98,7 +98,7 @@ Scroll to **Evaluation report**, then **GitHub export**.
 ## Talking points if asked
 
 - **"Is this real or mocked?"** Demo Mode is seeded for a key-free walkthrough. The artifacts
-  conform to the *same* `@ventureos/contracts` types the live labs emit, and the evaluation
+  conform to the *same* `@foundry/contracts` types the live labs emit, and the evaluation
   report and export files are produced by the *same* renderers Real Mode uses.
 - **"How do you handle secrets?"** BYOK keys are encrypted, used only server-side, never sent to
   the browser or logged, and never included in a GitHub export. See `docs/security.md` and
@@ -114,7 +114,7 @@ For a quick reviewer pass. Skip everything optional.
 
 | Time | URL | Talk track |
 |---|---|---|
-| 0:00 | `/` | "VentureOS is a multi-agent venture operating system. Persona, committee, research-graph, validation, BuildSquad and evaluation agents collaborate on a shared venture." |
+| 0:00 | `/` | "Foundry is a multi-agent venture operating system. Persona, committee, research-graph, validation, BuildSquad and evaluation agents collaborate on a shared venture." |
 | 0:30 | `/demo/faceless-crm` | "Faceless CRM for SMB — every artifact below was produced by an agent group. No keys, no network calls." |
 | 1:00 | scroll to Buying Committee | "Five synthetic personas deliberated, two changed positions, the committee converged on Pilot." |
 | 1:45 | scroll to Research Graph | "The graph surfaces god-nodes and contradictions explicitly." |

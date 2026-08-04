@@ -1,4 +1,4 @@
-import type { LogicalModel, ProviderConfig, ProviderRoute } from '@ventureos/contracts';
+import type { LogicalModel, ProviderConfig, ProviderRoute } from '@foundry/contracts';
 import type { RouteResolver } from './types';
 import { ProviderUnavailableError } from './errors';
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { ChatRequest, ChatResponse, DecryptedKey, ProviderRoute } from '@ventureos/contracts';
+import type { ChatRequest, ChatResponse, DecryptedKey, ProviderRoute } from '@foundry/contracts';
 import {
   InMemoryBudgetGuard,
   ProviderAuthError,

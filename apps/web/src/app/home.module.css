@@ -1,9 +1,8 @@
-/* VentureOS homepage — calm, product-led (Linear/Vercel feel). 960px shell. */
+/* Foundry homepage — calm, product-led, lots of whitespace. */
 
 .page {
   --accent: #8b7bf0;
   --accent-2: #7aa3ff;
-  --green: #56c596;
   --card: #16161a;
   --card-2: #1b1b20;
   --border: #26262c;
@@ -13,12 +12,13 @@
   --faint: #71767d;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 4rem;
   line-height: 1.55;
+  padding-bottom: 1rem;
 }
 
 /* Hero */
-.hero { display: flex; flex-direction: column; gap: 1.2rem; padding: 1.5rem 0 0.5rem; }
+.hero { display: flex; flex-direction: column; gap: 1.1rem; padding: 2rem 0 0.5rem; }
 .eyebrow {
   font-size: 0.74rem;
   letter-spacing: 0.14em;
@@ -28,20 +28,35 @@
   margin: 0;
 }
 .title {
-  font-size: 2.6rem;
-  line-height: 1.08;
+  font-size: 2.9rem;
+  line-height: 1.06;
   margin: 0;
   font-weight: 800;
   letter-spacing: -0.02em;
-  max-width: 18ch;
+  max-width: 16ch;
 }
-.subtitle { font-size: 1.12rem; color: var(--muted); margin: 0; max-width: 60ch; }
-.ctaRow { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 0.4rem; }
+.subtitle { font-size: 1.14rem; color: var(--muted); margin: 0; max-width: 62ch; }
+
+.chips { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.3rem; }
+.chip {
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-2);
+  background: var(--card);
+}
+.chipArrow { color: var(--faint); font-weight: 700; }
+
+.ctaRow { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 0.6rem; }
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.7rem 1.2rem;
+  padding: 0.72rem 1.25rem;
   border-radius: 10px;
   font-size: 0.95rem;
   font-weight: 600;
@@ -54,225 +69,82 @@
 .btn:hover { border-color: #4a4a55; background: var(--card-2); }
 .btnPrimary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .btnPrimary:hover { background: #7a68ee; border-color: #7a68ee; }
-
-/* Workflow strip */
-.workflow {
-  display: flex;
-  align-items: stretch;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-.flowStep {
-  flex: 1;
-  min-width: 120px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--card);
-  padding: 0.85rem 0.9rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-.flowIdx { font-size: 0.72rem; color: var(--accent); font-weight: 700; }
-.flowLabel { font-size: 0.9rem; font-weight: 600; }
-.flowDesc { font-size: 0.78rem; color: var(--muted); }
+.reassure { font-size: 0.85rem; color: var(--faint); margin: 0.1rem 0 0; }
 
 /* Generic section */
-.section { display: flex; flex-direction: column; gap: 1.1rem; }
+.section { display: flex; flex-direction: column; gap: 1.3rem; }
 .kicker { font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); font-weight: 700; margin: 0; }
-.h2 { font-size: 1.5rem; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
-.lead { color: var(--muted); margin: 0; max-width: 70ch; }
+.h2 { font-size: 1.6rem; font-weight: 700; margin: 0 0 0.4rem; letter-spacing: -0.01em; }
+.lead { color: var(--muted); margin: 0; max-width: 72ch; }
 
-/* Differentiators */
+/* Operating model — four phases */
+.modelGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.9rem; }
+.modelCard {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.modelPhase {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Differentiators / feature cards */
 .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
 .feature {
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--card);
-  padding: 1.1rem;
+  padding: 1.2rem;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
-.featureTitle { font-size: 1rem; font-weight: 700; margin: 0; }
-.featureDesc { font-size: 0.86rem; color: var(--muted); margin: 0; }
+.featureTitle { font-size: 1.02rem; font-weight: 700; margin: 0; }
+.featureDesc { font-size: 0.88rem; color: var(--muted); margin: 0; line-height: 1.5; }
 
-/* Demo scenario / security cards */
-.split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.panel {
+/* Workflow strip */
+.workflow { display: flex; align-items: stretch; gap: 0.5rem; flex-wrap: wrap; }
+.flowStep {
+  flex: 1;
+  min-width: 140px;
   border: 1px solid var(--border);
-  border-radius: 14px;
-  background: linear-gradient(135deg, #17171c, #141418);
-  padding: 1.4rem;
+  border-radius: 10px;
+  background: var(--card);
+  padding: 0.9rem;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  align-items: flex-start;
+  gap: 0.28rem;
 }
-.panelAccent { border-color: rgba(139, 123, 240, 0.4); }
-.panelTitle { font-size: 1.15rem; font-weight: 700; margin: 0; }
-.panelText { font-size: 0.9rem; color: var(--muted); margin: 0; }
-.bullets { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.35rem; color: var(--text); font-size: 0.88rem; }
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #c8bfff;
-  background: rgba(139, 123, 240, 0.14);
-  border: 1px solid rgba(139, 123, 240, 0.4);
-}
+.flowIdx { font-size: 0.72rem; color: var(--accent); font-weight: 700; }
+.flowLabel { font-size: 0.92rem; font-weight: 600; }
+.flowDesc { font-size: 0.78rem; color: var(--muted); }
 
-/* Pipeline table — agent role · artifact · signal per step */
-.pipelineTable {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--card);
-}
-.pipeRow {
-  display: grid;
-  grid-template-columns: 1.2fr 1.4fr 1.6fr 1.4fr;
-  gap: 0.8rem;
-  padding: 0.7rem 0.9rem;
-  border-top: 1px solid var(--border);
-  font-size: 0.86rem;
-  align-items: baseline;
-}
-.pipeRow:first-child { border-top: 0; }
-.pipeHead {
-  background: var(--card-2);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--faint);
-  font-weight: 700;
-}
-.pipeStep { font-weight: 700; color: var(--text); }
-.pipeMuted { color: var(--muted); }
-
-/* Production points */
-.prodList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.6rem 1rem;
-}
-.prodItem {
-  position: relative;
-  padding-left: 1.1rem;
-  font-size: 0.9rem;
-  color: var(--text);
-  line-height: 1.45;
-}
-.prodItem::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.55rem;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-/* Agent Swarm flow strip */
-.swarmStrip {
+/* Closing CTA band */
+.ctaBand {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  padding: 1rem 1.2rem;
-  border: 1px dashed rgba(139, 123, 240, 0.5);
-  border-radius: 12px;
-  background: rgba(139, 123, 240, 0.05);
+  border: 1px solid rgba(139, 123, 240, 0.32);
+  border-radius: 16px;
+  padding: 1.8rem 2rem;
+  background: linear-gradient(135deg, rgba(139, 123, 240, 0.10), rgba(122, 163, 255, 0.06)), var(--card);
 }
-.swarmCell {
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--text);
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  background: var(--card);
-  border: 1px solid var(--border-2);
-}
-.swarmArrow { color: var(--accent); font-weight: 700; }
 
-/* Judge guidance card — anchors the hackathon judging path on the homepage. */
-.judgeCard {
-  position: relative;
-  border-radius: 14px;
-  padding: 1.4rem 1.5rem;
-  background:
-    linear-gradient(135deg, rgba(122, 163, 255, 0.10), rgba(139, 123, 240, 0.08)),
-    var(--card);
-  border: 1px solid rgba(122, 163, 255, 0.32);
-  box-shadow: 0 0 0 1px rgba(122, 163, 255, 0.04) inset;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
+@media (max-width: 860px) {
+  .modelGrid { grid-template-columns: 1fr 1fr; }
 }
-.judgeHead {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  flex-wrap: wrap;
-}
-.judgeBadge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 0.22rem 0.6rem;
-  border-radius: 999px;
-  color: #cfe1ff;
-  background: rgba(122, 163, 255, 0.16);
-  border: 1px solid rgba(122, 163, 255, 0.45);
-}
-.judgeTitle {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: -0.01em;
-}
-.judgeBody {
-  font-size: 0.92rem;
-  color: var(--text);
-  margin: 0;
-  max-width: 78ch;
-  line-height: 1.55;
-}
-.judgeCtaRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.7rem;
-  margin-top: 0.35rem;
-}
-.judgeMutedLink {
-  color: var(--muted);
-  font-size: 0.85rem;
-  text-decoration: none;
-  border-bottom: 1px dashed var(--border-2);
-  padding-bottom: 1px;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-.judgeMutedLink:hover { color: var(--text); border-bottom-color: var(--accent); }
-
 @media (max-width: 760px) {
-  .title { font-size: 2rem; }
+  .title { font-size: 2.1rem; }
   .grid { grid-template-columns: 1fr; }
-  .split { grid-template-columns: 1fr; }
-  .pipeRow { grid-template-columns: 1fr; gap: 0.25rem; }
-  .pipeHead { display: none; }
-  .prodList { grid-template-columns: 1fr; }
+  .modelGrid { grid-template-columns: 1fr; }
 }

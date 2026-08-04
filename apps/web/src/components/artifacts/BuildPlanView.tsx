@@ -1,5 +1,5 @@
-import { renderPack } from '@ventureos/buildsquad';
-import type { BuildSquadArtifactPack } from '@ventureos/contracts';
+import { renderPack } from '@foundry/buildsquad';
+import type { BuildSquadArtifactPack } from '@foundry/contracts';
 
 import { cx, styles } from './helpers';
 import { Badge } from './primitives';

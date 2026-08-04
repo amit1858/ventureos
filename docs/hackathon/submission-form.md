@@ -8,7 +8,7 @@
 ## Project Title
 
 ```
-VentureOS
+Foundry
 ```
 
 ---
@@ -24,7 +24,7 @@ AI-native multi-agent venture operating system that turns raw ideas into validat
 ## Short description (≤ 280 chars)
 
 ```
-VentureOS gives every idea an agent swarm. Synthetic personas, a buying committee, a research graph, validation, BuildSquad planning and an evaluation agent collaborate to turn a raw idea into a validated, GitHub-ready venture — before a single line of code ships.
+Foundry gives every idea an agent swarm. Synthetic personas, a buying committee, a research graph, validation, BuildSquad planning and an evaluation agent collaborate to turn a raw idea into a validated, GitHub-ready venture — before a single line of code ships.
 ```
 
 ---
@@ -32,7 +32,7 @@ VentureOS gives every idea an agent swarm. Synthetic personas, a buying committe
 ## Long description (judge-facing)
 
 ```
-VentureOS helps founders and product teams decide what to build before they build it. It uses a swarm of specialized AI agents to:
+Foundry helps founders and product teams decide what to build before they build it. It uses a swarm of specialized AI agents to:
 
 - simulate synthetic customers (PersonaLab)
 - run a buying committee that debates and challenges assumptions
@@ -62,7 +62,7 @@ Agent Swarms
 ## Why this fits Agent Swarms
 
 ```
-VentureOS is not a single chatbot. It coordinates multiple specialized agents across the venture lifecycle: persona agents, a buying-committee agent, research-graph agents, a venture-validation agent, BuildSquad planning agents and an evaluation agent.
+Foundry is not a single chatbot. It coordinates multiple specialized agents across the venture lifecycle: persona agents, a buying-committee agent, research-graph agents, a venture-validation agent, BuildSquad planning agents and an evaluation agent.
 
 Each step produces a typed, versioned artifact the next agent reads. The agents share one Venture context, run as VentureJobs with full provenance, and surface their decisions in an auditable Evaluation Report. Provider keys are user-owned (BYOK), so the same swarm runs against any LLM (OpenAI, Anthropic, Gemini, Azure OpenAI) without lock-in.
 
@@ -90,7 +90,7 @@ https://ventureos-dun.vercel.app/demo/faceless-crm
 ## GitHub repository
 
 ```
-https://github.com/amit1858/ventureos
+https://github.com/amit1858/foundry-venture-os
 ```
 
 ---
@@ -108,7 +108,7 @@ https://github.com/amit1858/ventureos
 ## Submission deck (PDF)
 
 ```
-docs/hackathon/VentureOS-Submission-Deck.pdf
+docs/archive/ventureos-submission/VentureOS-Submission-Deck.pdf
 ```
 
 ---
@@ -124,7 +124,7 @@ Amit Pandey — solo build
 ## Tagged release
 
 ```
-v1.0-submission — https://github.com/amit1858/ventureos/releases/tag/v1.0-submission
+v1.0-submission — https://github.com/amit1858/foundry-venture-os/releases/tag/v1.0-submission
 ```
 
 ---
@@ -156,7 +156,7 @@ Note: TinyTroupe / Graphify adapters are scaffolded; full Python runtime parity 
 ## Notable engineering controls (for judges)
 
 ```
-- Contracts-first architecture — every artifact is a typed JSON contract in @ventureos/contracts
+- Contracts-first architecture — every artifact is a typed JSON contract in @foundry/contracts
 - VentureJob async execution primitive with timeline, provenance, retries and cancellation
 - import-boundary checks (pnpm lint:arch) keep vendor SDKs out of app code
 - Sanitized API errors — no provider keys, tokens or stack traces leak in HTTP responses
@@ -192,14 +192,14 @@ Real Mode requires Google sign-in. The deployed app has an email allowlist; to t
 
 ```
 GitHub: https://github.com/amit1858
-Repo issues: https://github.com/amit1858/ventureos/issues
+Repo issues: https://github.com/amit1858/foundry-venture-os/issues
 ```
 
 ---
 
 ## Final pre-submission checklist
 
-- [x] GitHub repo is public (`amit1858/ventureos`)
+- [x] GitHub repo is public (`amit1858/foundry-venture-os`)
 - [x] Live app works in incognito (`https://ventureos-dun.vercel.app`)
 - [x] Zero-key demo works in incognito (`/demo/faceless-crm`)
 - [x] Submission deck is under 20 MB (current: ~0.7 MB PDF, ~1.8 MB PPTX)

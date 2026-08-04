@@ -1,6 +1,6 @@
 # BYOK & Security
 
-VentureOS is a **Bring-Your-Own-Key** product. We never ship our own provider credentials, never persist user keys in plaintext, and never expose any credential to the browser.
+Foundry is a **Bring-Your-Own-Key** product. We never ship our own provider credentials, never persist user keys in plaintext, and never expose any credential to the browser.
 
 This is the security model.
 
@@ -71,7 +71,7 @@ If the export fails, the user gets a stable failure code (`repo_exists`, `invali
 
 ## Workspace identity (auth model)
 
-VentureOS supports three workspace identity sources in production. The server
+Foundry supports three workspace identity sources in production. The server
 resolves them in this order — first match wins:
 
 1. **Real Supabase session (Google sign-in).** If `NEXT_PUBLIC_SUPABASE_URL`
@@ -84,7 +84,7 @@ resolves them in this order — first match wins:
    `VENTUREOS_ALPHA_ACCESS=true` is set on the server AND the visitor has
    clicked **Continue to Alpha Workspace** on `/access` (which sets the
    `ventureos_alpha_access=1` HttpOnly cookie), the server resolves them as
-   the shared `alpha-user` identity (`alpha@ventureos.local`). Both pieces
+   the shared `alpha-user` identity (`alpha@foundry.local`). Both pieces
    are required — env alone or cookie alone fails closed.
 3. **Local dev cookie** — `vos_dev_user` JSON cookie. Honoured **only** when
    `NODE_ENV !== 'production'`. The deployed app cannot be unlocked with it

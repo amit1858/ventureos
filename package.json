@@ -1,8 +1,9 @@
 {
-  "name": "ventureos",
+  "name": "foundry",
   "private": true,
-  "version": "0.0.0",
-  "description": "VentureOS — AI-native venture incubation platform (PersonaLab · VentureLab · BuildSquad)",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "Foundry — an AI-native Venture Operating System (PersonaLab · VentureLab · BuildSquad)",
   "packageManager": "pnpm@9.12.0",
   "engines": {
     "node": ">=20.0.0",

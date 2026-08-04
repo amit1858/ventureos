@@ -7,7 +7,7 @@
  */
 import { NextResponse } from 'next/server';
 
-import type { VentureArtifactKind } from '@ventureos/contracts';
+import type { VentureArtifactKind } from '@foundry/contracts';
 
 import { requireUser, UnauthorizedError } from '../../../../../lib/auth';
 import { sanitizeApiError } from '../../../../../lib/api-errors';

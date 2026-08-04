@@ -14,21 +14,23 @@
  */
 import 'server-only';
 
-import type { ProviderId, ChatRequest, ChatResponse, CallContext } from '@ventureos/contracts';
+import type { ProviderId, ChatRequest, ChatResponse, CallContext } from '@foundry/contracts';
 import {
   PersonaLab,
+  type GenerationTelemetry,
   type PersonaLabBrief,
   type PersonaLabPersona,
   type PersonaLabOptions,
-} from '@ventureos/personalab';
-import { ProviderError } from '@ventureos/providers-core';
-import { OpenAiAdapter } from '@ventureos/providers-openai';
-import { AnthropicAdapter } from '@ventureos/providers-anthropic';
-import { GeminiAdapter } from '@ventureos/providers-gemini';
-import { AzureOpenAiAdapter } from '@ventureos/providers-azure-openai';
+} from '@foundry/personalab';
+import { ProviderError, ProviderModelNotFoundError } from '@foundry/providers-core';
+import { OpenAiAdapter } from '@foundry/providers-openai';
+import { AnthropicAdapter } from '@foundry/providers-anthropic';
+import { GeminiAdapter } from '@foundry/providers-gemini';
+import { AzureOpenAiAdapter } from '@foundry/providers-azure-openai';
 
 import { getCredentialService } from './credentials';
 import { isTinyTroupeBridgeEnabled, runTinyTroupeBridge } from './tinytroupe-bridge';
+import { isValidatedModel, missingCredentialReason, unsupportedModelReason } from './model-support';
 
 export type PersonaLabAction =
   | 'generatePersonas'
@@ -71,6 +73,11 @@ export interface RunPersonaLabInput {
   offerSummary?: string;
   transcripts?: unknown[];
   n?: number;
+  /**
+   * Optional per-generation telemetry sink. The job layer wires this to record
+   * real token usage/cost and structured-output diagnostics (repair/retry).
+   */
+  onTelemetry?: (telemetry: GenerationTelemetry) => void;
 }
 
 export type PersonaLabResult =
@@ -135,7 +142,7 @@ export async function runPersonaLabAction(input: RunPersonaLabInput): Promise<Pe
         tenantId: input.userId,
         traceId: traceId(input),
       };
-      const lab = new PersonaLab(chat, buildOptions(input, ctx));
+      const lab = new PersonaLab(chat, buildOptions(input, ctx, providerType));
 
       switch (input.action) {
         case 'generatePersonas':
@@ -181,10 +188,16 @@ export async function runPersonaLabAction(input: RunPersonaLabInput): Promise<Pe
   return { ok: true, data: used.value };
 }
 
-function buildOptions(input: RunPersonaLabInput, ctx: CallContext): PersonaLabOptions {
+function buildOptions(
+  input: RunPersonaLabInput,
+  ctx: CallContext,
+  provider?: ProviderId,
+): PersonaLabOptions {
   return {
     model: input.modelId,
     ctx,
+    ...(provider ? { provider } : {}),
+    ...(input.onTelemetry ? { onTelemetry: input.onTelemetry } : {}),
   };
 }
 
@@ -237,13 +250,25 @@ function buildChatFn(
 ) {
   const adapter = buildAdapter(providerType, config);
   if (!adapter) {
+    const reason = missingCredentialReason(providerType, config);
     return async (): Promise<ChatResponse> => {
-      throw new ProviderError(`Provider '${providerType}' is not supported by PersonaLab.`);
+      throw new ProviderError(reason);
     };
   }
   const decrypted = { id: keyId, provider: providerType, secret };
   return async (req: ChatRequest): Promise<ChatResponse> => {
-    return adapter.chat(req, decrypted, typeof req.model === 'string' ? req.model : 'default');
+    const model = typeof req.model === 'string' ? req.model : 'default';
+    if (!isValidatedModel(providerType, model)) {
+      throw new ProviderError(unsupportedModelReason(model));
+    }
+    try {
+      return await adapter.chat(req, decrypted, model);
+    } catch (e) {
+      if (e instanceof ProviderModelNotFoundError) {
+        throw new ProviderError(unsupportedModelReason(model));
+      }
+      throw e;
+    }
   };
 }
 

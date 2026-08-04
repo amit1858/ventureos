@@ -6,8 +6,8 @@ import { ReadinessRing } from '../../components/demo/ReadinessRing';
 import styles from '../../components/demo/demo.module.css';
 
 export const metadata: Metadata = {
-  title: 'Demo Mode · VentureOS',
-  description: 'Explore a fully-seeded VentureOS venture end-to-end — no API keys required.',
+  title: 'Demo Mode',
+  description: 'Explore a fully-seeded Foundry venture end-to-end — no API keys required.',
 };
 
 export default function DemoIndexPage() {
@@ -18,7 +18,7 @@ export default function DemoIndexPage() {
       <div className={styles.banner}>
         <span className={styles.bannerDot} />
         <span className={styles.bannerText}>
-          <strong>Demo Mode</strong> — explore VentureOS end-to-end with seeded data. No OpenAI, Anthropic,
+          <strong>Demo Mode</strong> — explore Foundry end-to-end with seeded data. No OpenAI, Anthropic,
           Supabase or GitHub keys required.
         </span>
       </div>
@@ -28,8 +28,8 @@ export default function DemoIndexPage() {
           <span className={styles.sectionKicker}>Demo Mode</span>
           <h1 className={styles.sectionTitle}>See a venture taken from idea to build-ready</h1>
           <p className={styles.sectionDesc}>
-            Each demo is a real VentureOS venture that has already been driven through every lab —
-            PersonaLab, the buying committee, the research graph, VentureLab validation, BuildSquad
+            Each demo is a real Foundry venture that has already been driven end to end —
+            persona research, the buying committee, the research graph, validation, build
             planning, the evaluation report and a simulated GitHub export. Open one to walk the entire
             pipeline. When you&apos;re ready, Real Mode runs the same flow on your own idea with your BYOK keys.
           </p>

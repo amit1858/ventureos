@@ -1,4 +1,4 @@
-# VentureOS — Security Architecture
+# Foundry — Security Architecture
 
 > Sprint −1 deliverable. Threat model + controls. Not an implementation spec.
 

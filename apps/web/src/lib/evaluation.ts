@@ -3,14 +3,14 @@
  *
  * Renders the EvaluationReport artifact + EVALUATION_REPORT.md directly in the
  * browser from already-loaded venture artifacts, using the SAME pure renderer
- * Real Mode's GitHub export uses (`@ventureos/buildsquad`). The `/api/evaluation/*`
+ * Real Mode's GitHub export uses (`@foundry/buildsquad`). The `/api/evaluation/*`
  * routes ship as 501 stubs (Sprint 2B), so the workspace renders evaluation
  * locally — no extra round-trip, no server work, and byte-for-byte identical to
  * what an export would write.
  *
  * Pure: no I/O, no secrets, no provider SDKs.
  */
-import { renderEvaluationReport } from '@ventureos/buildsquad';
+import { renderEvaluationReport } from '@foundry/buildsquad';
 import type {
   BuildSquadArtifactPack,
   BuyingCommitteeTranscript,
@@ -21,7 +21,7 @@ import type {
   VentureArtifactKind,
   VentureReadinessScore,
   VentureRecommendation,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 export interface BuildEvaluationInput {
   venture: Venture;

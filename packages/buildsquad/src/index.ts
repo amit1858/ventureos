@@ -1,5 +1,5 @@
 /**
- * @ventureos/buildsquad — public surface.
+ * @foundry/buildsquad — public surface.
  */
 export * from './types';
 export {

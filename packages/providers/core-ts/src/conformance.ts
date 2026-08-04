@@ -13,7 +13,7 @@
  * Usage from an adapter test file:
  *
  *   ```ts
- *   import { runProviderConformance } from '@ventureos/providers-core/conformance';
+ *   import { runProviderConformance } from '@foundry/providers-core/conformance';
  *
  *   runProviderConformance({
  *     name: 'OpenAiAdapter',
@@ -29,7 +29,7 @@ import type {
   ChatResponse,
   DecryptedKey,
   ProviderId,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import type { ProviderAdapter } from './types';
 

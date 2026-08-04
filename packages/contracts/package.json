@@ -1,5 +1,5 @@
 {
-  "name": "@ventureos/contracts",
+  "name": "@foundry/contracts",
   "version": "0.0.0",
   "private": true,
   "type": "module",

@@ -16,7 +16,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // 30 days. Short-lived enough that a forgotten cookie eventually expires;
-// long enough that judges can come back next day without re-clicking.
+// long enough that users can come back the next day without re-clicking.
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 
 export async function POST(request: Request): Promise<Response> {

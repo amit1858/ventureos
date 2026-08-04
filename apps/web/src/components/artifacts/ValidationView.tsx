@@ -1,4 +1,4 @@
-import type { VentureRecommendation } from '@ventureos/contracts';
+import type { VentureRecommendation } from '@foundry/contracts';
 
 import { cx, DIMENSION_LABELS, prob, riskClass, scoreColor, styles } from './helpers';
 import { Badge, DecisionBadge } from './primitives';

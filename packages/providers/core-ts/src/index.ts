@@ -7,3 +7,7 @@ export * from './mock-provider';
 export * from './config-route-resolver';
 export * from './conformance';
 export * from './retry';
+export * from './capabilities';
+export * from './budgeting';
+export * from './json-repair';
+export * from './structured-output';

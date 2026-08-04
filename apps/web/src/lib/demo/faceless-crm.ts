@@ -21,7 +21,7 @@ import type {
   VentureRecommendation,
   VentureSummary,
   VentureTimelineEvent,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import type { DemoVenture } from './types';
 
@@ -709,7 +709,7 @@ const pack: BuildSquadArtifactPack = {
 
 const timeline: VentureTimelineEvent[] = [
   { kind: 'VentureTimelineEvent', eventId: 'ev1', ventureId: VENTURE_ID, ownerId: OWNER, eventKind: 'venture_created', label: 'Venture created from idea brief "Faceless CRM for SMB"', at: '2025-05-12T09:00:00.000Z' },
-  { kind: 'VentureTimelineEvent', eventId: 'ev2', ventureId: VENTURE_ID, ownerId: OWNER, eventKind: 'research_graph_built', label: 'Research graph built · 13 nodes · 5 god-nodes · 2 contradictions', at: '2025-05-12T09:08:00.000Z', artifactId: 'art_demo_research', jobId: 'job_graph', metrics: { executionDurationMs: 88000, providerName: 'openai', providerModel: 'gpt-4.1-mini', estimatedCostCents: 80, artifactKind: 'research_graph', artifactVersion: 1 } },
+  { kind: 'VentureTimelineEvent', eventId: 'ev2', ventureId: VENTURE_ID, ownerId: OWNER, eventKind: 'research_graph_built', label: 'Research graph built · 13 nodes · 5 key concepts · 2 contradictions', at: '2025-05-12T09:08:00.000Z', artifactId: 'art_demo_research', jobId: 'job_graph', metrics: { executionDurationMs: 88000, providerName: 'openai', providerModel: 'gpt-4.1-mini', estimatedCostCents: 80, artifactKind: 'research_graph', artifactVersion: 1 } },
   { kind: 'VentureTimelineEvent', eventId: 'ev3', ventureId: VENTURE_ID, ownerId: OWNER, eventKind: 'persona_set_generated', label: 'PersonaLab generated 5 personas', at: '2025-05-12T09:12:00.000Z', artifactId: PERSONA_SET_ID, jobId: 'job_personas', metrics: { executionDurationMs: 61000, providerName: 'openai', providerModel: 'gpt-4.1-mini', estimatedCostCents: 50, artifactKind: 'persona_set', artifactVersion: 1 } },
   { kind: 'VentureTimelineEvent', eventId: 'ev4', ventureId: VENTURE_ID, ownerId: OWNER, eventKind: 'buying_committee_run', label: 'Buying committee deliberated → decision: pilot (moderate consensus)', at: '2025-05-12T09:18:00.000Z', artifactId: 'art_demo_committee', jobId: 'job_committee', metrics: { executionDurationMs: 132000, providerName: 'anthropic', providerModel: 'claude-3-5-sonnet', estimatedCostCents: 120, artifactKind: 'buying_committee', artifactVersion: 1 } },
   { kind: 'VentureTimelineEvent', eventId: 'ev5', ventureId: VENTURE_ID, ownerId: OWNER, eventKind: 'recommendation_generated', label: 'VentureLab recommendation: PROCEED · score 74 · confidence 82%', at: '2025-05-12T09:20:00.000Z', artifactId: 'art_demo_rec', jobId: 'job_rec', metrics: { executionDurationMs: 58000, providerName: 'openai', providerModel: 'gpt-4.1-mini', estimatedCostCents: 40, artifactKind: 'venture_recommendation', artifactVersion: 1 } },
@@ -747,7 +747,7 @@ const summary: VentureSummary = {
 // ──────────── Artifact ledger (drives readiness/progress) ───────────────────
 
 const artifacts: VentureArtifact[] = [
-  { kind: 'VentureArtifact', artifactId: 'art_demo_research', ventureId: VENTURE_ID, ownerId: OWNER, artifactKind: 'research_graph', version: 1, createdAt: '2025-05-12T09:08:00.000Z', summary: '13 nodes · 15 edges · 5 god-nodes · 2 contradictions', payload: research },
+  { kind: 'VentureArtifact', artifactId: 'art_demo_research', ventureId: VENTURE_ID, ownerId: OWNER, artifactKind: 'research_graph', version: 1, createdAt: '2025-05-12T09:08:00.000Z', summary: '13 nodes · 15 edges · 5 key concepts · 2 contradictions', payload: research },
   { kind: 'VentureArtifact', artifactId: PERSONA_SET_ID, ventureId: VENTURE_ID, ownerId: OWNER, artifactKind: 'persona_set', version: 1, createdAt: '2025-05-12T09:12:00.000Z', summary: '5 personas · champion, supporters, blocker, skeptic', payload: personas },
   { kind: 'VentureArtifact', artifactId: 'art_demo_committee', ventureId: VENTURE_ID, ownerId: OWNER, artifactKind: 'buying_committee', version: 1, createdAt: '2025-05-12T09:18:00.000Z', summary: 'Decision: pilot · moderate consensus · 1 opinion change', payload: committee },
   { kind: 'VentureArtifact', artifactId: 'art_demo_rec', ventureId: VENTURE_ID, ownerId: OWNER, artifactKind: 'venture_recommendation', version: 1, createdAt: '2025-05-12T09:20:00.000Z', summary: 'PROCEED · 74/100 · confidence 82%', payload: recommendation },

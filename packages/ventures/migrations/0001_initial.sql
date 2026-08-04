@@ -1,4 +1,4 @@
--- VentureOS Sprint 2A.6 — Venture domain persistence.
+-- Foundry Sprint 2A.6 — Venture domain persistence.
 --
 -- Mirrors the credentials package pattern: jsonb payloads, RLS keyed on
 -- owner_id = auth.uid(), service-role-bypass writes done by the Node service

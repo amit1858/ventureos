@@ -1,4 +1,4 @@
-# VentureOS — Repository Structure
+# Foundry — Repository Structure
 
 > Sprint −1 deliverable. Monorepo layout, package responsibilities, ownership boundaries.
 
@@ -12,13 +12,13 @@
 ## 2. Top-level layout
 
 ```
-ventureos/
+foundry/
 ├── apps/                          # Deployable application surfaces
 │   ├── web/                       # Next.js front-end
 │   ├── api/                       # API gateway / orchestrator (TypeScript, Fastify)
 │   ├── worker-python/             # PersonaLab + VentureLab worker (Python, Arq)
 │   ├── worker-node/               # BuildSquad worker (TypeScript, BullMQ)
-│   └── cli/                       # `ventureos` CLI (TypeScript, oclif)
+│   └── cli/                       # `foundry` CLI (TypeScript, oclif)
 │
 ├── packages/                      # Reusable, versioned internal packages
 │   ├── contracts/                 # JSON schemas + generated TS + Python types  ⭐ single source of truth

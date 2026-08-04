@@ -1,10 +1,10 @@
-# VentureOS — Evaluation Framework
+# Foundry — Evaluation Framework
 
 > Sprint −1 deliverable. How we measure whether the labs are producing useful output.
 
 ## 1. Why this matters
 
-An LLM-native product that does not measure its own output quality has no defensible answer to the question **"Is your AI actually helping?"** VentureOS produces artifacts that drive business decisions; we owe ourselves and our users a continuous evaluation harness.
+An LLM-native product that does not measure its own output quality has no defensible answer to the question **"Is your AI actually helping?"** Foundry produces artifacts that drive business decisions; we owe ourselves and our users a continuous evaluation harness.
 
 Evaluation is also our regression net: when we bump TinyTroupe, change a prompt, swap a provider, or rewrite a lab, we need objective signal that quality didn't fall.
 
@@ -77,7 +77,7 @@ Outcomes are joined with the original `Recommendation` artifact's predictions. O
 - **Risk hit rate** — % of called-out risks that materialised.
 - **Persona accuracy** — opt-in users can replay synthetic interviews against real customer interviews on the same topic; we measure the overlap of objections surfaced.
 
-This loop is slow (months of wall time), but it's the loop that determines whether VentureOS is real.
+This loop is slow (months of wall time), but it's the loop that determines whether Foundry is real.
 
 ## 4. Per-artifact scoring detail
 

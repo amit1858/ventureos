@@ -1,4 +1,4 @@
-# VentureOS — Provider Abstraction (BYOK)
+# Foundry — Provider Abstraction (BYOK)
 
 > Sprint −1 deliverable. The single seam through which every LLM token flows.
 
@@ -252,6 +252,116 @@ Edge cases handled by the abstraction:
 - Gemini wraps tool calls in `functionCall` parts; we extract.
 - OpenAI's `tool_choice` semantics differ from Anthropic's `tool_choice`; we normalise.
 - Streaming tool calls: chunks are reassembled into complete calls before yielding.
+
+## 14b. Per-model request normalisation (OpenAI / Azure)
+
+Within a single provider, model families can speak different request dialects.
+The abstraction hides this so labs never send model-specific parameters.
+
+**OpenAI reasoning vs chat models.** GPT-5 and the o-series ("reasoning")
+models changed the Chat Completions contract:
+
+- they require `max_completion_tokens` and **reject** the legacy `max_tokens`;
+- they only accept the **default** `temperature` (sending a custom value 400s).
+
+Classic GPT-4o / GPT-4.1 / GPT-3.5 ("chat") models keep the original contract.
+Sending the wrong shape returns HTTP 400 — historically this made it look like
+"only GPT-4o mini works." The OpenAI adapter now consults a single per-model
+registry (`packages/providers/openai-ts/src/models.ts`) that records each model's
+param style, token limits, temperature support, and pricing. The registry is the
+one source of truth; there are **no** scattered model-specific `if` hacks in the
+call path. Unknown/new IDs fall back to an id heuristic (`o<n>`, `gpt-5*` →
+reasoning), so future models are handled without a code change.
+
+Reasoning models also spend part of their output budget on hidden reasoning
+tokens, so the adapter raises the output floor (4096) to avoid empty completions
+on small requests.
+
+**Azure deployments.** Azure addresses models by operator-chosen *deployment
+name*, so the adapter can't look up a fixed registry. It applies the same policy
+**best-effort** by detecting reasoning families from the deployment name
+(contains `o3`/`o4`/`gpt-5`, …). Name deployments to include the family to get
+the correct contract.
+
+Both `max_tokens`→`max_completion_tokens` selection and temperature omission are
+covered by mocked unit tests; see [model-compatibility.md](model-compatibility.md).
+
+## 14c. Provider-independent structured output (Release 1.0 hardening)
+
+PersonaLab (and any future structured lab) emits JSON, not prose. Getting *valid,
+complete* JSON reliably out of **every** provider — not just OpenAI — required a
+shared normalization layer so that no workflow ever contains a provider-specific
+branch. That layer lives entirely in `packages/providers/core-ts/` and is
+consumed as a set of pure helpers; the router and adapters are unchanged.
+
+**Why it was needed (two live-observed root causes).** OpenAI chat models expose
+a native `response_format: json_object` and are terse, so they returned valid,
+in-budget JSON on the shipped defaults. Anthropic Claude Sonnet 4.5 failed the
+same workflow for two independent reasons:
+
+1. **Budget truncation (`finish_reason: length`).** Sonnet is markedly more
+   verbose. The hard-coded persona budget (2200 output tokens) that was ample
+   for `gpt-4o-mini` truncated Sonnet mid-object, producing unparseable JSON.
+2. **No native JSON mode.** Anthropic has no `json_object`; we use the documented
+   assistant-prefill (`{`) trick. Under this mode a long transcript can still
+   contain an unescaped inner quote or a raw control character — syntactically
+   invalid JSON even when the response is complete.
+
+The fix is four deterministic, provider-neutral pieces:
+
+- **Capability registry — `capabilities.ts`.** `resolveCapability(provider,
+  model)` returns a `ModelCapability` (verbosity, native-JSON support, reasoning,
+  max output tokens, retry posture, optional price). Known models are a frozen
+  table; unknown/new IDs fall back through the same heuristics used by the OpenAI
+  registry (e.g. `gpt-5*`/`o<n>` ⇒ reasoning; Anthropic ⇒ verbose, no native
+  JSON, aggressive retry). This is *behavioral* data only — the per-provider
+  `models.ts` files remain the single source of truth for SDK request shaping, so
+  the two never disagree by construction.
+- **Adaptive output budgeting — `budgeting.ts`.** `recommendedBudget(cap, stage)`
+  replaces the hard-coded per-stage token caps with
+  `clamp(ceil(BASE_STAGE_TOKENS[stage] × VERBOSITY_MULTIPLIER[verbosity]) +
+  reasoningHeadroom, 512, cap.maxOutputTokens)`. A verbose model automatically
+  gets ~1.75× the budget of a terse one, so Sonnet's persona budget rises from
+  2200 to ~5600 and no longer truncates. The function is pure and deterministic,
+  and hosts can still pass an explicit per-call override.
+- **Deterministic JSON repair — `json-repair.ts`.** A single left-to-right pass
+  that escapes raw control characters, escapes unescaped inner quotes (closing vs
+  inner decided by the next structural token), drops trailing commas, closes an
+  unterminated final string, and balances open braces/brackets. It never calls a
+  model and never loops. `tryParseStructured` returns a discriminated outcome
+  (no exceptions for control flow); `parseStructured` is the throwing wrapper.
+- **Shared structured-output pipeline — `structured-output.ts`.**
+  `generateStructured({ chat, request, coerce?, retryMaxTokens? })` is the one
+  path every structured call flows through: **call → extract → strict-parse →
+  deterministic repair → parse → validate (`coerce`) → on failure, re-ask exactly
+  once → else fail.** The single retry merges its instruction into the final
+  user turn (not a new message — some providers reject non-alternating turns) and
+  raises the token ceiling to `retryMaxTokens` when the previous finish reason was
+  `length`. It returns `StructuredResult<T>` carrying the parsed data plus
+  `StructuredTelemetry` (finish reason, whether repair was applied/succeeded,
+  truncation, retry count, `finalStatus ∈ {ok, repaired, retried, failed}`,
+  usage, latency).
+
+This is intentionally an **opt-in helper**, not automatic router behavior: it
+preserves the rule in §18 that semantic-failure retries are the *lab's* policy.
+PersonaLab's orchestrator calls `recommendedBudget` + `generateStructured` for
+all nine of its LLM calls and contains **zero** provider conditionals. Its public
+`PersonaLabParseError` contract is preserved — the orchestrator translates the
+pipeline's provider-neutral `StructuredParseError` back into it.
+
+**Telemetry.** Each call's `StructuredTelemetry` is surfaced through a
+`GenerationTelemetry` sink that the app's job layer wires to the existing
+`recordUsage` path, so Run History now records **real** tokens and cost (not
+`$0.00`) plus the repair/retry diagnostics — with no new DB columns and no change
+to production configuration.
+
+**Live re-validation (Release 1.0).** The full PersonaLab workflow (personas →
+interview → focus group → 4-phase buying committee → insights = 8 live calls) was
+run end-to-end against `claude-sonnet-4-5` and, as a regression, `gpt-4.1`.
+Both completed **all** stages with **0 truncations, 0 repairs required, 0
+retries** — Sonnet's largest completion (persona generation, 2490 tokens) now
+lands comfortably inside the adaptive budget where the old 2200 cap would have
+truncated it. See [model-compatibility.md](model-compatibility.md) for the matrix.
 
 ## 15. Failure model (provider layer)
 

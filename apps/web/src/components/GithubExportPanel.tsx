@@ -22,7 +22,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { GitHubRepoArtifactPayload } from '@ventureos/contracts';
+import type { GitHubRepoArtifactPayload } from '@foundry/contracts';
 
 import { cx, styles } from './artifacts';
 import { JobProgress, useJob } from './JobProgress';

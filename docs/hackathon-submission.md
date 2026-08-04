@@ -1,8 +1,8 @@
-# Hackathon Submission — VentureOS
+# Hackathon Submission — Foundry
 
 > **Track:** Microsoft Build AI / HackerEarth — **Agent Swarms**
-> **Project:** VentureOS — an AI-native multi-agent venture operating system
-> **Repo:** https://github.com/amit1858/ventureos
+> **Project:** Foundry — an AI-native multi-agent venture operating system
+> **Repo:** https://github.com/amit1858/foundry-venture-os
 > **Live app:** https://ventureos-dun.vercel.app
 > **Primary judging path (zero-key):** https://ventureos-dun.vercel.app/demo/faceless-crm
 >
@@ -29,7 +29,7 @@ Founders, product teams and venture studios need a way to **simulate the decisio
 
 ## Solution
 
-**VentureOS** is a multi-agent venture operating system that turns a single brief into a validated, build-ready venture in one pipeline:
+**Foundry** is a multi-agent venture operating system that turns a single brief into a validated, build-ready venture in one pipeline:
 
 ```
 Idea → PersonaLab → Buying Committee → Research Graph
@@ -93,10 +93,10 @@ See [`demo-script.md`](demo-script.md) for 3 / 5 / 7-minute walkthroughs and fal
 ## Setup
 
 ```powershell
-git clone https://github.com/amit1858/ventureos.git
-cd ventureos
+git clone https://github.com/amit1858/foundry-venture-os.git
+cd foundry-venture-os
 corepack pnpm install
-corepack pnpm --filter "@ventureos/web" dev
+corepack pnpm --filter "@foundry/web" dev
 # open http://localhost:3000/demo/faceless-crm   ← no setup needed
 ```
 
@@ -104,7 +104,7 @@ For Real Mode setup (Supabase + encryption key + BYOK), see [`setup-local.md`](s
 
 ## Repository
 
-- **Source:** https://github.com/amit1858/ventureos
+- **Source:** https://github.com/amit1858/foundry-venture-os
 - **License:** TBD (research / hackathon project)
 - **Built by:** Amit Pandey (`@amit1858`) with GitHub Copilot
 

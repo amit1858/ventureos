@@ -1,5 +1,5 @@
 {
-  "name": "@ventureos/providers-anthropic",
+  "name": "@foundry/providers-anthropic",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,8 +12,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ventureos/contracts": "workspace:*",
-    "@ventureos/providers-core": "workspace:*",
+    "@foundry/contracts": "workspace:*",
+    "@foundry/providers-core": "workspace:*",
     "@anthropic-ai/sdk": "^0.27.0"
   },
   "devDependencies": { "typescript": "^5.6.0", "vitest": "^2.1.0" }

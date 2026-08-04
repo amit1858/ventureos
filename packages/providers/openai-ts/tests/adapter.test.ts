@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { ChatRequest, DecryptedKey } from '@ventureos/contracts';
+import type { ChatRequest, DecryptedKey } from '@foundry/contracts';
 import {
   ProviderAuthError,
   ProviderContentFilterError,
@@ -8,7 +8,7 @@ import {
   ProviderUnavailableError,
   RateLimited,
   runProviderConformance,
-} from '@ventureos/providers-core';
+} from '@foundry/providers-core';
 
 import { OpenAiAdapter, type OpenAiLike } from '../src/index';
 import { costUsd, estimateCostUsd, pricingFor } from '../src/cost';

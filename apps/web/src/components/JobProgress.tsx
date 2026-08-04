@@ -10,7 +10,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { VentureJob } from '@ventureos/contracts';
+import type { VentureJob } from '@foundry/contracts';
 
 import {
   cx,

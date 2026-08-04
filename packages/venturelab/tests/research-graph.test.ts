@@ -5,7 +5,7 @@
  * deterministically when one is provided.
  */
 import { describe, expect, it } from 'vitest';
-import type { CallContext, PersonaLabBrief, PersonaLabPersona, ResearchGraph } from '@ventureos/contracts';
+import type { CallContext, PersonaLabBrief, PersonaLabPersona, ResearchGraph } from '@foundry/contracts';
 
 import {
   applyResearchGraphAdjustments,

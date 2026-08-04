@@ -9,7 +9,7 @@
  * machine-readable code without migrating the JobStore schema.
  */
 
-import type { GitHubErrorCode } from '@ventureos/adapter-github';
+import type { GitHubErrorCode } from '@foundry/adapter-github';
 
 /** All reason codes the UI may receive — adapter codes plus our own validation codes. */
 export type ExportReasonCode = GitHubErrorCode | 'precondition' | 'invalid_input';
@@ -57,7 +57,7 @@ export function guidanceForReasonCode(code: string | null): ExportFailureGuidanc
     case 'rate_limited':
       return {
         title: 'GitHub rate limit reached',
-        body: 'Your PAT has hit GitHub\'s hourly rate limit. Wait a few minutes and try again — nothing on the VentureOS side was saved.',
+        body: 'Your PAT has hit GitHub\'s hourly rate limit. Wait a few minutes and try again — nothing on the Foundry side was saved.',
       };
     case 'not_found':
       return {
@@ -67,7 +67,7 @@ export function guidanceForReasonCode(code: string | null): ExportFailureGuidanc
     case 'network':
       return {
         title: 'Network error reaching GitHub',
-        body: 'We could not reach api.github.com. Check your internet connection and retry — nothing on VentureOS changed.',
+        body: 'We could not reach api.github.com. Check your internet connection and retry — nothing on Foundry changed.',
       };
     case 'precondition':
       return {
@@ -82,7 +82,7 @@ export function guidanceForReasonCode(code: string | null): ExportFailureGuidanc
     default:
       return {
         title: 'GitHub export failed',
-        body: 'Something went wrong during the export. Verify your PAT and repo name, then retry — nothing was saved on the VentureOS side.',
+        body: 'Something went wrong during the export. Verify your PAT and repo name, then retry — nothing was saved on the Foundry side.',
       };
   }
 }

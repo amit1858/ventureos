@@ -4,7 +4,7 @@ import type {
   VentureRecommendation,
   VentureSummary,
   VentureTimelineEvent,
-} from '@ventureos/contracts';
+} from '@foundry/contracts';
 
 import { calculateVentureProgress, calculateVentureReadiness } from './readiness.js';
 import type {

@@ -23,9 +23,9 @@ import {
 } from '../../lib/auth';
 
 export const metadata: Metadata = {
-  title: 'Enter VentureOS Alpha Workspace',
+  title: 'Enter the Alpha Workspace',
   description:
-    'Demo Mode is open without sign-in. Real Mode uses a temporary alpha workspace for testing BYOK providers, venture creation, validation, BuildSquad planning and GitHub export.',
+    'Demo Mode is open without sign-in. Real Mode uses a temporary alpha workspace for testing BYOK providers, venture creation, validation, build planning and GitHub export.',
 };
 
 export const dynamic = 'force-dynamic';
@@ -45,7 +45,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
     return (
       <section style={layout}>
         <Header />
-        <JudgeEscape />
+        <DemoNotice />
         <Card>
           <h2 style={h2}>You are signed in</h2>
           <p style={muted}>
@@ -64,7 +64,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
     return (
       <section style={layout}>
         <Header />
-        <JudgeEscape />
+        <DemoNotice />
         <Card>
           <h2 style={h2}>Alpha workspace active</h2>
           <p style={muted}>
@@ -88,7 +88,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
     return (
       <section style={layout}>
         <Header />
-        <JudgeEscape />
+        <DemoNotice />
         <Card>
           <h2 style={h2}>Choose how to enter Real Mode</h2>
           <p style={muted}>
@@ -105,8 +105,8 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
             <li>
               <strong style={optionLabel}>Continue to Alpha Workspace</strong>
               <span style={muted}>
-                Shared <code>alpha-user</code> identity. Useful for hackathon judging and quick
-                demos. Not appropriate when multiple unrelated users will share the deployment.
+                Shared <code>alpha-user</code> identity. Useful for quick demos and shared
+                testing. Not appropriate when multiple unrelated users will share the deployment.
               </span>
             </li>
             <li>
@@ -141,7 +141,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
     return (
       <section style={layout}>
         <Header />
-        <JudgeEscape />
+        <DemoNotice />
         <Card>
           <h2 style={h2}>Sign in to enter Real Mode</h2>
           <p style={muted}>
@@ -167,7 +167,7 @@ export default async function AccessPage({ searchParams }: AccessPageProps) {
   return (
     <section style={layout}>
       <Header />
-      <JudgeEscape />
+      <DemoNotice />
       <Card>
         <h2 style={h2}>Real Mode requires workspace access</h2>
         <p style={muted}>
@@ -195,7 +195,7 @@ VENTUREOS_CREDENTIAL_ENCRYPTION_KEY=...`}
         <div style={ctaRow}>
           <Link href="/demo" style={primaryBtn}>Open Demo Mode</Link>
           <a
-            href="https://github.com/amit1858/ventureos/blob/main/docs/deployment.md"
+            href="https://github.com/amit1858/foundry-venture-os/blob/main/docs/deployment.md"
             target="_blank"
             rel="noreferrer"
             style={secondaryBtn}
@@ -228,7 +228,7 @@ function Header() {
       <p style={{ ...muted, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>
         Workspace access
       </p>
-      <h1 style={{ margin: '0.25rem 0 0' }}>Enter VentureOS Alpha Workspace</h1>
+      <h1 style={{ margin: '0.25rem 0 0' }}>Enter Foundry Alpha Workspace</h1>
     </header>
   );
 }
@@ -248,12 +248,12 @@ function Card({ children }: { children: React.ReactNode }) {
   );
 }
 
-function JudgeEscape() {
+function DemoNotice() {
   return (
     <aside
       role="note"
-      aria-label="Judge guidance"
-      data-testid="judge-escape"
+      aria-label="Guided demo"
+      data-testid="demo-notice"
       style={{
         marginBottom: '1rem',
         padding: '0.85rem 1rem',
@@ -279,10 +279,10 @@ function JudgeEscape() {
           border: '1px solid rgba(122, 163, 255, 0.45)',
         }}
       >
-        For judges
+        Product tour
       </span>
       <span style={{ color: '#e8e8ea', fontSize: '0.9rem' }}>
-        Just reviewing the submission? Open the zero-key demo.
+        Prefer to look around first? Open the guided demo — no keys needed.
       </span>
       <span style={{ flex: 1 }} />
       <Link
@@ -297,7 +297,7 @@ function JudgeEscape() {
           fontSize: '0.88rem',
         }}
       >
-        Open Judge Demo →
+        Open the guided demo →
       </Link>
     </aside>
   );

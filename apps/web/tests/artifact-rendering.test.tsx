@@ -1,7 +1,7 @@
 /**
  * Proves the Real-Mode Venture Workspace renders artifacts as readable product
  * UI — never raw JSON by default. Uses the Faceless CRM demo fixture because its
- * payloads are real `@ventureos/contracts` types, identical in shape to what the
+ * payloads are real `@foundry/contracts` types, identical in shape to what the
  * labs emit in Real Mode, so these components see exactly the same data live.
  */
 import { renderToStaticMarkup } from 'react-dom/server';

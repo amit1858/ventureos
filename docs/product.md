@@ -1,16 +1,16 @@
-# What is VentureOS?
+# What is Foundry?
 
-> **VentureOS is an AI-native venture operating system.** It turns a raw product idea into a validated, build-ready venture — with synthetic customer research, evidence graphs, a Proceed / Pivot / Kill recommendation, a full BuildSquad plan, an evaluation report, and a real GitHub repository — all produced by a governed swarm of specialized agents, not a single chatbot.
+> **Foundry is an AI-native Venture Operating System that helps teams decide what deserves to be built before engineering begins.** It turns a raw product idea into a validated, execution-ready venture — with synthetic customer research, evidence graphs, a Proceed / Pivot / Kill recommendation, a full BuildSquad plan, an evaluation report, and a real GitHub repository — all produced by a governed swarm of specialized agents, not a single chatbot.
 
-**Live deployment:** https://ventureos-dun.vercel.app · **Zero-key demo:** https://ventureos-dun.vercel.app/demo/faceless-crm · **Repo:** https://github.com/amit1858/ventureos
+**Live deployment:** https://ventureos-dun.vercel.app · **Zero-key demo:** https://ventureos-dun.vercel.app/demo/faceless-crm · **Repo:** https://github.com/amit1858/foundry-venture-os
 
 ---
 
 ## TL;DR
 
-If a "chat with GPT to draft a PRD" tool is a **typewriter**, VentureOS is a **product-discovery workshop**: a multi-agent system that simulates the customer, stress-tests the opportunity, plans the build, and ships a real repository — with an audit trail of which model said what, when, and with what evidence. You bring your own LLM keys; nothing leaves the boundary you don't explicitly authorize.
+If a "chat with GPT to draft a PRD" tool is a **typewriter**, Foundry is a **product-discovery workshop**: a multi-agent system that simulates the customer, stress-tests the opportunity, plans the build, and ships a real repository — with an audit trail of which model said what, when, and with what evidence. You bring your own LLM keys; nothing leaves the boundary you don't explicitly authorize.
 
-**One sentence:** *VentureOS decides what to build — before you write code — by running an opinionated swarm of agents over a structured Venture object, then handing you a buildable GitHub repo with a Proceed / Pivot / Kill recommendation.*
+**One sentence:** *Foundry decides what to build — before you write code — by running an opinionated swarm of agents over a structured Venture object, then handing you a buildable GitHub repo with a Proceed / Pivot / Kill recommendation.*
 
 ---
 
@@ -26,13 +26,13 @@ Most "AI for product" tools generate documents. That's not the bottleneck. The a
 | Evidence trail | Lives in 12 Notion pages and one Slack thread |
 | Provenance | Nobody can tell you *which model produced this paragraph* |
 
-LLM tools today accelerate **execution** (Copilot, Cursor). VentureOS accelerates **the decision to build the right thing**. It's the deliberation layer that sits in front of your IDE.
+LLM tools today accelerate **execution** (Copilot, Cursor). Foundry accelerates **the decision to build the right thing**. It's the deliberation layer that sits in front of your IDE.
 
 ---
 
 ## What you get, end-to-end
 
-Give VentureOS a one-paragraph idea brief. Out the other end, you walk away with:
+Give Foundry a one-paragraph idea brief. Out the other end, you walk away with:
 
 1. **A simulated buying committee** — synthetic SMB buyers, ops leads, finance, and economic buyers who actually *deliberate* about your offer, surface objections, and change positions
 2. **A research graph** — a typed graph of problems, customer segments, competitors, risks and contradictions, with "god-nodes" surfaced where the same issue appears in multiple parts of the evidence
@@ -96,7 +96,7 @@ Every arrow is a `VentureJob` — a durable, observable async task with status, 
 
 ## Why this is different
 
-| Typical "AI for product" tool | VentureOS |
+| Typical "AI for product" tool | Foundry |
 | --- | --- |
 | One chatbot that drafts whatever you ask | A governed swarm of specialized agents with typed handoffs |
 | Output is prose in a Markdown blob | Output is typed artifacts + a real GitHub repo |
@@ -111,11 +111,11 @@ Every arrow is a `VentureJob` — a durable, observable async task with status, 
 
 ## Who it's for
 
-- **Founders** weighing 3 product ideas — VentureOS gives you a defensible "go with idea 2" with provenance, not a hunch
+- **Founders** weighing 3 product ideas — Foundry gives you a defensible "go with idea 2" with provenance, not a hunch
 - **Product managers** at established companies — replace the 6-week pre-PRD discovery sprint with a 2-day workshop that produces the same artifact pack, with audit trail
 - **Strategy teams** evaluating adjacent markets — get a typed research graph + objection log + competitive map in hours
 - **Hackathon and design-partner workflows** — a clean, structured way to take a partner's idea from intake to a build-ready repo in one session
-- **Anyone who's tired of "chat with GPT and copy-paste into Notion"** — VentureOS treats discovery as a system, not a transcript
+- **Anyone who's tired of "chat with GPT and copy-paste into Notion"** — Foundry treats discovery as a system, not a transcript
 
 ---
 
@@ -151,7 +151,7 @@ Every arrow is a `VentureJob` — a durable, observable async task with status, 
 
 ## Architecture in one paragraph
 
-VentureOS is a **TypeScript-first monorepo** (pnpm + turbo) with a strict five-plane layout — Experience, Orchestration, Lab, Provider, Persistence. Every lab is a pure package (`@ventureos/personalab`, `@ventureos/venturelab`, `@ventureos/buildsquad`, `@ventureos/research-graph`) that consumes and produces JSON contracts from `@ventureos/contracts`. Long-running work runs as a `VentureJob` so the UI always sees status / progress / provider · model · cost / elapsed / failure guidance. Provider SDKs (OpenAI, Anthropic, Gemini, Azure OpenAI, Octokit) live only in their named adapter packages, enforced by a custom `lint:arch` check that fails the build if anything imports `openai`, `@anthropic-ai/sdk`, etc., outside its approved package.
+Foundry is a **TypeScript-first monorepo** (pnpm + turbo) with a strict five-plane layout — Experience, Orchestration, Lab, Provider, Persistence. Every lab is a pure package (`@foundry/personalab`, `@foundry/venturelab`, `@foundry/buildsquad`, `@foundry/research-graph`) that consumes and produces JSON contracts from `@foundry/contracts`. Long-running work runs as a `VentureJob` so the UI always sees status / progress / provider · model · cost / elapsed / failure guidance. Provider SDKs (OpenAI, Anthropic, Gemini, Azure OpenAI, Octokit) live only in their named adapter packages, enforced by a custom `lint:arch` check that fails the build if anything imports `openai`, `@anthropic-ai/sdk`, etc., outside its approved package.
 
 See [`architecture-overview.md`](architecture-overview.md) for the full breakdown.
 
@@ -179,7 +179,7 @@ See [`security-byok.md`](security-byok.md) for the full identity-resolution tabl
 - **No provider keys in environment.** Provider API keys + GitHub PATs are entered exclusively through `/settings/byok`, never via Vercel env vars.
 - **Per-user RLS isolation.** Under Google sign-in, two testers on the same deployment cannot see, modify, validate, or delete each other's BYOK providers or ventures.
 - **No secret leaks in exports.** A dedicated test asserts no `ghp_…` / `sk-…` shaped strings ever appear in exported file contents.
-- **No telemetry.** VentureOS does not ship telemetry to a third party. The only outbound calls are to the LLM provider you configured.
+- **No telemetry.** Foundry does not ship telemetry to a third party. The only outbound calls are to the LLM provider you configured.
 - **Import boundaries enforced.** A custom `lint:arch` check fails the build if app or lab code imports provider SDKs directly.
 
 See [`security-byok.md`](security-byok.md) and [`security.md`](security.md).
@@ -203,7 +203,7 @@ See [`product-roadmap.md`](product-roadmap.md) for what's next, and [`known-limi
 
 ## Honest limits
 
-We are deliberate about what VentureOS is and is not. From [`known-limitations.md`](known-limitations.md):
+We are deliberate about what Foundry is and is not. From [`known-limitations.md`](known-limitations.md):
 
 - The TS implementation is canonical. The TinyTroupe / Graphify / Squad-OSS Python adapters are **scaffolded seams**, not wired runtimes. We say "TinyTroupe-style" and "Graphify-inspired" intentionally.
 - `VentureJob` is durable per-process but not crash-safe across mid-flight process restarts. A future iteration would back this with Temporal or similar.
@@ -219,7 +219,7 @@ Read the full list — we keep it up to date.
 
 1. **Just look at it** → https://ventureos-dun.vercel.app/demo/faceless-crm (no setup)
 2. **Sign in and run it on your own idea** → https://ventureos-dun.vercel.app/signin → Continue with Google (you must be on the allowlist; ask Amit)
-3. **Run it locally** → `corepack pnpm install && corepack pnpm --filter @ventureos/web dev` → open http://localhost:3000
+3. **Run it locally** → `corepack pnpm install && corepack pnpm --filter @foundry/web dev` → open http://localhost:3000
 
 See [`setup-local.md`](setup-local.md) for local Real Mode, [`deployment.md`](deployment.md) for the full Vercel deployment runbook (including Supabase Google OAuth setup), and the [`README`](../README.md) for the engineering quick-start.
 

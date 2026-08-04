@@ -1,5 +1,5 @@
 {
-  "name": "@ventureos/ventures",
+  "name": "@foundry/ventures",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -16,7 +16,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ventureos/contracts": "workspace:*"
+    "@foundry/contracts": "workspace:*"
   },
   "peerDependencies": {
     "@supabase/supabase-js": "^2.45.0"
