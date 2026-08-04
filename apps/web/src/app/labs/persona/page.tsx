@@ -1,14 +1,19 @@
 'use client';
 
 /**
- * PersonaLab (Sprint 1D).
+ * PersonaLab (Sprint 1D) — venture-scoped (rebuilt for the venture-context repair).
  *
  * Source of truth = server. The browser holds no secrets and no encrypted
  * envelopes. It only sends the user's brief + the id of a BYOK credential.
  * Every persona/transcript shown here is the JSON returned by the server.
+ *
+ * The lab is bound to the active venture via `?ventureId=` (enforced by
+ * `useVentureLab`). The brief is seeded from the VENTURE's own record — never a
+ * hard-coded "Faceless CRM" demo default — and every generation persists back
+ * to that venture so the workspace and downstream labs stay in sync.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import type {
   PersonaLabBrief,
@@ -20,87 +25,69 @@ import type {
   PersonaSetEvaluation,
 } from '@foundry/contracts';
 
-import { SignInNotice } from '../../../components/SignInNotice';
-
-interface ProviderProfile {
-  id: string;
-  providerType: string;
-  displayName: string;
-  maskedPreview: string;
-  validationStatus: 'pending' | 'active' | 'invalid' | 'revoked';
-  availableModels: string[];
-  isDefault: boolean;
-}
+import {
+  LabFrame,
+  useElapsedSeconds,
+  useVentureLab,
+  type VentureLab,
+} from '../../../components/labs/LabFrame';
 
 interface Envelope<T> { ok: boolean; data?: T; reason?: string }
 
-const FACELESS_CRM_BRIEF: PersonaLabBrief = {
-  businessIdea: 'Faceless CRM for SMB',
-  targetMarket: 'Small and medium businesses',
-  customerType: 'Owner-led sales teams',
-  region: 'India',
-  businessSize: '5 to 50 employees',
-  additionalContext: 'Mobile-first; integrates with WhatsApp Business.',
+const EMPTY_BRIEF: PersonaLabBrief = {
+  businessIdea: '',
+  targetMarket: '',
+  customerType: '',
+  region: '',
+  businessSize: '',
+  additionalContext: '',
 };
 
 export default function PersonaLabPage() {
-  const [providers, setProviders] = useState<ProviderProfile[]>([]);
-  const [selectedProviderId, setSelectedProviderId] = useState<string>('');
-  const [selectedModel, setSelectedModel] = useState<string>('');
-  const [providerError, setProviderError] = useState<string | null>(null);
-  const [needsAuth, setNeedsAuth] = useState(false);
+  const lab = useVentureLab();
+  return (
+    <LabFrame
+      lab={lab}
+      labPath="/labs/persona"
+      title="Personas"
+      description="Generate a diverse persona set for this venture, then run interviews, a focus group, a buying-committee simulation, and insight extraction. All model calls run through your selected BYOK provider on the server — the browser never sees plaintext secrets."
+      authMessage="Sign in to generate personas for this venture using your own provider key."
+    >
+      <PersonaBody lab={lab} />
+    </LabFrame>
+  );
+}
 
+function PersonaBody({ lab }: { lab: VentureLab }) {
   const [tinytroupeAvailable, setTinytroupeAvailable] = useState<boolean>(false);
   const [engine, setEngine] = useState<'builtin' | 'tinytroupe'>('builtin');
 
-  const [brief, setBrief] = useState<PersonaLabBrief>(FACELESS_CRM_BRIEF);
-  const [ventureId, setVentureId] = useState<string>('');
+  // Seeded once from the active venture's brief (PersonaBody only mounts once the
+  // context is ready). Edits stay local so a background context refresh never
+  // clobbers what the user is typing.
+  const [brief, setBrief] = useState<PersonaLabBrief>(lab.context?.brief ?? EMPTY_BRIEF);
   const [n, setN] = useState<number>(6);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const elapsed = useElapsedSeconds(busy !== null);
 
-  const [personas, setPersonas] = useState<PersonaLabPersona[]>([]);
+  const [personas, setPersonas] = useState<PersonaLabPersona[]>(lab.context?.personas ?? []);
   const [interview, setInterview] = useState<InterviewTranscript | null>(null);
   const [focusGroup, setFocusGroup] = useState<FocusGroupTranscript | null>(null);
-  const [committee, setCommittee] = useState<BuyingCommitteeTranscript | null>(null);
+  const [committee, setCommittee] = useState<BuyingCommitteeTranscript | null>(lab.context?.committee ?? null);
   const [insights, setInsights] = useState<PersonaLabInsights | null>(null);
   const [evaluation, setEvaluation] = useState<PersonaSetEvaluation | null>(null);
 
-  const [interviewPersonaId, setInterviewPersonaId] = useState<string>('');
+  const [interviewPersonaId, setInterviewPersonaId] = useState<string>(lab.context?.personas?.[0]?.id ?? '');
   const [interviewTopic, setInterviewTopic] = useState<string>('Current CRM frustrations');
   const [interviewQuestions, setInterviewQuestions] = useState<string>(
     'What does your current sales workflow look like?\nWhat would make you switch CRMs?\nWhat would block adoption in your team?',
   );
 
   const [focusGroupTopic, setFocusGroupTopic] = useState<string>(
-    'Reactions to a Rs. 999/user/month faceless CRM',
+    'Reactions to the proposed offer',
   );
-  const [offerSummary, setOfferSummary] = useState<string>(
-    'Faceless CRM for SMB: WhatsApp + email lead capture, AI-prioritised pipeline, Rs. 999/user/month with a 30-day pilot.',
-  );
-
-  // Initial provider list
-  useEffect(() => {
-    void (async () => {
-      try {
-        const r = await fetch('/api/byok/providers', { cache: 'no-store' });
-        if (r.status === 401) {
-          setNeedsAuth(true);
-          return;
-        }
-        const body = await r.json() as { profiles?: ProviderProfile[] };
-        const list = (body.profiles ?? []).filter((p) => p.validationStatus === 'active');
-        setProviders(list);
-        const def = list.find((p) => p.isDefault) ?? list[0];
-        if (def) {
-          setSelectedProviderId(def.id);
-          setSelectedModel(def.availableModels[0] ?? '');
-        }
-      } catch (e) {
-        setProviderError(e instanceof Error ? e.message : 'Failed to load providers.');
-      }
-    })();
-  }, []);
+  const [offerSummary, setOfferSummary] = useState<string>('');
 
   // Probe whether the TinyTroupe Python bridge is configured on the server.
   useEffect(() => {
@@ -118,36 +105,16 @@ export default function PersonaLabPage() {
     })();
   }, []);
 
-  // Initialise ventureId from ?ventureId=X — auto-attaches results to that venture.
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const fromUrl = new URLSearchParams(window.location.search).get('ventureId');
-    if (fromUrl) setVentureId(fromUrl);
-  }, []);
-
-  const selectedProvider = useMemo(
-    () => providers.find((p) => p.id === selectedProviderId) ?? null,
-    [providers, selectedProviderId],
-  );
-
-  // Keep model list aligned with selected provider.
-  useEffect(() => {
-    if (!selectedProvider) return;
-    if (!selectedProvider.availableModels.includes(selectedModel)) {
-      setSelectedModel(selectedProvider.availableModels[0] ?? '');
-    }
-  }, [selectedProvider, selectedModel]);
-
   const call = useCallback(
     async <T,>(action: string, extra: Record<string, unknown>): Promise<T | null> => {
       setError(null);
       setBusy(action);
       try {
         const payload: Record<string, unknown> = { action, brief, ...extra };
-        if (ventureId) payload['ventureId'] = ventureId;
+        if (lab.ventureId) payload['ventureId'] = lab.ventureId;
         if (action !== 'validatePersonaSet') {
-          payload['providerCredentialId'] = selectedProviderId;
-          payload['modelId'] = selectedModel;
+          payload['providerCredentialId'] = lab.selectedProviderId;
+          payload['modelId'] = lab.selectedModel;
           payload['engine'] = engine;
         }
         const r = await fetch('/api/personalab', {
@@ -168,7 +135,7 @@ export default function PersonaLabPage() {
         setBusy(null);
       }
     },
-    [brief, selectedProviderId, selectedModel, engine, ventureId],
+    [brief, lab.selectedProviderId, lab.selectedModel, engine, lab.ventureId],
   );
 
   async function generate() {
@@ -177,6 +144,7 @@ export default function PersonaLabPage() {
       setPersonas(result);
       setInterviewPersonaId(result[0]?.id ?? '');
       setInterview(null); setFocusGroup(null); setCommittee(null); setInsights(null); setEvaluation(null);
+      void lab.reloadContext();
     }
   }
 
@@ -208,7 +176,7 @@ export default function PersonaLabPage() {
     const result = await call<BuyingCommitteeTranscript>('runBuyingCommittee', {
       personas, offerSummary,
     });
-    if (result) setCommittee(result);
+    if (result) { setCommittee(result); void lab.reloadContext(); }
   }
 
   async function summarise() {
@@ -221,83 +189,29 @@ export default function PersonaLabPage() {
     if (result) setInsights(result);
   }
 
+  if (!lab.context) return null;
+
   return (
-    <section style={{ maxWidth: 1080 }}>
-      <h1>Personas</h1>
-      <p style={{ color: '#9aa0a6' }}>
-        Persona generation and buying-committee simulation. All model calls run through your selected
-        BYOK provider on the server — the browser never sees plaintext secrets.
-      </p>
-
-      {needsAuth && (
-        <SignInNotice
-          next="/labs/persona"
-          message="Sign in to generate personas with your own provider keys — or explore the guided demo. No keys needed."
-        />
-      )}
-      {providerError ? (
-        <div style={{
-          padding: '0.75rem 1rem',
-          border: '1px solid #2a2a2a',
-          borderRadius: 8,
-          background: '#15171c',
-          marginBottom: '1rem',
-        }}>
-          <p style={{ color: '#ef6a6a', margin: 0 }}>{providerError}</p>
-          <p style={{ color: '#9aa0a6', margin: '0.5rem 0 0.75rem', fontSize: '0.85rem' }}>
-            <a href="/signin?next=/labs/persona" style={{ color: '#7aa3ff' }}>Sign in with Google</a>
-            {' · '}
-            <a href="/demo" style={{ color: '#7aa3ff' }}>Open Demo Mode</a>
-          </p>
-        </div>
-      ) : null}
-
-      <div style={{ ...cardStyle, marginTop: '1rem' }}>
-        <h3 style={{ marginTop: 0 }}>1. Provider</h3>
-        {providers.length === 0 ? (
-          <p style={{ color: '#9aa0a6' }}>
-            No active providers found. Add and validate a key on <a href="/settings/byok" style={{ color: '#7aa3ff' }}>/settings/byok</a>.
-          </p>
-        ) : (
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <label>
-              Credential
-              <select value={selectedProviderId} onChange={(e) => setSelectedProviderId(e.target.value)} style={inputStyle}>
-                {providers.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.providerType} — {p.displayName} ({p.maskedPreview})
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Model
-              <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)} style={inputStyle}>
-                {(selectedProvider?.availableModels ?? []).map((m) => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
-            </label>
-            {tinytroupeAvailable ? (
-              <label>
-                Engine
-                <select
-                  value={engine}
-                  onChange={(e) => setEngine(e.target.value === 'tinytroupe' ? 'tinytroupe' : 'builtin')}
-                  style={inputStyle}
-                  title="TinyTroupe routes generate/interview/focus-group/buying-committee through a Python subprocess. Insights and evaluation always run in-process."
-                >
-                  <option value="builtin">Built-in (chat)</option>
-                  <option value="tinytroupe">TinyTroupe (subprocess)</option>
-                </select>
-              </label>
-            ) : null}
-          </div>
-        )}
-      </div>
-
-      <div style={{ ...cardStyle, marginTop: '1rem' }}>
-        <h3 style={{ marginTop: 0 }}>2. Brief</h3>
+    <div style={{ display: 'grid', gap: '1rem' }}>
+      <div style={cardStyle}>
+        <h3 style={{ marginTop: 0 }}>1. Brief</h3>
+        <p style={{ color: '#9aa0a6', margin: '0 0 0.6rem', fontSize: '0.85rem' }}>
+          Pre-filled from this venture. Adjust anything before generating — changes stay on this venture.
+        </p>
+        {tinytroupeAvailable ? (
+          <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+            Engine
+            <select
+              value={engine}
+              onChange={(e) => setEngine(e.target.value === 'tinytroupe' ? 'tinytroupe' : 'builtin')}
+              style={inputStyle}
+              title="TinyTroupe routes generate/interview/focus-group/buying-committee through a Python subprocess. Insights and evaluation always run in-process."
+            >
+              <option value="builtin">Built-in (chat)</option>
+              <option value="tinytroupe">TinyTroupe (subprocess)</option>
+            </select>
+          </label>
+        ) : null}
         <BriefField label="Business idea"  value={brief.businessIdea}     onChange={(v) => setBrief({ ...brief, businessIdea: v })} />
         <BriefField label="Target market"  value={brief.targetMarket}     onChange={(v) => setBrief({ ...brief, targetMarket: v })} />
         <BriefField label="Customer type"  value={brief.customerType}     onChange={(v) => setBrief({ ...brief, customerType: v })} />
@@ -313,20 +227,25 @@ export default function PersonaLabPage() {
               style={{ ...inputStyle, width: 80 }}
             />
           </label>
-          <button onClick={generate} disabled={busy !== null || !selectedProviderId} style={primaryBtn}>
-            {busy === 'generatePersonas' ? 'Generating…' : 'Generate personas'}
+          <button onClick={generate} disabled={busy !== null || !lab.selectedProviderId} style={primaryBtn}>
+            {busy === 'generatePersonas' ? `Generating… ${elapsed}s` : 'Generate personas'}
           </button>
         </div>
+        {busy === 'generatePersonas' ? (
+          <p style={{ color: '#9aa0a6', margin: '0.5rem 0 0', fontSize: '0.85rem' }}>
+            Generating with {lab.selectedModel}. This can take up to a minute.
+          </p>
+        ) : null}
       </div>
 
-      {error ? <p style={{ color: '#ef6a6a', marginTop: '0.75rem' }}>{error}</p> : null}
+      {error ? <p style={{ color: '#ef6a6a', marginTop: '0.25rem' }}>{error}</p> : null}
 
       {personas.length > 0 ? (
-        <div style={{ ...cardStyle, marginTop: '1rem' }}>
+        <div style={cardStyle}>
           <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ margin: 0 }}>3. Personas ({personas.length})</h3>
+            <h3 style={{ margin: 0 }}>2. Personas ({personas.length})</h3>
             <button onClick={evaluate} disabled={busy !== null} style={secondaryBtn}>
-              {busy === 'validatePersonaSet' ? 'Scoring…' : 'Run evaluation'}
+              {busy === 'validatePersonaSet' ? `Scoring… ${elapsed}s` : 'Run evaluation'}
             </button>
           </header>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '0.75rem', marginTop: '0.75rem' }}>
@@ -337,8 +256,8 @@ export default function PersonaLabPage() {
       ) : null}
 
       {personas.length > 0 ? (
-        <div style={{ ...cardStyle, marginTop: '1rem' }}>
-          <h3 style={{ marginTop: 0 }}>4. Interview</h3>
+        <div style={cardStyle}>
+          <h3 style={{ marginTop: 0 }}>3. Interview</h3>
           <div style={{ display: 'grid', gap: '0.5rem' }}>
             <label>
               Persona
@@ -361,7 +280,7 @@ export default function PersonaLabPage() {
             </label>
             <div>
               <button onClick={interviewSelected} disabled={busy !== null} style={primaryBtn}>
-                {busy === 'runInterview' ? 'Interviewing…' : 'Run interview'}
+                {busy === 'runInterview' ? `Interviewing… ${elapsed}s` : 'Run interview'}
               </button>
             </div>
           </div>
@@ -370,15 +289,15 @@ export default function PersonaLabPage() {
       ) : null}
 
       {personas.length > 1 ? (
-        <div style={{ ...cardStyle, marginTop: '1rem' }}>
-          <h3 style={{ marginTop: 0 }}>5. Focus group</h3>
+        <div style={cardStyle}>
+          <h3 style={{ marginTop: 0 }}>4. Focus group</h3>
           <label>
             Topic
             <input value={focusGroupTopic} onChange={(e) => setFocusGroupTopic(e.target.value)} style={inputStyle} />
           </label>
           <div style={{ marginTop: '0.5rem' }}>
             <button onClick={focusGroupAll} disabled={busy !== null} style={primaryBtn}>
-              {busy === 'runFocusGroup' ? 'Simulating…' : 'Run focus group'}
+              {busy === 'runFocusGroup' ? `Simulating… ${elapsed}s` : 'Run focus group'}
             </button>
           </div>
           {focusGroup ? (
@@ -398,20 +317,21 @@ export default function PersonaLabPage() {
       ) : null}
 
       {personas.length > 1 ? (
-        <div style={{ ...cardStyle, marginTop: '1rem' }}>
-          <h3 style={{ marginTop: 0 }}>6. Buying committee</h3>
+        <div style={cardStyle}>
+          <h3 style={{ marginTop: 0 }}>5. Buying committee</h3>
           <label>
             Offer summary
             <textarea
               value={offerSummary}
               onChange={(e) => setOfferSummary(e.target.value)}
               rows={3}
+              placeholder="Describe the offer the committee should evaluate (pricing, pilot terms, key capabilities)…"
               style={{ ...inputStyle, fontFamily: 'inherit' }}
             />
           </label>
           <div style={{ marginTop: '0.5rem' }}>
             <button onClick={committeeAll} disabled={busy !== null} style={primaryBtn}>
-              {busy === 'runBuyingCommittee' ? 'Simulating…' : 'Run buying committee'}
+              {busy === 'runBuyingCommittee' ? `Simulating… ${elapsed}s` : 'Run buying committee'}
             </button>
           </div>
           {committee ? <CommitteePanel committee={committee} personas={personas} /> : null}
@@ -419,15 +339,15 @@ export default function PersonaLabPage() {
       ) : null}
 
       {personas.length > 0 ? (
-        <div style={{ ...cardStyle, marginTop: '1rem' }}>
-          <h3 style={{ marginTop: 0 }}>7. Insights</h3>
+        <div style={cardStyle}>
+          <h3 style={{ marginTop: 0 }}>6. Insights</h3>
           <button onClick={summarise} disabled={busy !== null} style={primaryBtn}>
-            {busy === 'extractInsights' ? 'Summarising…' : 'Extract insights'}
+            {busy === 'extractInsights' ? `Summarising… ${elapsed}s` : 'Extract insights'}
           </button>
           {insights ? <InsightsPanel insights={insights} /> : null}
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }
 
