@@ -16,6 +16,7 @@ export {
 export {
   InMemoryJobStore,
   JobOrchestrator,
+  DuplicateActiveJobError,
   DEFAULT_PRICING_TABLE,
   JOB_KIND_TO_ARTIFACT_KIND,
   estimateCostCents,
