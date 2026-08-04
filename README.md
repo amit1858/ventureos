@@ -2,7 +2,7 @@
 
 [![Live demo](https://img.shields.io/badge/Live%20demo-ventureos--dun.vercel.app-blueviolet?logo=vercel)](https://ventureos-dun.vercel.app/demo/faceless-crm)
 [![Sign in](https://img.shields.io/badge/Sign%20in-Google%20OAuth-4285F4?logo=google)](https://ventureos-dun.vercel.app/signin)
-[![License](https://img.shields.io/badge/license-TBD-lightgrey)](#license)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 > **An AI-native Venture Operating System that helps teams decide what deserves to be built before engineering begins.** Foundry turns raw ideas into validated, execution-ready ventures using collaborative AI agents — not a single chatbot.
 
@@ -197,4 +197,4 @@ Built by **Amit Pandey** ([@amit1858](https://github.com/amit1858)), with GitHub
 
 ## License
 
-Research / hackathon project. License TBD. Do not redistribute production credentials or seeded customer data without permission.
+Foundry is released under the [MIT License](LICENSE) — © 2026 Amit Pandey. You are free to use, modify, and distribute the source. The license covers the code only: do not redistribute production credentials, provider API keys, or seeded customer data without permission.
