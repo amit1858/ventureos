@@ -16,6 +16,12 @@ import { ANTHROPIC_KNOWN_MODELS } from '@foundry/providers-anthropic';
 import { GEMINI_KNOWN_MODELS } from '@foundry/providers-gemini';
 import { AZURE_OPENAI_KNOWN_MODELS } from '@foundry/providers-azure-openai';
 
+import { providerLabel } from './labels';
+
+// Re-exported so existing importers (and tests) keep a single call site while
+// the canonical provider→label map lives in the dependency-free ./labels module.
+export { providerLabel };
+
 /** Human-facing recommended shortlist. Mirrored in docs/model-compatibility.md. */
 export const RECOMMENDED_MODELS_DISPLAY = ['GPT-4o mini', 'GPT-4.1', 'Claude Sonnet'] as const;
 
@@ -25,21 +31,6 @@ const CATALOG: Partial<Record<ProviderId, ReadonlyArray<string>>> = {
   gemini: GEMINI_KNOWN_MODELS,
   azure_openai: AZURE_OPENAI_KNOWN_MODELS,
 };
-
-const PROVIDER_LABELS: Record<ProviderId, string> = {
-  openai: 'OpenAI',
-  anthropic: 'Anthropic',
-  gemini: 'Google Gemini',
-  azure_openai: 'Azure OpenAI',
-  azure_ai_foundry: 'Azure AI Foundry',
-  github_models: 'GitHub Models',
-  ollama: 'Ollama',
-  github: 'GitHub',
-};
-
-export function providerLabel(provider: ProviderId): string {
-  return PROVIDER_LABELS[provider] ?? provider;
-}
 
 export function knownModelsFor(provider: ProviderId): ReadonlyArray<string> {
   return CATALOG[provider] ?? [];

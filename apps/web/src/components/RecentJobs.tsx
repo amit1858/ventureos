@@ -9,6 +9,9 @@
 import { useEffect, useState } from 'react';
 import type { VentureJob } from '@foundry/contracts';
 
+import { JOB_KIND_LABEL } from './artifacts/helpers';
+import { jobStatusLabel } from '../lib/labels';
+
 export function RecentJobs({ ventureId, limit = 6 }: { ventureId: string; limit?: number }) {
   const [jobs, setJobs] = useState<VentureJob[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -40,8 +43,8 @@ export function RecentJobs({ ventureId, limit = 6 }: { ventureId: string; limit?
           padding: '0.5rem 0.75rem', background: '#161616', fontSize: '0.8rem',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem' }}>
-            <span style={{ color: '#d0d0d0', fontFamily: 'ui-monospace, monospace' }}>{j.jobKind}</span>
-            <span style={{ color: colourForStatus(j.status), fontWeight: 600 }}>{j.status}</span>
+            <span style={{ color: '#d0d0d0', fontWeight: 500 }}>{JOB_KIND_LABEL[j.jobKind] ?? j.jobKind}</span>
+            <span style={{ color: colourForStatus(j.status), fontWeight: 600 }}>{jobStatusLabel(j.status)}</span>
           </div>
           <div style={{ color: '#7a7a7a', fontSize: '0.72rem', marginTop: '0.15rem' }}>
             {footer(j)}
