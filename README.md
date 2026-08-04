@@ -106,6 +106,8 @@ Canonical, Foundry-branded captures from the live Release 1.0 UI at **[ventureos
 
 More captures — [demo index](docs/screenshots/demo.png), [security](docs/screenshots/security.png), and [privacy](docs/screenshots/privacy.png) — live in [docs/screenshots/](docs/screenshots/). Earlier screenshots captured under the original **VentureOS** branding are preserved as historical artifacts in [docs/archive/ventureos-submission/screenshots/](docs/archive/ventureos-submission/screenshots/).
 
+The full **Release 1.0 capture library** — including every pipeline stage (personas, buying committee, research graph, validation, build plan, evaluation and GitHub export), all captured from the live production deployment with public synthetic data — lives in [docs/assets/screenshots/v1.0/](docs/assets/screenshots/v1.0/).
+
 ## Demo Mode (no keys)
 
 Foundry ships a fully seeded **Demo Mode** so reviewers and teammates can experience the full pipeline without any API keys, Supabase, GitHub PAT, or provider calls.
