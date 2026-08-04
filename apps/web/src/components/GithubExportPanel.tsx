@@ -206,7 +206,7 @@ export function GithubExportPanel({
         <p className={cx(styles.muted)} style={{ fontSize: '0.85rem' }}>Loading GitHub credentials…</p>
       ) : profiles.length === 0 ? (
         <p style={{ color: '#f3b350', fontSize: '0.85rem', margin: 0 }}>
-          No active GitHub PAT. <a href="/settings/byok" style={{ color: '#7aa3ff' }}>Add one in BYOK</a>
+          No active GitHub PAT. <a href="/settings/byok" style={{ color: 'var(--accent)' }}>Add one in BYOK</a>
           {' '}— scopes needed: <code className={cx(styles.mono)}>repo</code> (or fine-grained: Contents read/write, Administration read/write).
         </p>
       ) : (

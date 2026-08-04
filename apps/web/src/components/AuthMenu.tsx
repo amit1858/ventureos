@@ -128,7 +128,7 @@ const deniedBadge: React.CSSProperties = {
   background: 'rgba(239, 106, 106, 0.08)',
 };
 const signInLink: React.CSSProperties = {
-  color: '#7aa3ff',
+  color: 'var(--accent)',
   textDecoration: 'none',
   fontSize: '0.9rem',
   fontWeight: 500,

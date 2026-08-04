@@ -1,11 +1,12 @@
 /* Foundry Real-Mode artifact rendering — shared product UI.
-   Same calm dark visual language as Demo Mode, but with the product blue
-   accent (Demo Mode uses the purple "demo" accent for identity). Used by the
-   Venture Workspace and any surface that renders venture artifacts. */
+   Same calm dark visual language as Demo Mode, and the same Foundry violet
+   accent as the rest of the product so the authenticated app reads as one
+   brand. (Demo Mode keeps its own purple "demo" accent for identity.) Used by
+   the Venture Workspace and any surface that renders venture artifacts. */
 
 .scope {
-  --accent: #7aa3ff;
-  --accent-soft: rgba(122, 163, 255, 0.14);
+  --accent: #8b7bf0;
+  --accent-soft: rgba(139, 123, 240, 0.14);
   --green: #56c596;
   --amber: #f3b350;
   --red: #ef6a6a;
@@ -84,7 +85,7 @@
 .barLabel { font-size: 0.82rem; color: var(--text); }
 .barVal { font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .barTrack { height: 7px; border-radius: 999px; background: #2a2a30; overflow: hidden; }
-.barFill { height: 100%; border-radius: 999px; background: var(--blue); }
+.barFill { height: 100%; border-radius: 999px; background: var(--accent); }
 .barFillGreen { background: var(--green); }
 .barFillAmber { background: var(--amber); }
 
@@ -313,10 +314,10 @@
   font-family: inherit;
 }
 .btn:hover { border-color: #4a4a55; background: var(--card-2); }
-.btnPrimary { background: var(--accent); border-color: var(--accent); color: #0b0b0e; }
-.btnPrimary:hover { background: #93b4ff; border-color: #93b4ff; }
+.btnPrimary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btnPrimary:hover { background: #7a68ee; border-color: #7a68ee; }
 .btnGhost { background: transparent; color: var(--muted); }
-.btnDisabled { opacity: 0.4; cursor: not-allowed; }
+.btnDisabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
 
 /* ---------- Empty states ---------- */
 .empty {

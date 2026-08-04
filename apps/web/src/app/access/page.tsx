@@ -274,9 +274,9 @@ function DemoNotice() {
           textTransform: 'uppercase',
           padding: '0.15rem 0.55rem',
           borderRadius: 999,
-          color: '#cfe1ff',
-          background: 'rgba(122, 163, 255, 0.16)',
-          border: '1px solid rgba(122, 163, 255, 0.45)',
+          color: 'var(--accent)',
+          background: 'rgba(139, 123, 240, 0.16)',
+          border: '1px solid rgba(139, 123, 240, 0.45)',
         }}
       >
         Product tour
@@ -289,8 +289,8 @@ function DemoNotice() {
         href="/demo/faceless-crm"
         style={{
           padding: '0.45rem 0.9rem',
-          background: '#7aa3ff',
-          color: '#0b0b0e',
+          background: 'var(--accent)',
+          color: 'var(--on-accent)',
           borderRadius: 6,
           fontWeight: 600,
           textDecoration: 'none',
@@ -339,8 +339,8 @@ const ctaRow: React.CSSProperties = {
 };
 const primaryBtn: React.CSSProperties = {
   padding: '0.6rem 1rem',
-  background: '#7aa3ff',
-  color: '#0b0b0e',
+  background: 'var(--accent)',
+  color: 'var(--on-accent)',
   borderRadius: 6,
   fontWeight: 600,
   textDecoration: 'none',
@@ -358,7 +358,7 @@ const secondaryBtn: React.CSSProperties = {
   cursor: 'pointer',
   fontSize: '0.95rem',
 };
-const inlineLink: React.CSSProperties = { color: '#7aa3ff', textDecoration: 'underline' };
+const inlineLink: React.CSSProperties = { color: 'var(--accent)', textDecoration: 'underline' };
 const code: React.CSSProperties = {
   marginTop: '0.75rem',
   padding: '0.75rem 1rem',

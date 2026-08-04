@@ -70,8 +70,8 @@ const muted: React.CSSProperties = { color: '#9aa0a6', lineHeight: 1.55, marginT
 const ctaRow: React.CSSProperties = { marginTop: '1.25rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' };
 const primaryBtn: React.CSSProperties = {
   padding: '0.6rem 1rem',
-  background: '#7aa3ff',
-  color: '#0b0b0e',
+  background: 'var(--accent)',
+  color: 'var(--on-accent)',
   borderRadius: 6,
   fontWeight: 600,
   textDecoration: 'none',

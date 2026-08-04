@@ -101,7 +101,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       <Header />
       <DemoNotice />
       <Card>
-        <h2 style={h2}>Sign in to Foundry</h2>
+        <h2 style={h2}>Get started</h2>
         <p style={muted}>
           Demo Mode is open without sign-in. Sign in with Google to create ventures, save BYOK
           providers, run validation workflows and export to GitHub.
@@ -183,8 +183,8 @@ function DemoNotice() {
       style={{
         marginBottom: '1rem',
         padding: '0.85rem 1rem',
-        border: '1px solid rgba(122, 163, 255, 0.35)',
-        background: 'linear-gradient(135deg, rgba(122, 163, 255, 0.10), rgba(139, 123, 240, 0.06))',
+        border: '1px solid rgba(139, 123, 240, 0.35)',
+        background: 'linear-gradient(135deg, rgba(139, 123, 240, 0.12), rgba(139, 123, 240, 0.05))',
         borderRadius: 10,
         display: 'flex',
         gap: '0.6rem',
@@ -200,9 +200,9 @@ function DemoNotice() {
           textTransform: 'uppercase',
           padding: '0.15rem 0.55rem',
           borderRadius: 999,
-          color: '#cfe1ff',
-          background: 'rgba(122, 163, 255, 0.16)',
-          border: '1px solid rgba(122, 163, 255, 0.45)',
+          color: 'var(--accent)',
+          background: 'rgba(139, 123, 240, 0.16)',
+          border: '1px solid rgba(139, 123, 240, 0.45)',
         }}
       >
         Product tour
@@ -215,8 +215,8 @@ function DemoNotice() {
         href="/demo/faceless-crm"
         style={{
           padding: '0.45rem 0.9rem',
-          background: '#7aa3ff',
-          color: '#0b0b0e',
+          background: 'var(--accent)',
+          color: 'var(--on-accent)',
           borderRadius: 6,
           fontWeight: 600,
           textDecoration: 'none',
@@ -235,8 +235,8 @@ const muted: React.CSSProperties = { color: '#9aa0a6', lineHeight: 1.55, marginT
 const ctaRow: React.CSSProperties = { marginTop: '1.25rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' };
 const primaryBtn: React.CSSProperties = {
   padding: '0.6rem 1rem',
-  background: '#7aa3ff',
-  color: '#0b0b0e',
+  background: 'var(--accent)',
+  color: 'var(--on-accent)',
   borderRadius: 6,
   fontWeight: 600,
   textDecoration: 'none',

@@ -55,7 +55,12 @@ export default function NewVenturePage() {
       <Field label="Business size" value={businessSize} onChange={setBusinessSize} />
 
       <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
-        <button onClick={submit} disabled={busy || title.trim().length === 0} style={primaryBtn}>
+        <button
+          onClick={submit}
+          disabled={busy || title.trim().length === 0}
+          title={title.trim().length === 0 ? 'Enter a title to create your venture' : undefined}
+          style={{ ...primaryBtn, ...(busy || title.trim().length === 0 ? disabledBtn : {}) }}
+        >
           {busy ? 'Creating…' : 'Create venture'}
         </button>
         <a href="/ventures" style={ghostBtn}>Cancel</a>
@@ -81,9 +86,10 @@ const inputStyle: React.CSSProperties = {
   border: '1px solid #2a2a2a', borderRadius: 6, fontSize: '0.9rem', fontFamily: 'inherit',
 };
 const primaryBtn: React.CSSProperties = {
-  padding: '0.55rem 1rem', background: '#7aa3ff', color: '#0b0b0e',
+  padding: '0.55rem 1rem', background: 'var(--accent)', color: 'var(--on-accent)',
   border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem',
 };
+const disabledBtn: React.CSSProperties = { opacity: 0.45, cursor: 'not-allowed' };
 const ghostBtn: React.CSSProperties = {
   padding: '0.55rem 1rem', background: 'transparent', color: '#9aa0a6',
   border: '1px solid #2a2a2a', borderRadius: 6, fontSize: '0.9rem', textDecoration: 'none',
