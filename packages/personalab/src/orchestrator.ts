@@ -69,6 +69,12 @@ export interface PersonaLabOptions {
   /** Optional sink for per-generation telemetry (usage, finishReason, repair, retry). */
   onTelemetry?: GenerationTelemetrySink;
   /**
+   * Optional cooperative abort signal, threaded into every provider request so
+   * the host (job orchestrator) can enforce a hard per-job timeout: on abort the
+   * in-flight model call is cancelled and the workflow rejects promptly.
+   */
+  signal?: AbortSignal;
+  /**
    * Explicit output-budget overrides. When unset, budgets are derived
    * adaptively from the resolved capability + workflow stage.
    */
@@ -298,6 +304,7 @@ export class PersonaLab implements PersonaLabEngine {
       maxTokens,
       responseFormat: 'json',
       ctx: this.opts.ctx,
+      ...(this.opts.signal ? { signal: this.opts.signal } : {}),
     };
   }
 }
