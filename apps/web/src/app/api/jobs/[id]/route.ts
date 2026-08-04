@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 import { requireUser, UnauthorizedError } from '../../../../lib/auth';
 import { sanitizeApiError } from '../../../../lib/api-errors';
-import { getJobStore } from '../../../../lib/jobs';
+import { getJobOrchestrator } from '../../../../lib/jobs';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -13,7 +13,9 @@ export const runtime = 'nodejs';
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   try {
     const user = await requireUser();
-    const job = await getJobStore().getJob(user.id, params.id);
+    // Reconcile-on-read: an orphaned job (its serverless invocation was killed
+    // before it could finalise) is failed here rather than polled forever.
+    const job = await getJobOrchestrator().getJobReconciled(user.id, params.id);
     if (!job) return NextResponse.json({ ok: false, reason: 'Not found' }, { status: 404 });
     return NextResponse.json({ ok: true, job });
   } catch (e) {

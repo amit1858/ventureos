@@ -11,7 +11,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
  *   - support both the sync ({ok,data}) and async (202 + jobId) paths.
  */
 
-const { requireUser, UnauthorizedError, enqueueAndWait, getJobOrchestrator, enqueue } =
+const { requireUser, UnauthorizedError, enqueueAndWait, getJobOrchestrator, enqueue, findActiveJob } =
   vi.hoisted(() => {
     class UnauthorizedError extends Error {
       constructor() {
@@ -25,6 +25,7 @@ const { requireUser, UnauthorizedError, enqueueAndWait, getJobOrchestrator, enqu
       enqueueAndWait: vi.fn(),
       getJobOrchestrator: vi.fn(),
       enqueue: vi.fn(),
+      findActiveJob: vi.fn(),
     };
   });
 
@@ -47,7 +48,8 @@ function makeReq(body: unknown): Request {
 describe('POST /api/graphify', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    getJobOrchestrator.mockReturnValue({ enqueue });
+    getJobOrchestrator.mockReturnValue({ enqueue, findActiveJob });
+    findActiveJob.mockResolvedValue(null);
   });
 
   it('returns 401 when unauthorized', async () => {
@@ -135,6 +137,27 @@ describe('POST /api/graphify', () => {
     expect(arg.ventureId).toBe(VENTURE_ID);
     expect(arg.jobKind).toBe('graphify.build');
     expect(enqueueAndWait).not.toHaveBeenCalled();
+  });
+
+  it('returns 409 (without enqueuing) when a build is already active for the venture', async () => {
+    requireUser.mockResolvedValue({ id: 'owner-1' });
+    findActiveJob.mockResolvedValue({ jobId: 'job-live' });
+
+    const res = await POST(
+      makeReq({
+        providerCredentialId: 'c1',
+        modelId: 'm1',
+        async: true,
+        payload: { ventureId: VENTURE_ID, brief: BRIEF, notes: ['a signal'] },
+      }),
+    );
+
+    expect(res.status).toBe(409);
+    const body = (await res.json()) as { ok: boolean; jobId: string };
+    expect(body.ok).toBe(false);
+    expect(body.jobId).toBe('job-live');
+    expect(findActiveJob).toHaveBeenCalledWith('owner-1', VENTURE_ID, 'graphify.build');
+    expect(enqueue).not.toHaveBeenCalled();
   });
 
   it('returns 400 with a sanitized reason when the job fails', async () => {

@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 import { requireUser, UnauthorizedError } from '../../../../../lib/auth';
 import { sanitizeApiError } from '../../../../../lib/api-errors';
-import { getJobStore } from '../../../../../lib/jobs';
+import { getJobStore, getJobOrchestrator } from '../../../../../lib/jobs';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -15,6 +15,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     const user = await requireUser();
     const url = new URL(req.url);
     const limit = Number(url.searchParams.get('limit') ?? '50');
+    // Reconcile orphaned jobs for this venture before listing so Run History
+    // never shows a job wedged in RUNNING after its invocation was terminated.
+    await getJobOrchestrator().reconcileStale({ ownerId: user.id, ventureId: params.id });
     const jobs = await getJobStore().listJobs({
       ownerId: user.id,
       ventureId: params.id,

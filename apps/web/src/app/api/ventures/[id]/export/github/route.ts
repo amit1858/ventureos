@@ -16,6 +16,7 @@ import type { GitHubExportInput } from '../../../../../../lib/github-export';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 300;
 
 interface Body {
   providerCredentialId?: string;

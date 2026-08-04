@@ -7,12 +7,14 @@
 import { NextResponse } from 'next/server';
 
 import type { VentureLabInput } from '@foundry/venturelab';
+import { DuplicateActiveJobError } from '@foundry/ventures';
 
 import { requireUser, UnauthorizedError } from '../../../lib/auth';
 import { enqueueAndWait, getJobOrchestrator } from '../../../lib/jobs';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+export const maxDuration = 300;
 
 interface PostBody {
   providerCredentialId?: string;
@@ -54,6 +56,13 @@ export async function POST(req: Request) {
     };
 
     if (body.async === true) {
+      const activeJob = await getJobOrchestrator().findActiveJob(user.id, payload.ventureId, 'venturelab.recommend');
+      if (activeJob) {
+        return NextResponse.json(
+          { ok: false, reason: 'A recommendation is already running for this venture.', jobId: activeJob.jobId },
+          { status: 409 },
+        );
+      }
       const job = await getJobOrchestrator().enqueue({
         ownerId: user.id,
         ventureId: payload.ventureId,
@@ -81,6 +90,12 @@ export async function POST(req: Request) {
   } catch (e) {
     if (e instanceof UnauthorizedError) {
       return NextResponse.json({ ok: false, reason: 'Unauthorized' }, { status: 401 });
+    }
+    if (e instanceof DuplicateActiveJobError) {
+      return NextResponse.json(
+        { ok: false, reason: 'A recommendation is already running for this venture.', jobId: e.existingJobId },
+        { status: 409 },
+      );
     }
     const message = e instanceof Error ? e.message : 'VentureLab call failed.';
     return NextResponse.json({ ok: false, reason: sanitize(message) }, { status: 500 });
