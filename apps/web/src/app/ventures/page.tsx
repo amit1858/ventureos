@@ -12,6 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { VentureSummary, VentureStatus } from '@foundry/contracts';
 
 import { SignInNotice } from '../../components/SignInNotice';
+import { ventureStatusLabel, titleCase } from '../../lib/labels';
 
 const STATUSES: VentureStatus[] = [
   'draft', 'researching', 'validating', 'pivoting', 'approved', 'building', 'archived', 'rejected',
@@ -100,7 +101,7 @@ export default function MyVenturesPage() {
           <StatTile label="Ventures" value={stats.total} />
           <StatTile label="In evaluation" value={stats.inEval} accent="#f3b350" />
           <StatTile label="Advanced to build" value={stats.advanced} accent="#56c596" />
-          <StatTile label="Avg readiness" value={`${stats.avgReadiness}%`} accent="#8b7bf0" />
+          <StatTile label="Avg readiness" value={`${stats.avgReadiness}%`} accent="var(--accent)" />
         </div>
       )}
 
@@ -113,7 +114,7 @@ export default function MyVenturesPage() {
         />
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as '' | VentureStatus)} style={inputStyle}>
           <option value="">All statuses</option>
-          {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+          {STATUSES.map((s) => <option key={s} value={s}>{ventureStatusLabel(s)}</option>)}
         </select>
         <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} style={inputStyle}>
           <option value="updated_desc">Last updated</option>
@@ -128,7 +129,22 @@ export default function MyVenturesPage() {
           <p style={{ color: '#ef6a6a', margin: 0 }}>{error}</p>
         </div>
       )}
-      {loading && <p style={{ color: '#9aa0a6' }}>Loading…</p>}
+      {loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '0.75rem' }} aria-busy="true" aria-label="Loading ventures">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} style={{ ...card }}>
+              <div className="fdry-skeleton fdry-skeleton--title" style={{ width: '55%' }} />
+              <div className="fdry-skeleton fdry-skeleton--text" style={{ width: '90%', marginTop: '0.6rem' }} />
+              <div className="fdry-skeleton fdry-skeleton--text" style={{ width: '70%', marginTop: '0.4rem' }} />
+              <div className="fdry-skeleton-stack" style={{ marginTop: '1rem' }}>
+                <div className="fdry-skeleton fdry-skeleton--line" />
+                <div className="fdry-skeleton fdry-skeleton--line" />
+                <div className="fdry-skeleton fdry-skeleton--line" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       {!loading && !error && !needsAuth && ventures.length === 0 && (
         <div style={{ ...card, padding: '2rem', maxWidth: 640, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ margin: '0 0 0.5rem' }}>Start your first venture</h2>
@@ -163,7 +179,7 @@ function VentureCard({ summary }: { summary: VentureSummary }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
         <h3 style={{ margin: 0, fontSize: '1.05rem' }}>{v.title}</h3>
         <span style={{ ...badge, background: STATUS_COLOUR[v.status] + '22', color: STATUS_COLOUR[v.status], borderColor: STATUS_COLOUR[v.status] + '55' }}>
-          {v.status}
+          {ventureStatusLabel(v.status)}
         </span>
       </div>
       {v.description && (
@@ -182,7 +198,7 @@ function VentureCard({ summary }: { summary: VentureSummary }) {
       </div>
       <div style={{ fontSize: '0.75rem', color: '#7a8088', marginTop: '0.5rem' }}>
         {summary.latestRecommendation
-          ? <>Recommendation: <strong style={{ color: '#e8e8ea' }}>{summary.latestRecommendation.decision}</strong> · score {summary.latestRecommendation.overallScore}/100</>
+          ? <>Recommendation: <strong style={{ color: '#e8e8ea' }}>{titleCase(summary.latestRecommendation.decision)}</strong> · score {summary.latestRecommendation.overallScore}/100</>
           : <>No recommendation yet</>}
         <span style={{ float: 'right' }}>{summary.artifactCount} artifact(s)</span>
       </div>
@@ -210,7 +226,7 @@ function ProgressBar({ label, value }: { label: string; value: number }) {
         <span>{label}</span><span>{value}%</span>
       </div>
       <div style={{ height: 4, background: '#2a2a2a', borderRadius: 2 }}>
-        <div style={{ height: '100%', width: `${value}%`, background: '#8b7bf0', borderRadius: 2 }} />
+        <div style={{ height: '100%', width: `${value}%`, background: 'var(--accent)', borderRadius: 2 }} />
       </div>
     </div>
   );
@@ -238,7 +254,7 @@ const inputStyle: React.CSSProperties = {
   border: '1px solid #2a2a2a', borderRadius: 6, fontSize: '0.9rem',
 };
 const primaryBtn: React.CSSProperties = {
-  padding: '0.5rem 0.85rem', background: '#8b7bf0', color: '#fff',
+  padding: '0.5rem 0.85rem', background: 'var(--accent)', color: 'var(--on-accent)',
   borderRadius: 6, fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem',
 };
 const ghostBtn: React.CSSProperties = {

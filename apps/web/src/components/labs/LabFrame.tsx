@@ -21,6 +21,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 
 import { SignInNotice } from '../SignInNotice';
+import { providerLabel } from '../../lib/labels';
 import {
   loadVentureContext,
   ventureIdFromLocation,
@@ -179,26 +180,30 @@ export function useElapsedSeconds(active: boolean): number {
 export const labUi = {
   page: { maxWidth: 1000, margin: '0 auto', padding: '1.5rem 1.25rem 4rem' } as CSSProperties,
   card: {
-    padding: '1rem 1.25rem', border: '1px solid #2a2a2a',
-    borderRadius: 8, background: '#15171c',
+    padding: '1rem 1.25rem', border: '1px solid var(--border)',
+    borderRadius: 8, background: 'var(--surface)',
   } as CSSProperties,
   input: {
     display: 'block', width: '100%', marginTop: '0.25rem',
-    padding: '0.5rem 0.75rem', background: '#1a1a1f', color: '#e8e8ea',
-    border: '1px solid #2a2a2a', borderRadius: 6,
+    padding: '0.5rem 0.75rem', background: 'var(--surface-2)', color: 'var(--text)',
+    border: '1px solid var(--border)', borderRadius: 6,
   } as CSSProperties,
   primaryBtn: {
-    padding: '0.5rem 0.9rem', background: '#3a6bdc', color: 'white',
-    border: 0, borderRadius: 6, cursor: 'pointer',
+    padding: '0.5rem 0.9rem', background: 'var(--accent)', color: 'var(--on-accent)',
+    border: 0, borderRadius: 6, cursor: 'pointer', fontWeight: 600,
+  } as CSSProperties,
+  /** Spread over primaryBtn when an action can't run — clearly inert. */
+  primaryBtnDisabled: {
+    opacity: 0.45, cursor: 'not-allowed',
   } as CSSProperties,
   secondaryBtn: {
-    padding: '0.45rem 0.8rem', background: '#1f232b', color: '#cbd0d4',
-    border: '1px solid #2a2a2a', borderRadius: 6, cursor: 'pointer',
+    padding: '0.45rem 0.8rem', background: 'var(--surface-3)', color: 'var(--text)',
+    border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer',
     textDecoration: 'none', display: 'inline-block',
   } as CSSProperties,
-  muted: { color: '#9aa0a6' } as CSSProperties,
-  error: { color: '#ef6a6a' } as CSSProperties,
-  link: { color: '#7aa3ff' } as CSSProperties,
+  muted: { color: 'var(--muted)' } as CSSProperties,
+  error: { color: 'var(--danger)' } as CSSProperties,
+  link: { color: 'var(--accent)' } as CSSProperties,
 } as const;
 
 // ── shell ───────────────────────────────────────────────────────────────────
@@ -233,7 +238,16 @@ export function LabFrame({ lab, labPath, title, description, authMessage, childr
       </header>
 
       {lab.phase === 'loading' ? (
-        <div style={{ ...labUi.card, ...labUi.muted }}>Loading venture…</div>
+        <div aria-busy="true" aria-label="Loading venture">
+          <div style={{ ...labUi.card, marginBottom: '1rem' }}>
+            <div className="fdry-skeleton fdry-skeleton--text" style={{ width: 110 }} />
+            <div className="fdry-skeleton fdry-skeleton--title" style={{ width: '45%', marginTop: '0.5rem' }} />
+          </div>
+          <div style={{ ...labUi.card }}>
+            <div className="fdry-skeleton fdry-skeleton--text" style={{ width: 80 }} />
+            <div className="fdry-skeleton fdry-skeleton--line" style={{ width: '60%', marginTop: '0.75rem', height: 34 }} />
+          </div>
+        </div>
       ) : null}
 
       {lab.phase === 'redirecting' ? (
@@ -309,7 +323,7 @@ function ProviderPicker({ lab }: { lab: VentureLab }) {
             <select value={selectedProviderId} onChange={(e) => setSelectedProviderId(e.target.value)} style={labUi.input}>
               {providers.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.providerType} — {p.displayName} ({p.maskedPreview})
+                  {providerLabel(p.providerType)} — {p.displayName} ({p.maskedPreview})
                 </option>
               ))}
             </select>

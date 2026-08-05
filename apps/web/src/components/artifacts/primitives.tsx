@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { VentureJobStatus, VentureStatus } from '@foundry/contracts';
 
+import { jobStatusLabel, titleCase, ventureStatusLabel } from '../../lib/labels';
 import {
   cx,
   decisionClass,
@@ -14,15 +15,15 @@ export function Badge({ className, children }: { className?: string; children: R
 }
 
 export function JobStatusBadge({ status }: { status: VentureJobStatus }) {
-  return <Badge className={jobStatusClass(status)}>{status}</Badge>;
+  return <Badge className={jobStatusClass(status)}>{jobStatusLabel(status)}</Badge>;
 }
 
 export function VentureStatusBadge({ status }: { status: VentureStatus }) {
-  return <Badge className={ventureStatusClass(status)}>{status}</Badge>;
+  return <Badge className={ventureStatusClass(status)}>{ventureStatusLabel(status)}</Badge>;
 }
 
 export function DecisionBadge({ decision }: { decision: string }) {
-  return <Badge className={decisionClass(decision)}>{decision}</Badge>;
+  return <Badge className={decisionClass(decision)}>{titleCase(decision)}</Badge>;
 }
 
 /** Self-contained readiness ring (inline SVG, no external CSS dependency). */

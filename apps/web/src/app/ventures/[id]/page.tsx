@@ -52,6 +52,7 @@ import {
   VentureStatusBadge,
 } from '../../../components/artifacts';
 import { buildEvaluationFromArtifacts } from '../../../lib/evaluation';
+import { ventureStatusLabel } from '../../../lib/labels';
 
 const STATUSES: VentureStatus[] = [
   'draft', 'researching', 'validating', 'pivoting', 'approved', 'building', 'archived', 'rejected',
@@ -162,7 +163,7 @@ export default function VentureWorkspacePage({ params }: Props) {
   }, [summary, artifacts, derived]);
 
   if (error) return <p style={{ padding: '1.5rem', color: '#ef6a6a' }}>{error}</p>;
-  if (!summary) return <p style={{ padding: '1.5rem', color: '#9aa0a6' }}>Loading…</p>;
+  if (!summary) return <VentureWorkspaceSkeleton />;
 
   const v = summary.venture;
   const activeJobs = jobs.filter((j) => j.status === 'queued' || j.status === 'running');
@@ -171,7 +172,7 @@ export default function VentureWorkspacePage({ params }: Props) {
     <section className={cx(styles.scope)} style={{ maxWidth: 1200, margin: '0 auto', padding: '1.5rem' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
         <div style={{ flex: '1 1 320px' }}>
-          <a href="/ventures" style={{ color: '#7aa3ff', fontSize: '0.85rem', textDecoration: 'none' }}>← My Ventures</a>
+          <a href="/ventures" style={{ color: 'var(--accent)', fontSize: '0.85rem', textDecoration: 'none' }}>← My Ventures</a>
           <h1 style={{ margin: '0.25rem 0' }}>{v.title}</h1>
           {v.description && <p style={{ color: '#9aa0a6', margin: 0 }}>{v.description}</p>}
         </div>
@@ -183,14 +184,14 @@ export default function VentureWorkspacePage({ params }: Props) {
             onChange={(e) => void setStatus(e.target.value as VentureStatus)}
             style={inputStyle}
           >
-            {STATUSES.map((s) => <option key={s} value={s}>Set status → {s}</option>)}
+            {STATUSES.map((s) => <option key={s} value={s}>Set status → {ventureStatusLabel(s)}</option>)}
           </select>
         </div>
       </header>
 
-      <nav style={{ display: 'flex', gap: '0.25rem', marginTop: '1rem', borderBottom: '1px solid #2a2a2a', overflowX: 'auto' }}>
+      <nav className="fdry-scroll-x" style={{ display: 'flex', gap: '0.25rem', marginTop: '1rem', borderBottom: '1px solid #2a2a2a' }} aria-label="Venture sections">
         {TABS.map(({ key, label }) => (
-          <button key={key} onClick={() => setTab(key)} style={tabStyle(tab === key)}>{label}</button>
+          <button key={key} onClick={() => setTab(key)} style={tabStyle(tab === key)} aria-current={tab === key ? 'page' : undefined}>{label}</button>
         ))}
       </nav>
 
@@ -277,8 +278,21 @@ export default function VentureWorkspacePage({ params }: Props) {
           )
         )}
 
-        {tab === 'evaluation' && evaluation && (
-          <EvaluationView report={evaluation.report} markdown={evaluation.markdown} />
+        {tab === 'evaluation' && (
+          evaluation ? (
+            <EvaluationView report={evaluation.report} markdown={evaluation.markdown} />
+          ) : (
+            <EmptyState
+              icon="📊"
+              title="No evaluation yet"
+              text={derived.has.rec
+                ? 'The evaluation report is compiled from this venture’s artifacts. Generate a build plan to complete the picture, then the full report appears here.'
+                : 'The evaluation report summarises readiness across research, validation and build planning. Run validation first to start building it.'}
+              action={derived.has.rec
+                ? { href: `/labs/buildsquad?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Generate build plan →' }
+                : { href: `/labs/venture?ventureId=${encodeURIComponent(v.ventureId)}`, label: 'Run validation →' }}
+            />
+          )
         )}
 
         {tab === 'timeline' && (
@@ -447,6 +461,35 @@ function latestOf(arts: VentureArtifact[], kind: VentureArtifactKind): VentureAr
 const inputStyle: React.CSSProperties = { padding: '0.4rem 0.5rem', background: '#101015', color: '#e8e8ea', border: '1px solid #2a2a2a', borderRadius: 6, fontSize: '0.85rem' };
 const tabStyle = (active: boolean): React.CSSProperties => ({
   padding: '0.5rem 0.85rem', background: 'transparent', border: 'none',
-  borderBottom: active ? '2px solid #7aa3ff' : '2px solid transparent',
+  borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
   color: active ? '#e8e8ea' : '#9aa0a6', cursor: 'pointer', fontSize: '0.85rem', whiteSpace: 'nowrap',
 });
+
+function VentureWorkspaceSkeleton() {
+  return (
+    <section className={cx(styles.scope)} style={{ maxWidth: 1200, margin: '0 auto', padding: '1.5rem' }} aria-busy="true" aria-label="Loading venture">
+      <div className="fdry-skeleton fdry-skeleton--text" style={{ width: 90 }} />
+      <div className="fdry-skeleton fdry-skeleton--title" style={{ width: '40%', marginTop: '0.5rem' }} />
+      <div className="fdry-skeleton fdry-skeleton--text" style={{ width: '65%', marginTop: '0.5rem' }} />
+      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem', borderBottom: '1px solid #2a2a2a', paddingBottom: '0.6rem' }}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="fdry-skeleton fdry-skeleton--text" style={{ width: 72 }} />
+        ))}
+      </div>
+      <div className={cx(styles.grid2)} style={{ marginTop: '1.25rem' }}>
+        <div className={cx(styles.card)}>
+          <div className="fdry-skeleton fdry-skeleton--text" style={{ width: 110 }} />
+          <div className="fdry-skeleton-stack" style={{ marginTop: '1rem' }}>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="fdry-skeleton fdry-skeleton--line" />
+            ))}
+          </div>
+        </div>
+        <div className={cx(styles.card)}>
+          <div className="fdry-skeleton fdry-skeleton--text" style={{ width: 130 }} />
+          <div className="fdry-skeleton fdry-skeleton--line" style={{ marginTop: '1rem', height: 38 }} />
+        </div>
+      </div>
+    </section>
+  );
+}

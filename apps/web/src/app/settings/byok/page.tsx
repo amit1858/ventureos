@@ -17,6 +17,7 @@ import {
   parseJsonBody,
 } from '../../../lib/byok-http';
 import { SignInNotice } from '../../../components/SignInNotice';
+import { providerLabel, keyStatusLabel } from '../../../lib/labels';
 
 const PROVIDERS: ProviderId[] = ['openai', 'anthropic', 'gemini', 'azure_openai', 'github'];
 
@@ -120,7 +121,6 @@ export default function ByokSettings() {
 
       <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'baseline' }}>
         <button onClick={() => setShowAdd(true)} style={primaryBtn}>+ Add provider</button>
-        {loading ? <span style={{ color: '#9aa0a6' }}>loading…</span> : null}
       </div>
 
       {showAdd ? (
@@ -131,8 +131,30 @@ export default function ByokSettings() {
       ) : null}
 
       <div style={{ marginTop: '2rem', display: 'grid', gap: '1rem' }}>
+        {loading ? (
+          <div aria-busy="true" aria-label="Loading providers" style={{ display: 'grid', gap: '1rem' }}>
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} style={cardStyle}>
+                <div className="fdry-skeleton fdry-skeleton--title" style={{ width: '40%' }} />
+                <div className="fdry-skeleton fdry-skeleton--text" style={{ width: '25%', marginTop: '0.6rem' }} />
+              </div>
+            ))}
+          </div>
+        ) : null}
         {profiles.length === 0 && !loading ? (
-          <p style={{ color: '#9aa0a6' }}>No providers configured. Add one to get started.</p>
+          <div style={{ ...cardStyle, textAlign: 'center', padding: '2.5rem 1.5rem' }}>
+            <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }} aria-hidden>🔑</div>
+            <h3 style={{ margin: '0 0 0.4rem' }}>No provider keys yet</h3>
+            <p style={{ color: '#9aa0a6', margin: '0 auto 1.1rem', maxWidth: 460, lineHeight: 1.6 }}>
+              Add your own OpenAI, Anthropic, Google Gemini or Azure key to run personas,
+              validation and build planning against your account. Keys are encrypted at rest and
+              never leave the server.
+            </p>
+            <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button onClick={() => setShowAdd(true)} style={primaryBtn}>+ Add your first provider</button>
+              <a href="/demo" style={secondaryBtn}>Explore the demo →</a>
+            </div>
+          </div>
         ) : null}
         {profiles.map((p) => (
           <ProviderCard key={p.id} profile={p} onChanged={refresh} />
@@ -199,7 +221,7 @@ function AddProviderForm({
       <label>
         Provider
         <select value={providerType} onChange={(e) => setProviderType(e.target.value as ProviderId)} style={inputStyle}>
-          {PROVIDERS.map((p) => <option key={p} value={p}>{p}</option>)}
+          {PROVIDERS.map((p) => <option key={p} value={p}>{providerLabel(p)}</option>)}
         </select>
       </label>
       <label>
@@ -321,7 +343,7 @@ function ProviderCard({ profile, onChanged }: { profile: ProviderProfile; onChan
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
         <div>
           <h3 style={{ margin: 0 }}>
-            {profile.providerType} <span style={{ color: '#9aa0a6', fontWeight: 'normal' }}>· {profile.displayName}</span>
+            {providerLabel(profile.providerType)} <span style={{ color: '#9aa0a6', fontWeight: 'normal' }}>· {profile.displayName}</span>
             {profile.isDefault ? <span style={defaultPill}> default </span> : null}
           </h3>
           <p style={{ margin: '0.25rem 0 0', color: '#9aa0a6', fontFamily: 'monospace' }}>
@@ -329,7 +351,7 @@ function ProviderCard({ profile, onChanged }: { profile: ProviderProfile; onChan
           </p>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <p style={{ margin: 0, color: statusColor }}>● {profile.validationStatus}</p>
+          <p style={{ margin: 0, color: statusColor }}>● {keyStatusLabel(profile.validationStatus)}</p>
           <p style={{ margin: 0, color: '#9aa0a6', fontSize: '0.85rem' }}>
             last validated: {profile.lastValidatedAt ? new Date(profile.lastValidatedAt).toLocaleString() : 'never'}
           </p>
@@ -437,8 +459,8 @@ const cardStyle: React.CSSProperties = {
 };
 
 const primaryBtn: React.CSSProperties = {
-  padding: '0.5rem 0.9rem', background: '#3a6bdc', color: 'white',
-  border: 0, borderRadius: 6, cursor: 'pointer',
+  padding: '0.5rem 0.9rem', background: 'var(--accent)', color: 'var(--on-accent)',
+  border: 0, borderRadius: 6, cursor: 'pointer', fontWeight: 600,
 };
 
 const secondaryBtn: React.CSSProperties = {
@@ -452,6 +474,6 @@ const dangerBtn: React.CSSProperties = {
 
 const defaultPill: React.CSSProperties = {
   marginLeft: '0.5rem', fontSize: '0.7rem', textTransform: 'uppercase',
-  padding: '0.1rem 0.4rem', background: '#3a6bdc22',
-  color: '#7aa3ff', borderRadius: 4, fontWeight: 'bold',
+  padding: '0.1rem 0.4rem', background: 'rgba(139, 123, 240, 0.16)',
+  color: 'var(--accent)', borderRadius: 4, fontWeight: 'bold',
 };
