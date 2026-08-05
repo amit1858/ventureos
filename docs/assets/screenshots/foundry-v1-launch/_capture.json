@@ -1,0 +1,245 @@
+{
+  "base": "https://ventureos-dun.vercel.app",
+  "capturedAt": "2026-08-05T10:06:50.272Z",
+  "desktop": {
+    "width": 1440,
+    "height": 900
+  },
+  "mobile": {
+    "width": 390,
+    "height": 844
+  },
+  "dsf": 2,
+  "shots": [
+    {
+      "screen": "Landing hero",
+      "file": "01-landing-hero.png",
+      "route": "/",
+      "finalUrl": "https://ventureos-dun.vercel.app/",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "pxWidth": 2880,
+      "pxHeight": 1800,
+      "source": "marketing",
+      "kind": "viewport",
+      "status": 200
+    },
+    {
+      "screen": "Operating model",
+      "file": "02-operating-model.png",
+      "route": "/",
+      "finalUrl": "https://ventureos-dun.vercel.app/",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "pxWidth": 2880,
+      "pxHeight": 1800,
+      "source": "marketing",
+      "kind": "viewport-anchored",
+      "status": 200
+    },
+    {
+      "screen": "My Ventures (synthetic portfolio proxy)",
+      "file": "03-my-ventures-portfolio.png",
+      "route": "/demo",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "pxWidth": 2880,
+      "pxHeight": 1800,
+      "source": "demo-index",
+      "kind": "viewport",
+      "status": 200
+    },
+    {
+      "screen": "My Ventures (auth gate)",
+      "file": "03b-my-ventures-gate.png",
+      "route": "/ventures",
+      "finalUrl": "https://ventureos-dun.vercel.app/ventures",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "pxWidth": 2880,
+      "pxHeight": 1800,
+      "source": "auth-gate",
+      "kind": "viewport",
+      "status": 200
+    },
+    {
+      "screen": "Guided Demo",
+      "file": "15-guided-demo.png",
+      "route": "/demo/faceless-crm",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo/faceless-crm",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "pxWidth": 2880,
+      "pxHeight": 1800,
+      "source": "demo-walkthrough",
+      "kind": "viewport",
+      "status": 200
+    },
+    {
+      "screen": "Venture workspace overview",
+      "file": "04-venture-workspace-overview.png",
+      "route": "/demo/faceless-crm",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo/faceless-crm",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "sectionLogical": "992x545",
+      "source": "demo-walkthrough",
+      "kind": "section",
+      "status": 200
+    },
+    {
+      "screen": "Persona cards",
+      "file": "05-persona-cards.png",
+      "route": "/demo/faceless-crm",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo/faceless-crm",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "sectionLogical": "992x1517",
+      "source": "demo-walkthrough",
+      "kind": "section",
+      "status": 200
+    },
+    {
+      "screen": "Buying Committee",
+      "file": "07-buying-committee.png",
+      "route": "/demo/faceless-crm",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo/faceless-crm",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "sectionLogical": "992x2154",
+      "source": "demo-walkthrough",
+      "kind": "section",
+      "status": 200
+    },
+    {
+      "screen": "Research Graph",
+      "file": "08-research-graph.png",
+      "route": "/demo/faceless-crm",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo/faceless-crm",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "sectionLogical": "992x706",
+      "source": "demo-walkthrough",
+      "kind": "section",
+      "status": 200
+    },
+    {
+      "screen": "Validation recommendation",
+      "file": "09-validation-recommendation.png",
+      "route": "/demo/faceless-crm",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo/faceless-crm",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "sectionLogical": "992x2319",
+      "source": "demo-walkthrough",
+      "kind": "section",
+      "status": 200
+    },
+    {
+      "screen": "Build Plan",
+      "file": "10-build-plan.png",
+      "route": "/demo/faceless-crm",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo/faceless-crm",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "sectionLogical": "992x3430",
+      "source": "demo-walkthrough",
+      "kind": "section",
+      "status": 200
+    },
+    {
+      "screen": "Evaluation report",
+      "file": "11-evaluation-report.png",
+      "route": "/demo/faceless-crm",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo/faceless-crm",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "sectionLogical": "992x735",
+      "source": "demo-walkthrough",
+      "kind": "section",
+      "status": 200
+    },
+    {
+      "screen": "Timeline",
+      "file": "12-timeline.png",
+      "route": "/demo/faceless-crm",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo/faceless-crm",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "sectionLogical": "992x870",
+      "source": "demo-walkthrough",
+      "kind": "section",
+      "status": 200
+    },
+    {
+      "screen": "Artifact library (GitHub export)",
+      "file": "13-artifact-library.png",
+      "route": "/demo/faceless-crm",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo/faceless-crm",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "sectionLogical": "992x543",
+      "source": "demo-walkthrough",
+      "kind": "section",
+      "status": 200
+    },
+    {
+      "screen": "Provider Keys (auth gate)",
+      "file": "14-provider-keys-gate.png",
+      "route": "/settings/byok",
+      "finalUrl": "https://ventureos-dun.vercel.app/settings/byok",
+      "viewport": "1440x900",
+      "dsf": 2,
+      "pxWidth": 2880,
+      "pxHeight": 1800,
+      "source": "auth-gate",
+      "kind": "viewport",
+      "status": 200
+    },
+    {
+      "screen": "Mobile landing",
+      "file": "16-mobile-landing.png",
+      "route": "/",
+      "finalUrl": "https://ventureos-dun.vercel.app/",
+      "viewport": "390x844",
+      "dsf": 2,
+      "pxWidth": 780,
+      "pxHeight": 1688,
+      "source": "marketing",
+      "kind": "mobile",
+      "status": 200
+    },
+    {
+      "screen": "Mobile workspace (synthetic)",
+      "file": "17-mobile-workspace.png",
+      "route": "/demo/faceless-crm",
+      "finalUrl": "https://ventureos-dun.vercel.app/demo/faceless-crm",
+      "viewport": "390x844",
+      "dsf": 2,
+      "pxWidth": 780,
+      "pxHeight": 1688,
+      "source": "demo-walkthrough",
+      "kind": "mobile",
+      "status": 200
+    }
+  ],
+  "consoleErrors": [],
+  "authOnlyGaps": [
+    {
+      "screen": "Focus Group (#6)",
+      "reason": "No Focus Group section in Guided Demo; only exists in authenticated Persona Lab. Production auth = Google OAuth only; alpha access disabled (503).",
+      "closestProxy": "07-buying-committee.png"
+    },
+    {
+      "screen": "Provider Keys — masked credential (#14)",
+      "reason": "Requires an authenticated session with a stored BYOK credential. Captured the polished auth gate instead (14-provider-keys-gate.png).",
+      "closestProxy": "14-provider-keys-gate.png"
+    },
+    {
+      "screen": "My Ventures — populated portfolio (#3)",
+      "reason": "Populated portfolio requires an authenticated session with ventures. Captured the synthetic demo portfolio grid (03) + auth gate (03b) as proxies.",
+      "closestProxy": "03-my-ventures-portfolio.png"
+    }
+  ]
+}
